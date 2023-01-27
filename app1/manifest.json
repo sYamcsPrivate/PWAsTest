@@ -1,0 +1,17 @@
+{
+  "name": "PWAsTest App1",
+  "short_name": "PWAsTest App1",
+  "description": "PWAsTest App1",
+  "scope": "/PWAsTest/app1/",
+  "start_url": "/PWAsTest/app1/",
+  "theme_color": "#F0FF44",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/PWAsTest/icons/icon-app1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
