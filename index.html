@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, shrink-to-fit=no">
+<link rel="manifest" href="/manifest.json">
+<title>PWAsTest - Root</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+html,
+.fullscreen {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.container {
+  margin: auto;
+  text-align: center;
+}
+.title {
+  font-size: 3rem;
+}
+</style>
+</head>
+<body class="fullscreen">
+<div class="container">
+<a href="/">Root</a>
+<a href="/dir1">Sub Directory</a>
+<a href="/app1">App1</a>
+<a href="/app2">App2</a>
+<h1 class="title">This is root page</h1>
+</div>
+<script type="text/javascript">
+/*
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/swRoot.js').then((registration) => {
+    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+  }).catch((err) => {
+      console.log('ServiceWorker registration failed: ', err);
+  });
+}
+*/
+</script>
+</body>
+</html>
