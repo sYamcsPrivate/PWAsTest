@@ -4,7 +4,7 @@
   "description": "PWAsTest App2",
   "scope": "/PWAsTest/app2/",
   "start_url": "/PWAsTest/app2/",
-  "theme_color": "#F044FF",
+  "theme_color": "#0F9944",
   "background_color": "#FFFFFF",
   "display": "standalone",
   "icons": [
