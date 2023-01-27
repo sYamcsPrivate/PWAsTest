@@ -1,6 +1,10 @@
 const VERSION = "0.0.0.1";
 const CACHE_NAME = `${registration.scope}!${VERSION}`;
 const CACHE_ITEMS = [
+  "/PWAsTest/icons/icon-root.png",
+  "/PWAsTest/icons/favicon.ico",
+  "/PWAsTest/manifest.json",
+  "/PWAsTest/sw.js",
   "/PWAsTest/",
 ];
 
