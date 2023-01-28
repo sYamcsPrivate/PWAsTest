@@ -69,15 +69,15 @@ const _getCache = async(key) => {
   let req = "./" + key;
   await fetch(req).then((res) => {
     console.log(_getDateTime() + "|_getCacheThen:" + res.status());
-    return res.status === 200 ? res : "";
+    return res.status === 200 ? res : undefined;
   }).catch(() => {
     console.log(_getDateTime() + "|_getCacheCatch");
-    return "";
+    return undefined;
   });
 }
 const _getCacheName = async() => {
   let res = await _getCache("CACHE_NAME");
-  while (res == "") {
+  while (res == undefined) {
     await new Promise(s => setTimeout(s, 1000))
     res = await _getCache("CACHE_NAME");
   }
