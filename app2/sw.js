@@ -11,6 +11,9 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
+
+      console.log(_getDateTime() + "|install - set CacheName");
+
       return cache.addAll(CACHE_ITEMS);
     })
   );
