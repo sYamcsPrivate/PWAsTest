@@ -54,8 +54,8 @@ const _getCache = async(key) => {
 
 
 const _getCache = async(key) => {
-  let path = "./" + key;
-  await caches.match(path).then((res) => {
+  let req = "./" + key;
+  await caches.match(new Request(req)).then((res) => {
     return res ? res : "";
   })
 }
@@ -68,12 +68,12 @@ const _getCacheName = async() => {
   return res;
 };
 const _setCache = async(key, value) => {
-  let path = "./" + key;
+  let req = "./" + key;
   let cacheName = await _getCacheName();
 
   console.log(_getDateTime() + "|cacheName:" + cacheName);
 
   await caches.open(cacheName).then(async (cache) => {
-    await cache.put(path, new Response(value));
+    await cache.put(req, new Response(value));
   });
 };
