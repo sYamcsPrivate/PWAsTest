@@ -8,38 +8,115 @@
 <link rel="apple-touch-icon" href="./icon.png">
 <title>PWAsTest - App2</title>
 <style>
-body {
-  font-family: sans-serif;
-}
-html,
-.fullscreen {
-  display: flex;
-  height: 100%;
+html, body {
   margin: 0;
-  padding: 0;
-  width: 100%;
 }
-.container {
+._index {
+  font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0px;
+  padding: 0px;
+}
+._page {
+  display: none;
+  margin: 0px;
+}
+._doc {
+  padding: 10px 10px;
+}
+</style>
+<script src="base.js"></script>
+</head>
+<body>
+
+
+
+<!--
+****************************************
+div index start
+****************************************
+-->
+<div class="_index">
+
+
+
+<!--
+****************************************
+template.page
+****************************************
+-->
+<div class="_page" id="_template">
+
+<!-- css -->
+<style>
+#_template-container {
   margin: auto;
   text-align: center;
 }
-.title {
+#_template-title {
   font-size: 3rem;
 }
 </style>
-</head>
-<body class="fullscreen">
-<div class="container">
-<h1 class="title">This is App2 page</h1>
+
+<!-- html -->
+<div class="_doc">
+  <div id="_template-container">
+    <div id="_template-title">
+      <h1>App2</h1>
+    </div>
+  </div>
 </div>
+
+<!-- js -->
 <script type="text/javascript">
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then((registration) => {
-    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-  }).catch((err) => {
-      console.log('ServiceWorker registration failed: ', err);
-  });
-}
+</script>
+
+</div>
+
+
+
+<!--
+****************************************
+div index end
+****************************************
+-->
+</div>
+
+
+
+<script type="text/javascript">
+/*
+****************************************
+index.html js start
+****************************************
+*/
+
+
+
+window.onload = () => {
+
+  _setCache("keyDom", "valueDom");
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").then((registration) => {
+      console.log("ServiceWorker registration successful with scope: ", registration.scope);
+    }).catch((err) => {
+      console.log("ServiceWorker registration failed: ", err);
+    });
+  }
+};
+
+
+
+/*
+****************************************
+index.html js end
+****************************************
+*/
 </script>
 </body>
 </html>
