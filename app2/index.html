@@ -98,7 +98,7 @@ index.html js start
 
 
 const _regSw = () => {
-  return new Promise( async (resolve, reject) => {
+  return new Promise(async(resolve, reject) => {
     navigator.serviceWorker.register("./sw.js").then((registration) => {
       console.log(_getDateTime() + "ServiceWorker registration successful with scope: ", registration.scope);
       resolve();
@@ -110,7 +110,7 @@ const _regSw = () => {
 };
 
 window.onload = () => {
-  _regSw().then(() => {
+  _regSw().then(async() => {
     await new Promise(s => setTimeout(s, 1000))
     _setCache("keyDom", "valueDom");
   });
