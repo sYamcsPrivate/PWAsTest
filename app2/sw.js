@@ -1,7 +1,7 @@
 importScripts('base.js');
-VERSION = "0.0.0.4";
-CACHE_NAME = `${registration.scope}${VERSION}`;
-CACHE_ITEMS = [
+const VERSION = "0.0.0.5";
+const CACHE_NAME = `${registration.scope}${VERSION}`;
+const CACHE_ITEMS = [
   "./icon.png",
   "./manifest.json",
   "./sw.js",
@@ -10,12 +10,10 @@ CACHE_ITEMS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      cache.put("CACHE_NAME", new Response(CACHE_NAME));
       return cache.addAll(CACHE_ITEMS);
     })
   );
-
-  _setCache("keySw", "valueSw");
-
 });
 self.addEventListener('fetch', (event) => {
   event.respondWith(

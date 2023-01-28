@@ -1,19 +1,20 @@
-let VERSION;
-var CACHE_NAME;
-let CACHE_ITEMS;
-
-const _getCache = async (key) => {
+const _getCache = (key) => {
   let path = "./" + key;
-  await caches.open(CACHE_NAME).then(async (cache) => {
-    await cache.match(path).then((value) => {
-      return value ? value : undefined;
-    })
+  return fetch(new Request(path)).then((value) => {
+    return value;
+  }).catch((err) => {
+    return undefined;
   });
 };
-
 const _setCache = async (key, value) => {
   let path = "./" + key;
-  await caches.open(CACHE_NAME).then((cache) => {
-    return cache.put(path, new Response(value));
-  });
+  let cacheName = _getCache("CACHE_NAME");
+  if (cacheName) {
+    await caches.open(cacheName).then((cache) => {
+      await cache.put(path, new Response(value));
+      return true;
+    });
+  } else {
+    return false;
+  }
 };
