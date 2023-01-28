@@ -81,10 +81,10 @@ const _getCache = async(key) => {
 }
 const _getCacheName = async() => {
   let res = await _getCache("CACHE_NAME");
-  while (res === undefined) {
-    await new Promise(s => setTimeout(s, 1000))
-    res = await _getCache("CACHE_NAME");
-  }
+  //while (res === undefined) {
+  //  await new Promise(s => setTimeout(s, 1000))
+  //  res = await _getCache("CACHE_NAME");
+  //}
   return res;
 };
 const _setCache = async(key, value) => {
