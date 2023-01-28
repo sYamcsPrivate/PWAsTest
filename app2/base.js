@@ -68,8 +68,8 @@ const _getCache = async(key) => {
 const _getCache = async(key) => {
   let req = "./" + key;
   await fetch(req).then((res) => {
-    console.log(_getDateTime() + "|_getCacheThen:" + res);
-    return res ? res : "";
+    console.log(_getDateTime() + "|_getCacheThen:" + res.status());
+    return res.status === 200 ? res : "";
   }).catch(() => {
     console.log(_getDateTime() + "|_getCacheCatch");
     return "";
