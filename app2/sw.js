@@ -17,6 +17,7 @@ self.addEventListener("install", (event) => {
 });
 self.addEventListener("fetch", (event) => {
   event.respondWith(
+    console.log(_getDateTime() + "|event.request:" + event.request);
     caches.match(event.request).then((response) => {
 
       console.log(_getDateTime() + "|fetch:" + response);

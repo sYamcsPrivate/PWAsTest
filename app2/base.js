@@ -27,12 +27,7 @@ const _getDateTime = () => {
   return res;
 }
 
-const _getCache = async(key) => {
-  let path = "./" + key;
-  await caches.match(path).then((res) => {
-    return res ? res : undefined;
-  })
-}
+
 
 /*
 const _getCachePromise = (req) => {
@@ -56,9 +51,17 @@ const _getCache = async(key) => {
 }
 */
 
+
+
+const _getCache = async(key) => {
+  let path = "./" + key;
+  await caches.match(path).then((res) => {
+    return res ? res : "";
+  })
+}
 const _getCacheName = async() => {
   let res = _getCache("CACHE_NAME");
-  while (typeof res === "undefined" || res == "") {
+  while (res == "") {
     await new Promise(s => setTimeout(s, 1000))
     res = _getCache("CACHE_NAME");
   }
