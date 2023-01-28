@@ -77,6 +77,9 @@ const _getCache = async(key) => {
     console.log(_getDateTime() + "|_getCacheThen-Ok:" + res.ok);
     console.log(_getDateTime() + "|_getCacheThen-Text:" + resText);
     return resText;
+  }).then((res) => {
+    console.log(_getDateTime() + "|_getCacheThen-ThenText:" + res);
+    return res;
   }).catch((err) => {
     console.log(_getDateTime() + "|_getCacheCatch:" + err);
     return undefined;
