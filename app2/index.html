@@ -97,17 +97,22 @@ index.html js start
 
 
 
-window.onload = () => {
-
-  _setCache("keyDom", "valueDom");
-
-  if ("serviceWorker" in navigator) {
+const _regSw = () => {
+  return new Promise( async (resolve, reject) => {
     navigator.serviceWorker.register("./sw.js").then((registration) => {
       console.log("ServiceWorker registration successful with scope: ", registration.scope);
+      resolve();
     }).catch((err) => {
       console.log("ServiceWorker registration failed: ", err);
+      reject(); 
     });
-  }
+  })
+};
+
+window.onload = () => {
+  _regSw().then(() => {
+    _setCache("keyDom", "valueDom");
+  });
 };
 
 
