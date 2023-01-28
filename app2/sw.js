@@ -14,7 +14,12 @@ self.addEventListener("install", (event) => {
 
       console.log(_getDateTime() + "|install - set CacheName");
 
-      return cache.addAll(CACHE_ITEMS);
+      //return cache.addAll(CACHE_ITEMS);
+
+      let res = cache.addAll(CACHE_ITEMS);
+      console.log(_getDateTime() + "|install - set All" + res);
+      return res;
+
     })
   );
 });
