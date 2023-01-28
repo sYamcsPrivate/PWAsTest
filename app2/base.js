@@ -27,6 +27,14 @@ const _getDateTime = () => {
   return res;
 }
 
+const _getCache = async(key) => {
+  let path = "./" + key;
+  await caches.match(path).then((res) => {
+    return res ? res : undefined;
+  })
+}
+
+/*
 const _getCachePromise = (req) => {
   let reqPath = "./" + req;
   return new Promise( async (resolve, reject) => {
@@ -46,6 +54,8 @@ const _getCache = async(key) => {
     return undefined;
   });
 }
+*/
+
 const _getCacheName = async() => {
   let res = _getCache("CACHE_NAME");
   while (typeof res === "undefined" || res == "") {
