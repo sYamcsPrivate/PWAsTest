@@ -80,6 +80,7 @@ const _getCache = async(key) => {
   });
 }
 const _getCacheName = async() => {
+  console.log(_getDateTime() + "|_getCacheNameStart");
   let res = await _getCache("CACHE_NAME");
   //while (res === undefined) {
   //  await new Promise(s => setTimeout(s, 1000))
