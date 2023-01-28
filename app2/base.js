@@ -38,6 +38,9 @@ const _getCachePromise = (req) => {
 }
 const _getCache = async(key) => {
   await _getCachePromise(key).then ( (value) => {
+
+    console.log(_getDateTime() + "|value:" + value);
+
     return value;
   }).catch(() => {
     return undefined;
@@ -53,7 +56,7 @@ const _getCacheName = async() => {
 };
 const _setCache = async(key, value) => {
   let path = "./" + key;
-  let cacheName = _getCacheName();
+  let cacheName = await _getCacheName();
 
   console.log(_getDateTime() + "|cacheName:" + cacheName);
 
