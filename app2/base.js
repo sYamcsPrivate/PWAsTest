@@ -52,10 +52,22 @@ const _getCache = async(key) => {
 */
 
 
-
+/*
 const _getCache = async(key) => {
   let req = "./" + key;
   await caches.match(new Request(req)).then((res) => {
+    console.log(_getDateTime() + "|_getCacheThen:" + res);
+    return res ? res : "";
+  }).catch(() => {
+    console.log(_getDateTime() + "|_getCacheCatch");
+    return "";
+  });
+}
+*/
+
+const _getCache = async(key) => {
+  let req = "./" + key;
+  await fetch(req).then((res) => {
     console.log(_getDateTime() + "|_getCacheThen:" + res);
     return res ? res : "";
   }).catch(() => {
