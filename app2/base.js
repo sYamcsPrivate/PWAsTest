@@ -8,7 +8,7 @@ const _getCache = (key) => {
 };
 const _getCacheName = async() => {
   let res = _getCache("CACHE_NAME");
-  while (typeof cacheName === "undefined" || cacheName == "") {
+  while (typeof res === "undefined" || res == "") {
     await new Promise(s => setTimeout(s, 1000))
     res = _getCache("CACHE_NAME");
   }
