@@ -11,7 +11,7 @@ const _setCache = async (key, value) => {
   let cacheName = _getCache("CACHE_NAME");
   if (cacheName) {
     await caches.open(cacheName).then((cache) => {
-      await cache.put(path, new Response(value));
+      cache.put(path, new Response(value));
       return true;
     });
   } else {
