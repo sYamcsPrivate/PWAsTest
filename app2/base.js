@@ -57,7 +57,9 @@ const _getCache = async(key) => {
   let req = "./" + key;
   await caches.match(new Request(req)).then((res) => {
     return res ? res : "";
-  })
+  }).catch(() => {
+    return false;
+  });
 }
 const _getCacheName = async() => {
   let res = _getCache("CACHE_NAME");

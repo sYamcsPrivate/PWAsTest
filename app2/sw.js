@@ -16,11 +16,11 @@ self.addEventListener("install", (event) => {
   );
 });
 self.addEventListener("fetch", (event) => {
-  console.log(_getDateTime() + "|event.request:" + event.request);
+  console.log(_getDateTime() + "|event.request:" + event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
 
-      console.log(_getDateTime() + "|fetch:" + response);
+      console.log(_getDateTime() + "|fetch:" + response.url);
 
       return response ? response : fetch(event.request);
     })
