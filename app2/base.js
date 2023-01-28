@@ -27,12 +27,11 @@ const _getDateTime = () => {
   return res;
 }
 var _getCache = (key) => {
-  let reqPath = "./" + key;
-  return new Promise( async (resolve, reject) => {
-    fetch(reqPath)
-    .then(res => res.text())
-    .then(res => resolve(res))
-    .catch(err => reject(undefined));
+  let path = "./" + key;
+  return fetch(new Request(path)).then((res) => {
+    return res.text();
+  }).catch((err) => {
+    return undefined;
   });
 }
 const _getCacheName = async() => {
