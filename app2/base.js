@@ -6,15 +6,18 @@ const _getCache = (key) => {
     return undefined;
   });
 };
-const _setCache = async (key, value) => {
-  let path = "./" + key;
-  let cacheName = _getCache("CACHE_NAME");
-  if (cacheName) {
-    await caches.open(cacheName).then(async (cache) => {
-      await cache.put(path, new Response(value));
-      return true;
-    });
-  } else {
-    return false;
+const _getCacheName = async() => {
+  let res = _getCache("CACHE_NAME");
+  while (typeof cacheName === "undefined" || cacheName == "") {
+    await new Promise(s => setTimeout(s, 1000))
+    res = _getCache("CACHE_NAME");
   }
+  return res;
+};
+const _setCache = async(key, value) => {
+  let path = "./" + key;
+  let cacheName = _getCacheName();
+  await caches.open(cacheName).then(async (cache) => {
+    await cache.put(path, new Response(value));
+  });
 };
