@@ -1,5 +1,5 @@
 let VERSION;
-let CACHE_NAME;
+var CACHE_NAME;
 let CACHE_ITEMS;
 
 const _getCache = async (key) => {
