@@ -5,7 +5,7 @@ let CACHE_ITEMS;
 const _getCache = async (key) => {
   let path = "./" + key;
   await caches.open(CACHE_NAME).then(async (cache) => {
-    await caches.match(path).then((value) => {
+    await cache.match(path).then((value) => {
       return value ? value : undefined;
     })
   });
@@ -14,6 +14,6 @@ const _getCache = async (key) => {
 const _setCache = async (key, value) => {
   let path = "./" + key;
   await caches.open(CACHE_NAME).then((cache) => {
-    return cache.put(path, value);
+    return cache.put(path, new Response(value));
   });
 };
