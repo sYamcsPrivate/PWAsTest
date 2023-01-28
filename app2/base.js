@@ -69,7 +69,7 @@ const _getCache = async(key) => {
   let req = new Request("./" + key, {
     method: "GET",
     mode: "same-origin",
-    cache: "nly-if-cached",
+    cache: "only-if-cached",
   });
   await fetch(req).then((res) => {
     console.log(_getDateTime() + "|_getCacheThen:" + res.status());
