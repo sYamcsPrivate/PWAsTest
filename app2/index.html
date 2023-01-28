@@ -111,6 +111,7 @@ const _regSw = () => {
 
 window.onload = () => {
   _regSw().then(() => {
+    await new Promise(s => setTimeout(s, 1000))
     _setCache("keyDom", "valueDom");
   });
 };
