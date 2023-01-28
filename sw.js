@@ -1,10 +1,10 @@
-const VERSION = "0.0.0.2";
+const VERSION = "0.0.0.3";
 const CACHE_NAME = `${registration.scope}!${VERSION}`;
 const CACHE_ITEMS = [
-  "/PWAsTest/icons/icon-root.png",
-  "/PWAsTest/manifest.json",
-  "/PWAsTest/sw.js",
-  "/PWAsTest/",
+  "./icon.png",
+  "./manifest.json",
+  "./sw.js",
+  "./",
 ];
 
 self.addEventListener('install', (event) => {

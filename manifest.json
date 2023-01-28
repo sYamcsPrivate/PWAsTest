@@ -2,14 +2,14 @@
   "name": "PWAsTest Root",
   "short_name": "PWAsTest Root",
   "description": "PWAsTest Root",
-  "scope": "/PWAsTest/",
-  "start_url": "/PWAsTest/",
+  "scope": "./",
+  "start_url": "./?app",
   "theme_color": "#5200CD",
   "background_color": "#FFFFFF",
   "display": "standalone",
   "icons": [
     {
-      "src": "/PWAsTest/icons/icon-root.png",
+      "src": "./icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
