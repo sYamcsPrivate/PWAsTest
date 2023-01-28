@@ -1,4 +1,12 @@
 importScripts('base.js');
+VERSION = "0.0.0.4";
+CACHE_NAME = `${registration.scope}${VERSION}`;
+CACHE_ITEMS = [
+  "./icon.png",
+  "./manifest.json",
+  "./sw.js",
+  "./",
+];
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {

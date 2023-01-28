@@ -1,11 +1,6 @@
-const VERSION = "0.0.0.4";
-const CACHE_NAME = `${registration.scope}${VERSION}`;
-const CACHE_ITEMS = [
-  "./icon.png",
-  "./manifest.json",
-  "./sw.js",
-  "./",
-];
+let VERSION;
+let CACHE_NAME;
+let CACHE_ITEMS;
 
 const _getCache = async (key) => {
   let path = "./" + key;
