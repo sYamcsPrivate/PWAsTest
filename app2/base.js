@@ -58,18 +58,22 @@ const _getCache = async(key) => {
   await caches.match(new Request(req)).then((res) => {
     console.log(_getDateTime() + "|_getCacheThen:" + res);
     return res ? res : "";
-  }).catch(() => {
-    console.log(_getDateTime() + "|_getCacheCatch");
+  }).catch((err) => {
+    console.log(_getDateTime() + "|_getCacheCatch:" + err);
     return "";
   });
 }
 */
 
 const _getCache = async(key) => {
-  let req = "./" + key;
+  let req = new Request("./" + key, {
+    method: "GET",
+    mode: "same-origin",
+    cache: "nly-if-cached",
+  });
   await fetch(req).then((res) => {
     console.log(_getDateTime() + "|_getCacheThen:" + res.status());
-    return res.status === 200 ? res : undefined;
+    return res.ok ? res.text() : undefined;
   }).catch(() => {
     console.log(_getDateTime() + "|_getCacheCatch");
     return undefined;
@@ -77,7 +81,7 @@ const _getCache = async(key) => {
 }
 const _getCacheName = async() => {
   let res = await _getCache("CACHE_NAME");
-  while (res == undefined) {
+  while (res === undefined) {
     await new Promise(s => setTimeout(s, 1000))
     res = await _getCache("CACHE_NAME");
   }
