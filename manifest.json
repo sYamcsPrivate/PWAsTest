@@ -1,7 +1,7 @@
 {
   "name": "PWAsTest Root",
-  "short_name": "PWAsTest Root",
-  "description": "PWAsTest Root",
+  "short_name": "Root",
+  "description": "PWAsTest",
   "scope": "./",
   "start_url": "./?app",
   "theme_color": "#5200CD",

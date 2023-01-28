@@ -1,5 +1,5 @@
-const VERSION = "0.0.0.4";
-const CACHE_NAME = `${registration.scope}!${VERSION}`;
+const VERSION = "0.0.0.5";
+const CACHE_NAME = `${registration.scope}${VERSION}`;
 const CACHE_ITEMS = [
   "./icon.png",
   "./manifest.json",

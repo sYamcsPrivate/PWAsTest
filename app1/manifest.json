@@ -1,7 +1,7 @@
 {
   "name": "PWAsTest App1",
-  "short_name": "PWAsTest App1",
-  "description": "PWAsTest App1",
+  "short_name": "App1",
+  "description": "PWAsTest",
   "scope": "./",
   "start_url": "./?app",
   "theme_color": "#F0FF44",
