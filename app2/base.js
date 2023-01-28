@@ -72,7 +72,9 @@ const _getCache = async(key) => {
     cache: "only-if-cached",
   });
   await fetch(req).then((res) => {
-    console.log(_getDateTime() + "|_getCacheThen:" + res.type);
+    console.log(_getDateTime() + "|_getCacheThen-Type:" + res.type);
+    console.log(_getDateTime() + "|_getCacheThen-Ok:" + res.ok);
+    console.log(_getDateTime() + "|_getCacheThen-Text:" + res.text());
     return res.ok ? res.text() : undefined;
   }).catch((err) => {
     console.log(_getDateTime() + "|_getCacheCatch:" + err);
