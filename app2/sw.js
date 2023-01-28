@@ -10,7 +10,7 @@ const CACHE_ITEMS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      cache.put("CACHE_NAME", new Response(CACHE_NAME));
+      cache.put("./CACHE_NAME", new Response(CACHE_NAME));
       return cache.addAll(CACHE_ITEMS);
     })
   );
