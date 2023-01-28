@@ -26,11 +26,20 @@ const _getDateTime = () => {
   let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
   return res;
 }
-var _getCache = (key) => {
-  let path = "./" + key;
-  return fetch(new Request(path)).then((res) => {
-    return res.text();
-  }).catch((err) => {
+
+const _getCachePromise = (req) => {
+  let reqPath = "./" + req;
+  return new Promise( async (resolve, reject) => {
+    fetch(reqPath)
+    .then(res => res.text())
+    .then(res => resolve(res))
+    .catch(err => reject(err));
+  });
+}
+const _getCache = async(key) => {
+  await _getCachePromise(key).then ( (value) => {
+    return value;
+  }).catch(() => {
     return undefined;
   });
 }
