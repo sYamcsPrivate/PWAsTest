@@ -58,14 +58,14 @@ const _getCache = async(key) => {
   await caches.match(new Request(req)).then((res) => {
     return res ? res : "";
   }).catch(() => {
-    return false;
+    return "";
   });
 }
 const _getCacheName = async() => {
-  let res = _getCache("CACHE_NAME");
+  let res = await _getCache("CACHE_NAME");
   while (res == "") {
     await new Promise(s => setTimeout(s, 1000))
-    res = _getCache("CACHE_NAME");
+    res = await _getCache("CACHE_NAME");
   }
   return res;
 };
