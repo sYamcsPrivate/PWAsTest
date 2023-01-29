@@ -57,10 +57,10 @@ const _getCacheText = async(key) => {
     let data = await cache.match(req);
     if (data === undefined) return undefined;
     let text = await data.text();
-    _writeLog("[base.js]_getCacheText(key) : " + key);
+    console.log("[base.js]_getCacheText(key) : " + key);
     return text;
   } catch(e) {
-    _writeLog("[base.js]_getCacheText-catch(e) : " + e);
+    console.log("[base.js]_getCacheText-catch(e) : " + e);
     return undefined;
   }
 }
@@ -69,25 +69,18 @@ const _setCache = async(key, value) => {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
     await cache.put(req, new Response(value));
-    _writeLog("[base.js]_setCache(key, value) : " + key + ", " + value);
+    console.log("[base.js]_setCache(key, value) : " + key + ", " + value);
     return true;
   } catch(e) {
-    _writeLog("[base.js]_setCache-catch(e) : " + e);
+    console.log("[base.js]_setCache-catch(e) : " + e);
     return false;
   }
 };
-
-
-
-
 const _writeLog = async(log) => {
-
   let argsLog = _getDateTime() + "|" + log;
   console.log(argsLog);
-
   let cacheLog = await _getCacheText("log.txt")
   if (cacheLog === undefined) cacheLog = "";
-  cacheLog = cacheLog + argsLog + "<br>";
+  cacheLog = cacheLog + argsLog + "\n";
   await _setCache("log.txt", cacheLog);
-
 }
