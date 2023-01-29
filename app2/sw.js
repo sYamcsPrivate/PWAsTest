@@ -12,7 +12,7 @@ const CACHE_ITEMS = [
 self.addEventListener("install", (event) => {
   _writeLog("[sw.js]eventInstall-start");
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
+    caches.open(CACHE_NAME).then(async(cache) => {
       await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
 
       //return cache.addAll(CACHE_ITEMS);

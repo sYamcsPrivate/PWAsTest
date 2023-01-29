@@ -42,6 +42,22 @@ const _getCache = async(key) => {
     mode: "same-origin",
     cache: "only-if-cached",
   });
+  try {
+    let res = await fetch(req);
+    if (res.ok) {
+      _writeLog("[base.js]_getCache-res.ok : " + res);
+      resolve(res);
+    } else {
+      _writeLog("[base.js]_getCache-res.ng : " + res);
+      reject("not response.ok");
+    }
+  } catch(e) {
+    _writeLog("[base.js]_getCache-catch(e) : " + e);
+    reject(e);
+  }
+  
+
+/*
   await fetch(req).then((res) => {
     if (res.ok) {
       _writeLog("[base.js]_getCache-res.ok : " + res);
@@ -54,9 +70,23 @@ const _getCache = async(key) => {
     _writeLog("[base.js]_getCache-catch(err) : " + err);
     reject(err);
   });
+*/
+
 }
 const _getCacheText = async(key) => {
   _writeLog("[base.js]_getCacheText-start");
+  try {
+    let res = await _getCache(key);
+    res = await res.text();
+    _writeLog("[base.js]_getCacheText(res) : " + res);
+    return res;
+  } catch(e) {
+    _writeLog("[base.js]_getCacheText-catch(e) : " + e);
+    return undefined;
+  }
+
+
+/*
   return await _getCache(key).then((res) => {
     _writeLog("[base.js]_getCacheText-then(res) : " + res);
     return res.text();
@@ -67,6 +97,8 @@ const _getCacheText = async(key) => {
     _writeLog("[base.js]_getCacheText-catch(err) : " + err);
     return undefined;
   });
+*/
+
 }
 const _getCacheName = async() => {
   _writeLog("[base.js]_getCacheName-start");

@@ -97,23 +97,51 @@ index.html js start
 
 
 
-const _regSw = () => {
+const _regSw = async() => {
   _writeLog("[index.html]_regSw-start");
+
+  try {
+
+    let registration = await navigator.serviceWorker.register("./sw.js");
+    _writeLog("[index.html]_regSw-register(registration.scope) : " + registration.scope);
+
+    await navigator.serviceWorker.ready;
+    _writeLog("[index.html]_regSw-ready");
+
+    resolve();
+  } catch(e) {
+    _writeLog("[index.html]_regSw-catch(e) : " + e);
+    reject();
+  }
+  
+
+/*
   return new Promise(async(resolve, reject) => {
-    navigator.serviceWorker.register("./sw.js").then((registration) => {
+    await navigator.serviceWorker.register("./sw.js").then((registration) => {
       _writeLog("[index.html]_regSw-then(registration.scope) : " + registration.scope);
+    }).then(() => {
       resolve();
     }).catch((err) => {
       _writeLog("[index.html]_regSw-catch(err) : " + err);
       reject();
     });
   })
+*/
+
 };
 
-window.onload = () => {
-  _regSw().then(async() => {
+window.onload = async() => {
+  await _regSw();
+  _setCache("keyDom", "valueDom");
+
+
+
+/*
+  _regSw().then(() => {
     _setCache("keyDom", "valueDom");
   });
+*/
+
 };
 
 
