@@ -1,4 +1,4 @@
-const VERSION = "0.0.0.7";
+const VERSION = "0.0.0.8";
 const _getCacheName = () => {
   let res = "";
   try {
@@ -50,6 +50,7 @@ const _sleep = async(ms) => {
 
 
 
+/*
 const _getCache = async(key) => {
   _writeLog("[base.js]_getCache-start");
   let req = new Request("./" + key, {
@@ -71,6 +72,7 @@ const _getCache = async(key) => {
     return e;
   }
 }
+
 const _getCacheText = async(key) => {
   _writeLog("[base.js]_getCacheText-start");
   try {
@@ -84,11 +86,28 @@ const _getCacheText = async(key) => {
     return undefined;
   }
 }
+*/
+
+const _getCacheText = async(key) => {
+  _writeLog("[base.js]_getCacheText-start");
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(_getCacheName());
+    let data = await cache.match(req);
+    let text = await data.text();
+    return text;
+  } catch(e) {
+    _writeLog("[base.js]_getCacheText-catch(e) : " + e);
+    return undefined;
+  }
+}
+
+
 const _setCache = async(key, value) => {
   _writeLog("[base.js]_setCache-start(key, value) : " + key + ", " + value);
   try {
     let req = "./" + key;
-    let cache = await caches.open(_getCacheName())
+    let cache = await caches.open(_getCacheName());
     await cache.put(req, new Response(value));
     _writeLog("[base.js]_setCache-end(key, value) : " + key + ", " + value);
     return true;
