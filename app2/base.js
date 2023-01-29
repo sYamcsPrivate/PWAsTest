@@ -47,30 +47,37 @@ const _getCache = (key) => {
       if (res.ok) {
         resolve(res);
       } else {
-        reject();
+        reject("not response.ok");
       }
     }).catch((err) => {
-      reject();
+      reject(err);
     });
   });
 }
 const _getCacheText = (key) => {
   _writeLog("[base.js]_getCacheText-Start");
-  return _getCache(key)
-  .then((res) => res.text())
-  .then((text) => text)
-  .catch(() => undefined);
+  return new Promise(async(resolve, reject) => {
+    _getCache(key).then((res) => {
+      res.text();
+    }).then((text) => {
+      _writeLog("[base.js]_getCacheText-Then : " + text);
+      resolve(text);
+    }).catch((err) => {
+      _writeLog("[base.js]_getCacheText-Catch : " + err);
+      reject(undefined);
+    });
+  });
 }
 const _getCacheName = () => {
   _writeLog("[base.js]_getCacheName-Start");
 
-  let res = _getCacheText("CACHE_NAME");
+  let res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
 
   _writeLog("[base.js]_getCacheName(cachename) : " + res);
 
   while (res === undefined) {
     _sleep(1000);
-    res = _getCacheText("CACHE_NAME");
+    res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
   }
   return res;
 };
