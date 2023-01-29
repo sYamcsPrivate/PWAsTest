@@ -70,16 +70,16 @@ const _getCacheText = async(key) => {
     return undefined;
   });
 }
-const _getCacheName = () => {
+const _getCacheName = async() => {
   _writeLog("[base.js]_getCacheName-start");
 
-  let res = _getCacheText("CACHE_NAME");
+  let res = await _getCacheText("CACHE_NAME");
 
   _writeLog("[base.js]_getCacheName(cachename) : " + res);
 
   while (res === undefined) {
     _sleep(1000);
-    res = _getCacheText("CACHE_NAME");
+    res = await _getCacheText("CACHE_NAME");
     //res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
   }
   return res;
