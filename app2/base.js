@@ -100,6 +100,7 @@ const _getCacheText = async(key) => {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
     let data = await cache.match(req);
+    if (data === undefined) return undefined;
     let text = await data.text();
     return text;
   } catch(e) {
