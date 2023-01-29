@@ -42,19 +42,17 @@ const _getCache = async(key) => {
     mode: "same-origin",
     cache: "only-if-cached",
   });
-  return await new Promise(async(resolve, reject) => {
-    await fetch(req).then((res) => {
-      if (res.ok) {
-        _writeLog("[base.js]_getCache-res.ok : " + res);
-        resolve(res);
-      } else {
-        _writeLog("[base.js]_getCache-res.ng : " + res);
-        reject("not response.ok");
-      }
-    }).catch((err) => {
-      _writeLog("[base.js]_getCache-catch(err) : " + err);
-      reject(err);
-    });
+  await fetch(req).then((res) => {
+    if (res.ok) {
+      _writeLog("[base.js]_getCache-res.ok : " + res);
+      resolve(res);
+    } else {
+      _writeLog("[base.js]_getCache-res.ng : " + res);
+      reject("not response.ok");
+    }
+  }).catch((err) => {
+    _writeLog("[base.js]_getCache-catch(err) : " + err);
+    reject(err);
   });
 }
 const _getCacheText = async(key) => {
@@ -77,17 +75,22 @@ const _getCacheName = async() => {
 
   _writeLog("[base.js]_getCacheName(cachename) : " + res);
 
+  if (res === undefined) await location.reload(false);
+
+/*
   while (res === undefined) {
-    await _sleep(1000);
+    await _sleep(5000);
     res = await _getCacheText("CACHE_NAME");
     //res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
   }
+*/
+
   return res;
 };
 const _setCache = async(key, value) => {
   _writeLog("[base.js]_setCache-start");
   let req = "./" + key;
-  let cachename = _getCacheName();
+  let cachename = await _getCacheName();
 
   _writeLog("[base.js]_setCache(cachename) : " + cachename);
 
