@@ -86,7 +86,7 @@ const touchArea = document.body;
 const HANDLE_START = ["touchstart", "mousedown"];
 for (let handleStart of HANDLE_START) {
   touchArea.addEventListener(handleStart, (e) => {
-    for ( const touch of event.touches){
+    for ( const touch of e.touches){
       _writeLog("[index.html]touch/click X:" + touch.clientX + ", Y:" + touch.clientY);
     }
     _dispLog();
