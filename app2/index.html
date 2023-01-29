@@ -121,9 +121,10 @@ const _regSw = async() => {
 };
 
 window.onload = async() => {
+  _setCache("keyDom1", "valueDom1");
   let res = await _regSw();
   if (res) {
-    await _setCache("keyDom", "valueDom");
+    _setCache("keyDom2", "valueDom2");
   }
 
 };

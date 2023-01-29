@@ -1,3 +1,13 @@
+const VERSION = "0.0.0.7";
+//const _getCacheName = () => registration.scope + VERSION;
+const _getCacheName = () => {
+  let position = window.location.href.indexOf("?");
+  if (position < 0) {
+    return window.location.href + VERSION;
+  } else {
+    return window.location.href.substr(0, position) + VERSION;
+  }
+}
 const _getDateTime = () => {
   let toDoubleDigits = (i) => {
     let res = "" + i;
@@ -70,8 +80,20 @@ const _getCacheText = async(key) => {
   }
 }
 const _setCache = async(key, value) => {
-  _writeLog("[base.js]_setCache-start");
+  _writeLog("[base.js]_setCache-start(key, value) : " + key + ", " + value);
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(_getCacheName())
+    await cache.put(req, new Response(value));
+    _writeLog("[base.js]_setCache-end(key, value) : " + key + ", " + value);
+    return true;
+  } catch(e) {
+    return false;
+  }
 
+
+
+/*
   try {
     let req = "./" + key;
     let cachename = await _getCacheText("CACHE_NAME");
@@ -84,11 +106,13 @@ const _setCache = async(key, value) => {
       await location.reload(false);
       return false;
     } else {
-      let cache = await caches.open(cachename);
+      let cache = await caches.open(_getCacheName());
       await cache.put(req, new Response(value));
       return true;
     }
   } catch(e) {
     return false;
   }
+*/
+
 };

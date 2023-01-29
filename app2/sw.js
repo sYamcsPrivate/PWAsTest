@@ -1,6 +1,4 @@
 importScripts('base.js');
-const VERSION = "0.0.0.6";
-const CACHE_NAME = registration.scope + VERSION;
 const CACHE_ITEMS = [
   "./icon.png",
   "./manifest.json",
@@ -8,12 +6,15 @@ const CACHE_ITEMS = [
   "./sw.js",
   "./",
 ];
+
+_setCache("keySw1", "valueSw1");
+
 self.addEventListener("install", (event) => {
   _writeLog("[sw.js]eventInstall-start");
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async(cache) => {
-      //await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
-      await cache.add("./CACHE_NAME", new Response(CACHE_NAME));
+    caches.open(_getCacheName()).then(async(cache) => {
+      _setCache("keySw2", "valueSw2");
+      //await cache.put("./data.txt", new Response(_getCacheName()));
 
       //return cache.addAll(CACHE_ITEMS);
 
