@@ -76,14 +76,14 @@ log.page
 <!-- js -->
 <script type="text/javascript">
 const _dispLog = async() => {
-  _writeLog("[index.html]_dispLog-start");
+  await _writeLog("[index.html]_dispLog-start");
   let textLog = await _getCacheText("log.txt");
   let htmlLog = textLog.replaceAll("\n", "<br>");
   document.getElementById("_system-disp-element").innerHTML = htmlLog;
-  _writeLog("[index.html]_dispLog-end");
+  await _writeLog("[index.html]_dispLog-end");
 }
-const _addEventLog = () => {
-  _writeLog("[index.html]_addEventLog-start");
+const _addEventLog = async() => {
+  await _writeLog("[index.html]_addEventLog-start");
   const touchArea = document.getElementById("_system-body");
   const HANDLE_START = ["touchstart", "mousedown"];
   for (let handleStart of HANDLE_START) {
@@ -103,13 +103,13 @@ const _addEventLog = () => {
       _dispLog();
     });
   }
-  _writeLog("[index.html]_addEventLog-end");
+  await _writeLog("[index.html]_addEventLog-end");
 }
-const _logMain = () => {
-  _writeLog("[index.html]_logMain-start");
+const _logMain = async() => {
+  await _writeLog("[index.html]_logMain-start");
   _setPage("_log");
   _addEventLog();
-  _writeLog("[index.html]_logMain-end");
+  await _writeLog("[index.html]_logMain-end");
   _dispLog();
 }
 </script>
@@ -132,45 +132,45 @@ div index end
 index.html js start
 ****************************************
 */
-const _classStyle = (sels, prop, prov) => {
-  _writeLog("[index.html]_classStyle-start");
+const _classStyle = async(sels, prop, prov) => {
+  await _writeLog("[index.html]_classStyle-start");
   for(let sel of sels) {
     if (prop == "display") {
       sel.style.display = prov;
     }
   }
-  _writeLog("[index.html]_classStyle-end");
+  await _writeLog("[index.html]_classStyle-end");
   return;
 }
 
-const _setPage = (pageid) => {
-  _writeLog("[index.html]_setPage-start");
+const _setPage = async(pageid) => {
+  await _writeLog("[index.html]_setPage-start");
   let els = document.getElementsByClassName("_page");
   _classStyle(els, "display", "none");
   let el = document.getElementById(pageid);
   if (el != null) {
-    _writeLog("[index.html]_classStyle-display(pageid) : " + pageid);
+    await _writeLog("[index.html]_classStyle-display(pageid) : " + pageid);
     el.style.display = "block";
   }
-  _writeLog("[index.html]_setPage-end");
+  await _writeLog("[index.html]_setPage-end");
   return;
 }
 window.onload = async() => {
   try {
     let registration = await navigator.serviceWorker.register("./sw.js");
-    _writeLog("[index.html]window.onload-register(registration.scope) : " + registration.scope);
+    await _writeLog("[index.html]window.onload-register(registration.scope) : " + registration.scope);
   } catch(e) {
-    _writeLog("[index.html]window.onload-catch(e) : " + e);
+    await _writeLog("[index.html]window.onload-catch(e) : " + e);
   }
 
   //await _setCache("key1", "+index.html");
-  //_writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
+  //await _writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
   //await _addCacheText("key2", "+index.html");
-  //_writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
+  //await _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
   _logMain();
 };
-//_writeLog("[index.html]LastLine");
+//await _writeLog("[index.html]LastLine");
 /*
 ****************************************
 index.html js end
