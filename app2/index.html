@@ -75,22 +75,29 @@ log.page
 
 <!-- js -->
 <script type="text/javascript">
-let _dispLog = async() => {
+const _dispLog = async() => {
   _writeLog("[index.html]_dispLog-start");
   let textLog = await _getCacheText("log.txt");
   let htmlLog = textLog.replace("\n", "<br>");
   document.getElementById("_system-disp-element").innerHTML = htmlLog;
   _writeLog("[index.html]_dispLog-end");
 }
-const touchArea = document.body;
-const HANDLE_START = ["touchstart", "mousedown"];
-for (let handleStart of HANDLE_START) {
-  touchArea.addEventListener(handleStart, (e) => {
-    for ( const touch of e.touches){
+const _addEvent = () => {
+  const touchArea = document.getElementById("_log");
+  const HANDLE_START = ["touchstart", "mousedown"];
+  for (let handleStart of HANDLE_START) {
+    touchArea.addEventListener(handleStart, (e) => {
+      for (const touch of e.touches) {
       _writeLog("[index.html]touch/click X:" + touch.clientX + ", Y:" + touch.clientY);
-    }
-    _dispLog();
-  });
+      }
+      _dispLog();
+    });
+  }
+}
+const _logStart = () => {
+  _setPage("_log");
+  _addEvent();
+  _dispLog();
 }
 </script>
 </div>
@@ -124,7 +131,7 @@ const _classStyle = (sels, prop, prov) => {
 }
 
 const _setPage = (pageid) => {
-  _writeLog("[index.html]_classStyle-start");
+  _writeLog("[index.html]_setPage-start");
   let els = document.getElementsByClassName("_page");
   _classStyle(els, "display", "none");
   let el = document.getElementById(pageid);
@@ -132,7 +139,7 @@ const _setPage = (pageid) => {
     _writeLog("[index.html]_classStyle-display(pageid) : " + pageid);
     el.style.display = "block";
   }
-  _writeLog("[index.html]_classStyle-end");
+  _writeLog("[index.html]_setPage-end");
   return;
 }
 window.onload = async() => {
@@ -148,8 +155,7 @@ window.onload = async() => {
   await _addCacheText("key2", "+index.html");
   _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
-  _setPage("_log");
-  _dispLog();
+  _logStart();
 };
 //_writeLog("[index.html]LastLine");
 /*
