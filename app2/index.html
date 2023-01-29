@@ -100,17 +100,17 @@ const _addEventLog = async() => {
         positionY = e.pageY;
       }
       await _writeLog("[index.html]touch/click X:" + positionX + ", Y:" + positionY);
-      _dispLog();
+      await _dispLog();
     });
   }
   await _writeLog("[index.html]_addEventLog-end");
 }
 const _logMain = async() => {
   await _writeLog("[index.html]_logMain-start");
-  _setPage("_log");
-  _addEventLog();
+  await _setPage("_log");
+  await _addEventLog();
   await _writeLog("[index.html]_logMain-end");
-  _dispLog();
+  await _dispLog();
 }
 </script>
 </div>
@@ -146,7 +146,7 @@ const _classStyle = async(sels, prop, prov) => {
 const _setPage = async(pageid) => {
   await _writeLog("[index.html]_setPage-start");
   let els = document.getElementsByClassName("_page");
-  _classStyle(els, "display", "none");
+  await _classStyle(els, "display", "none");
   let el = document.getElementById(pageid);
   if (el != null) {
     await _writeLog("[index.html]_classStyle-display(pageid) : " + pageid);
@@ -168,7 +168,7 @@ window.onload = async() => {
   //await _addCacheText("key2", "+index.html");
   //await _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
-  _logMain();
+  await _logMain();
 };
 //await _writeLog("[index.html]LastLine");
 /*

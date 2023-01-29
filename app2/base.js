@@ -85,13 +85,13 @@ const _setCache = async(key, value) => {
   }
 };
 const _addCacheText = async(key, value) => {
-  let cacheText = await _getCacheText(key)
+  let cacheText = await _getCacheText(key);
   if (cacheText === undefined) cacheText = "";
   cacheText = cacheText + value;
   await _setCache(key, cacheText);
 }
 const _writeLog = async(log) => {
   let argsLog = _getDateTime() + "|" + log;
-  console.log(argsLog);
   await _addCacheText("log.txt", argsLog + "\n");
+  console.log(argsLog);
 }
