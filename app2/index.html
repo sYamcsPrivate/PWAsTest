@@ -99,40 +99,25 @@ index.html js start
 
 const _regSw = async() => {
   _writeLog("[index.html]_regSw-start");
-
   try {
-
     let registration = await navigator.serviceWorker.register("./sw.js");
     _writeLog("[index.html]_regSw-register(registration.scope) : " + registration.scope);
-
     await navigator.serviceWorker.ready;
     _writeLog("[index.html]_regSw-ready");
-
     await navigator.serviceWorker.oncontrollerchange;
     _writeLog("[index.html]_regSw-oncontrollerchange");
-
     return true;
   } catch(e) {
     _writeLog("[index.html]_regSw-catch(e) : " + e);
     return false;
   }
-  
-
 };
 
 window.onload = async() => {
-  _setCache("keyDom1", "valueDom1");
-  let res = await _regSw();
-  if (res) {
-    _setCache("keyDom2", "valueDom2");
-  }
+  await _regSw();
 
-  //await _sleep(10000);
-
-  _writeLog("[index.html]window.onload-_getCacheText(keyDom1) : " + await _getCacheText("keyDom1"));
-  _writeLog("[index.html]window.onload-_getCacheText(keyDom2) : " + await _getCacheText("keyDom2"));
-  _writeLog("[index.html]window.onload-_getCacheText(keySw1) : " + await _getCacheText("keySw1"));
-  _writeLog("[index.html]window.onload-_getCacheText(keySw2) : " + await _getCacheText("keySw2"));
+  await _addCacheText("key1", "fromDOM" + "\n");
+  _writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
 
 
 

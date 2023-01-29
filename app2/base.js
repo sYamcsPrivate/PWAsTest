@@ -47,7 +47,7 @@ const _getDateTime = () => {
   let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
   return res;
 }
-const _sleep = async(ms) => {
+const _sleep = async(ms) => { // how to use ... 「await _sleep(1000);」
   await new Promise(resolve => setTimeout(resolve, ms));
 }
 const _getCacheText = async(key) => {
@@ -74,11 +74,14 @@ const _setCache = async(key, value) => {
     return false;
   }
 };
+const _addCacheText = async(key, value) => {
+  let cacheText = await _getCacheText(key)
+  if (cacheText === undefined) cacheText = "";
+  cacheText = cacheText + value;
+  await _setCache(key, cacheText);
+}
 const _writeLog = async(log) => {
   let argsLog = _getDateTime() + "|" + log;
   console.log(argsLog);
-  let cacheLog = await _getCacheText("log.txt")
-  if (cacheLog === undefined) cacheLog = "";
-  cacheLog = cacheLog + argsLog + "\n";
-  await _setCache("log.txt", cacheLog);
+  await _addCacheText("log.txt", argsLog + "\n");
 }
