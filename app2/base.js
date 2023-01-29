@@ -11,7 +11,7 @@ const _getCacheName = () => {
   } catch {
     res = registration.scope + VERSION;
   }
-  retrun res;
+  return res;
 }
 const _getDateTime = () => {
   let toDoubleDigits = (i) => {
