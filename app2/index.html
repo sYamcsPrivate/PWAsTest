@@ -98,14 +98,11 @@ index.html js start
 
 
 const _regSw = async() => {
-  _writeLog("[index.html]_regSw-start");
   try {
     let registration = await navigator.serviceWorker.register("./sw.js");
     _writeLog("[index.html]_regSw-register(registration.scope) : " + registration.scope);
     await navigator.serviceWorker.ready;
-    _writeLog("[index.html]_regSw-ready");
     await navigator.serviceWorker.oncontrollerchange;
-    _writeLog("[index.html]_regSw-oncontrollerchange");
     return true;
   } catch(e) {
     _writeLog("[index.html]_regSw-catch(e) : " + e);
