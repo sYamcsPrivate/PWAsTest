@@ -99,9 +99,15 @@ const _getCacheText = async(key) => {
   try {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
+
     let data = await cache.match(req);
+    _writeLog("[base.js]_getCacheText(data) : " + data);
+
     if (data === undefined) return undefined;
+
     let text = await data.text();
+    _writeLog("[base.js]_getCacheText(text) : " + text);
+
     return text;
   } catch(e) {
     _writeLog("[base.js]_getCacheText-catch(e) : " + e);
