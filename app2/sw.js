@@ -19,7 +19,7 @@ self.addEventListener("install", (event) => {
 
       let res = cache.addAll(CACHE_ITEMS);
 
-      _writeLog("[sw.js]eventInstall-addAllFinish");
+      _writeLog("[sw.js]eventInstall-end");
       return res;
 
     })

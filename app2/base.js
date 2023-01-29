@@ -55,23 +55,6 @@ const _getCache = async(key) => {
     _writeLog("[base.js]_getCache-catch(e) : " + e);
     return e;
   }
-  
-
-/*
-  await fetch(req).then((res) => {
-    if (res.ok) {
-      _writeLog("[base.js]_getCache-res.ok : " + res);
-      resolve(res);
-    } else {
-      _writeLog("[base.js]_getCache-res.ng : " + res);
-      reject("not response.ok");
-    }
-  }).catch((err) => {
-    _writeLog("[base.js]_getCache-catch(err) : " + err);
-    reject(err);
-  });
-*/
-
 }
 const _getCacheText = async(key) => {
   _writeLog("[base.js]_getCacheText-start");
@@ -85,53 +68,21 @@ const _getCacheText = async(key) => {
     _writeLog("[base.js]_getCacheText-catch(e) : " + e);
     return undefined;
   }
-
-
-/*
-  return await _getCache(key).then((res) => {
-    _writeLog("[base.js]_getCacheText-then(res) : " + res);
-    return res.text();
-  }).then((res) => {
-    _writeLog("[base.js]_getCacheText-then-then(res) : " + res);
-    return res;
-  }).catch((err) => {
-    _writeLog("[base.js]_getCacheText-catch(err) : " + err);
-    return undefined;
-  });
-*/
-
 }
-const _getCacheName = async() => {
-  _writeLog("[base.js]_getCacheName-start");
-
-  let res = await _getCacheText("CACHE_NAME");
-
-  _writeLog("[base.js]_getCacheName(cachename) : " + res);
-
-  if (res === undefined) {
-    _writeLog("[base.js]_getCacheName : Cachename is undefined and will be reloaded after 10 seconds");
-    await _sleep(10000);
-    await location.reload(false);
-  }
-
-/*
-  while (res === undefined) {
-    await _sleep(5000);
-    res = await _getCacheText("CACHE_NAME");
-    //res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
-  }
-*/
-
-  return res;
-};
 const _setCache = async(key, value) => {
   _writeLog("[base.js]_setCache-start");
   let req = "./" + key;
-  let cachename = await _getCacheName();
+  let cachename = await _getCacheText("CACHE_NAME");
 
   _writeLog("[base.js]_setCache(cachename) : " + cachename);
 
-  await caches.open(cachename).then(async(cache) => {
-    await cache.put(req, new Response(value));
-  });
+  if (res === undefined) {
+    _writeLog("[base.js]_getCacheName : Cachename is undefined and will be reloaded after 60 seconds");
+    await _sleep(60000);
+    await location.reload(false);
+  } else {
+    await caches.open(cachename).then(async(cache) => {
+      await cache.put(req, new Response(value));
+    });
+  }
 };

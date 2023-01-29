@@ -133,7 +133,7 @@ const _regSw = async() => {
 window.onload = async() => {
   let res = await _regSw();
   if (res) {
-    _setCache("keyDom", "valueDom");
+    await _setCache("keyDom", "valueDom");
   }
 
 
