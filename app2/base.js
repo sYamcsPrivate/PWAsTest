@@ -46,14 +46,14 @@ const _getCache = async(key) => {
     let res = await fetch(req);
     if (res.ok) {
       _writeLog("[base.js]_getCache-res.ok : " + res);
-      resolve(res);
+      return res;
     } else {
       _writeLog("[base.js]_getCache-res.ng : " + res);
-      reject("not response.ok");
+      throw new Error("not response.ok");
     }
   } catch(e) {
     _writeLog("[base.js]_getCache-catch(e) : " + e);
-    reject(e);
+    return e;
   }
   
 
@@ -77,9 +77,10 @@ const _getCacheText = async(key) => {
   _writeLog("[base.js]_getCacheText-start");
   try {
     let res = await _getCache(key);
-    res = await res.text();
     _writeLog("[base.js]_getCacheText(res) : " + res);
-    return res;
+    let text = await res.text();
+    _writeLog("[base.js]_getCacheText(text) : " + text);
+    return text;
   } catch(e) {
     _writeLog("[base.js]_getCacheText-catch(e) : " + e);
     return undefined;

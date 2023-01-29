@@ -108,10 +108,10 @@ const _regSw = async() => {
     await navigator.serviceWorker.ready;
     _writeLog("[index.html]_regSw-ready");
 
-    resolve();
+    return true;
   } catch(e) {
     _writeLog("[index.html]_regSw-catch(e) : " + e);
-    reject();
+    return false;
   }
   
 
@@ -131,8 +131,10 @@ const _regSw = async() => {
 };
 
 window.onload = async() => {
-  await _regSw();
-  _setCache("keyDom", "valueDom");
+  let res = await _regSw();
+  if (res) {
+    _setCache("keyDom", "valueDom");
+  }
 
 
 
