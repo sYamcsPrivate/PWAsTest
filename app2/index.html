@@ -75,7 +75,7 @@ log.page
 
 <!-- js -->
 <script type="text/javascript">
-let _dispLog = () => {
+let _dispLog = async() => {
   _writeLog("[index.html]_dispLog-start");
   let textLog = await _getCacheText("log.txt");
   let htmlLog = "<br><br><br>" + textLog.replace("\n", "<br>");
