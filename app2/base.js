@@ -1,4 +1,5 @@
 const VERSION = "0.0.0.8";
+
 let CACHENAME = "";
 const _getCacheName = () => {
   let res = "";
@@ -50,27 +51,6 @@ const _getDateTime = () => {
 const _sleep = async(ms) => { // how to use ... 「await _sleep(1000);」
   await new Promise(resolve => setTimeout(resolve, ms));
 }
-
-
-
-/*
-const _getCacheText = async(key) => {
-  try {
-    let req = "./" + key;
-    let cache = await caches.open(_getCacheName());
-    let data = await cache.match(req);
-    if (data === undefined) return undefined;
-    let text = await data.text();
-    return text;
-  } catch(e) {
-    console.log("[base.js]_getCacheText-catch(e) : " + e);
-    return undefined;
-  }
-}
-*/
-
-
-
 const _getCache = async(key) => {
   try {
     let req = "./" + key;

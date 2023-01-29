@@ -22,7 +22,7 @@ html, body {
   padding: 0px;
 }
 ._page {
-  display: block;
+  display: none;
   margin: 0px;
 }
 ._doc {
@@ -46,35 +46,50 @@ div index start
 
 <!--
 ****************************************
-template.page
+log.page
 ****************************************
 -->
-<div class="_page" id="_template">
+<div class="_page" id="_log">
 
 <!-- css -->
 <style>
-#_template-container {
-  margin: auto;
-  text-align: center;
-}
-#_template-title {
-  font-size: 3rem;
+#_system-body {
+  position: fixed;
+  transform: scale(0.7);
+  top: -21.42%; /* android-chrome：レイアウト崩れ小数点3位を指定するとレイアウト崩れ */
+  left: -21.42%;
+  width: 142.85%;
+  height: 142.85%;
+  overflow-y: auto;
+  word-break: break-all;
+  -webkit-overflow-scrolling: touch;
 }
 </style>
 
 <!-- html -->
-<div class="_doc">
-  <div id="_template-container">
-    <div id="_template-title">
-      <h1>App2</h1>
-    </div>
+<div id="_system-body">
+  <div class="_doc">
+    <span id="_system-disp-element"></span>
   </div>
 </div>
 
 <!-- js -->
 <script type="text/javascript">
+let _dispLog = () => {
+  _writeLog("[index.html]_dispLog-start");
+  let textLog = await _getCacheText("log.txt");
+  let htmlLog = "<br><br><br>" + textLog.replace("\n", "<br>");
+  document.getElementById("_system-disp-element").innerHTML = htmlLog;
+  _writeLog("[index.html]_dispLog-end");
+}
+const touchArea = document.body;
+const HANDLE_START = ["touchstart", "mousedown"];
+for (let handleStart of HANDLE_START) {
+  touchArea.addEventListener(handleStart, (e) => {
+    _dispLog();
+  });
+}
 </script>
-
 </div>
 
 
@@ -94,36 +109,45 @@ div index end
 index.html js start
 ****************************************
 */
+const _classStyle = (sels, prop, prov) => {
+  _writeLog("[index.html]_classStyle-start");
+  for(let sel of sels) {
+    if (prop == "display") {
+      sel.style.display = prov;
+    }
+  }
+  _writeLog("[index.html]_classStyle-end");
+  return;
+}
 
-
-
-const _regSw = async() => {
+const _setPage = (pageid) => {
+  _writeLog("[index.html]_classStyle-start");
+  let els = document.getElementsByClassName("_page");
+  _classStyle(els, "display", "none");
+  let el = document.getElementById(pageid);
+  if (el != null) {
+    _writeLog("[index.html]_classStyle-display(pageid) : " + pageid);
+    el.style.display = "block";
+  }
+  _writeLog("[index.html]_classStyle-end");
+  return;
+}
+window.onload = async() => {
   try {
     let registration = await navigator.serviceWorker.register("./sw.js");
-    _writeLog("[index.html]_regSw-register(registration.scope) : " + registration.scope);
-    await navigator.serviceWorker.ready;
-    await navigator.serviceWorker.oncontrollerchange;
-    return true;
+    _writeLog("[index.html]window.onload-register(registration.scope) : " + registration.scope);
   } catch(e) {
-    _writeLog("[index.html]_regSw-catch(e) : " + e);
-    return false;
+    _writeLog("[index.html]window.onload-catch(e) : " + e);
   }
-};
 
-window.onload = async() => {
-  await _regSw();
-
-  await _setCache("key1", "+fromDOM");
+  await _setCache("key1", "+index.html");
   _writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
-
-  await _addCacheText("key2", "+fromDOM");
+  await _addCacheText("key2", "+index.html");
   _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
-
-
+  _setPage("_log");
+  _dispLog();
 };
-
-
 //_writeLog("[index.html]LastLine");
 /*
 ****************************************
