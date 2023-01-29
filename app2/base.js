@@ -1,15 +1,17 @@
 const VERSION = "0.0.0.7";
 const _getCacheName = () => {
+  let res = "";
   try {
-    retrun registration.scope + VERSION;
-  } catch {
     let position = window.location.href.indexOf("?");
     if (position < 0) {
-      return window.location.href + VERSION;
+      res = window.location.href + VERSION;
     } else {
-      return window.location.href.substr(0, position) + VERSION;
+      res = window.location.href.substr(0, position) + VERSION;
     }
+  } catch {
+    res = registration.scope + VERSION;
   }
+  retrun res;
 }
 const _getDateTime = () => {
   let toDoubleDigits = (i) => {
