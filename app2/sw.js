@@ -25,4 +25,4 @@ self.addEventListener("fetch", (event) => {
 
 _setCache("key1", "+fromSW");
 _addCacheText("key2", "+fromSW");
-_writeLog("[sw.js]LastLine");
+//_writeLog("[sw.js]LastLine");
