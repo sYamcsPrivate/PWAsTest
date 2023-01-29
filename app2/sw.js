@@ -7,9 +7,6 @@ const CACHE_ITEMS = [
   "./",
 ];
 self.addEventListener("install", (event) => {
-
-  _addCacheText("key1", "fromSW" + "\n");
-
   event.waitUntil(
     caches.open(_getCacheName()).then(async(cache) => {
       _writeLog("[sw.js]eventInstall");
@@ -30,3 +27,8 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
+
+
+_setCache("key1", "+fromSW");
+_addCacheText("key2", "+fromSW");

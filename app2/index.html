@@ -116,8 +116,11 @@ const _regSw = async() => {
 window.onload = async() => {
   await _regSw();
 
-  await _addCacheText("key1", "fromDOM" + "\n");
+  await _setCache("key1", "+fromDOM");
   _writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
+
+  await _addCacheText("key2", "+fromDOM");
+  _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
 
 
