@@ -82,7 +82,8 @@ const _dispLog = async() => {
   document.getElementById("_system-disp-element").innerHTML = htmlLog;
   _writeLog("[index.html]_dispLog-end");
 }
-const _addEvent = () => {
+const _addEventLog = () => {
+  _writeLog("[index.html]_addEventLog-start");
   const touchArea = document.getElementById("_log");
   const HANDLE_START = ["touchstart", "mousedown"];
   for (let handleStart of HANDLE_START) {
@@ -93,10 +94,13 @@ const _addEvent = () => {
       _dispLog();
     });
   }
+  _writeLog("[index.html]_addEventLog-end");
 }
-const _logStart = () => {
+const _logMain = () => {
+  _writeLog("[index.html]_logMain-start");
   _setPage("_log");
-  _addEvent();
+  _addEventLog();
+  _writeLog("[index.html]_logMain-end");
   _dispLog();
 }
 </script>
@@ -155,7 +159,7 @@ window.onload = async() => {
   await _addCacheText("key2", "+index.html");
   _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
-  _logStart();
+  _logMain();
 };
 //_writeLog("[index.html]LastLine");
 /*
