@@ -53,7 +53,7 @@ const _getCache = async(key) => {
     }
   } catch(e) {
     _writeLog("[base.js]_getCache-catch(e) : " + e);
-    return e;
+    return new Error(e);
   }
 }
 const _getCacheText = async(key) => {
@@ -76,8 +76,8 @@ const _setCache = async(key, value) => {
 
   _writeLog("[base.js]_setCache(cachename) : " + cachename);
 
-  if (res === undefined) {
-    _writeLog("[base.js]_getCacheName : Cachename is undefined and will be reloaded after 60 seconds");
+  if (cachename === undefined) {
+    _writeLog("[base.js]_setCache : Cachename is undefined and will be reloaded after 60 seconds");
     await _sleep(60000);
     await location.reload(false);
   } else {
