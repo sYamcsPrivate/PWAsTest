@@ -1,15 +1,21 @@
 const VERSION = "0.0.0.8";
+let CACHENAME = "";
 const _getCacheName = () => {
   let res = "";
-  try {
-    let position = window.location.href.indexOf("?");
-    if (position < 0) {
-      res = window.location.href + VERSION;
-    } else {
-      res = window.location.href.substr(0, position) + VERSION;
+  if (CACHENAME == "") {
+    try {
+      let position = window.location.href.indexOf("?");
+      if (position < 0) {
+        res = window.location.href + VERSION;
+      } else {
+        res = window.location.href.substr(0, position) + VERSION;
+      }
+    } catch {
+      res = registration.scope + VERSION;
     }
-  } catch {
-    res = registration.scope + VERSION;
+    CACHENAME = res;
+  } else {
+    res = CACHENAME;
   }
   return res;
 }
