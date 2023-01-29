@@ -95,29 +95,4 @@ const _setCache = async(key, value) => {
   } catch(e) {
     return false;
   }
-
-
-
-/*
-  try {
-    let req = "./" + key;
-    let cachename = await _getCacheText("CACHE_NAME");
-
-    _writeLog("[base.js]_setCache(cachename) : " + cachename);
-
-    if (cachename === undefined) {
-      _writeLog("[base.js]_setCache : Cachename is undefined and will be reloaded after 60 seconds");
-      await _sleep(60000);
-      await location.reload(false);
-      return false;
-    } else {
-      let cache = await caches.open(_getCacheName());
-      await cache.put(req, new Response(value));
-      return true;
-    }
-  } catch(e) {
-    return false;
-  }
-*/
-
 };
