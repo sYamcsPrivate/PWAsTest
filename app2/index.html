@@ -78,7 +78,7 @@ log.page
 let _dispLog = async() => {
   _writeLog("[index.html]_dispLog-start");
   let textLog = await _getCacheText("log.txt");
-  let htmlLog = "<br><br><br>" + textLog.replace("\n", "<br>");
+  let htmlLog = textLog.replace("\n", "<br>");
   document.getElementById("_system-disp-element").innerHTML = htmlLog;
   _writeLog("[index.html]_dispLog-end");
 }
