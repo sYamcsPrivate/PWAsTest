@@ -47,84 +47,47 @@ const _getDateTime = () => {
   let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
   return res;
 }
-const _writeLog = (log) => {
-  console.log(_getDateTime() + "|" + log);
-}
 const _sleep = async(ms) => {
   await new Promise(resolve => setTimeout(resolve, ms));
 }
-
-
-
-/*
-const _getCache = async(key) => {
-  _writeLog("[base.js]_getCache-start");
-  let req = new Request("./" + key, {
-    method: "GET",
-    mode: "same-origin",
-    cache: "only-if-cached",
-  });
-  try {
-    let res = await fetch(req);
-    if (res.ok) {
-      _writeLog("[base.js]_getCache-res.ok : " + res);
-      return res;
-    } else {
-      _writeLog("[base.js]_getCache-res.ng : " + res);
-      throw new Error("not response.ok");
-    }
-  } catch(e) {
-    _writeLog("[base.js]_getCache-catch(e) : " + e);
-    return e;
-  }
-}
-
 const _getCacheText = async(key) => {
-  _writeLog("[base.js]_getCacheText-start");
-  try {
-    let res = await _getCache(key);
-    _writeLog("[base.js]_getCacheText(res) : " + res);
-    let text = await res.text();
-    _writeLog("[base.js]_getCacheText(text) : " + text);
-    return text;
-  } catch(e) {
-    _writeLog("[base.js]_getCacheText-catch(e) : " + e);
-    return undefined;
-  }
-}
-*/
-
-const _getCacheText = async(key) => {
-  _writeLog("[base.js]_getCacheText-start");
   try {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
-
     let data = await cache.match(req);
-    _writeLog("[base.js]_getCacheText(data) : " + data);
-
     if (data === undefined) return undefined;
-
     let text = await data.text();
-    _writeLog("[base.js]_getCacheText(text) : " + text);
-
+    _writeLog("[base.js]_getCacheText(key) : " + key);
     return text;
   } catch(e) {
     _writeLog("[base.js]_getCacheText-catch(e) : " + e);
     return undefined;
   }
 }
-
-
 const _setCache = async(key, value) => {
-  _writeLog("[base.js]_setCache-start(key, value) : " + key + ", " + value);
   try {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
     await cache.put(req, new Response(value));
-    _writeLog("[base.js]_setCache-end(key, value) : " + key + ", " + value);
+    _writeLog("[base.js]_setCache(key, value) : " + key + ", " + value);
     return true;
   } catch(e) {
+    _writeLog("[base.js]_setCache-catch(e) : " + e);
     return false;
   }
 };
+
+
+
+
+const _writeLog = async(log) => {
+
+  let argsLog = _getDateTime() + "|" + log;
+  console.log(argsLog);
+
+  let cacheLog = await _getCacheText("log.txt")
+  if (cacheLog === undefined) cacheLog = "";
+  cacheLog = cacheLog + argsLog + "<br>";
+  await _setCache("log.txt", cacheLog);
+
+}
