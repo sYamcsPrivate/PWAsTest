@@ -53,7 +53,7 @@ const _getCache = async(key) => {
     }
   } catch(e) {
     _writeLog("[base.js]_getCache-catch(e) : " + e);
-    return new Error(e);
+    return e;
   }
 }
 const _getCacheText = async(key) => {

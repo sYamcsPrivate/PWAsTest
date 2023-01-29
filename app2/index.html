@@ -108,25 +108,15 @@ const _regSw = async() => {
     await navigator.serviceWorker.ready;
     _writeLog("[index.html]_regSw-ready");
 
+    await navigator.serviceWorker.oncontrollerchange;
+    _writeLog("[index.html]_regSw-oncontrollerchange");
+
     return true;
   } catch(e) {
     _writeLog("[index.html]_regSw-catch(e) : " + e);
     return false;
   }
   
-
-/*
-  return new Promise(async(resolve, reject) => {
-    await navigator.serviceWorker.register("./sw.js").then((registration) => {
-      _writeLog("[index.html]_regSw-then(registration.scope) : " + registration.scope);
-    }).then(() => {
-      resolve();
-    }).catch((err) => {
-      _writeLog("[index.html]_regSw-catch(err) : " + err);
-      reject();
-    });
-  })
-*/
 
 };
 
@@ -135,14 +125,6 @@ window.onload = async() => {
   if (res) {
     await _setCache("keyDom", "valueDom");
   }
-
-
-
-/*
-  _regSw().then(() => {
-    _setCache("keyDom", "valueDom");
-  });
-*/
 
 };
 
