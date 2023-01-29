@@ -9,7 +9,6 @@ const CACHE_ITEMS = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(_getCacheName()).then(async(cache) => {
-      _writeLog("[sw.js]eventInstall");
       return cache.addAll(CACHE_ITEMS);
     })
   );
@@ -17,7 +16,6 @@ self.addEventListener("install", (event) => {
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      _writeLog("[sw.js]eventFetch");
       return response ? response : fetch(event.request);
     })
   );
@@ -27,3 +25,4 @@ self.addEventListener("fetch", (event) => {
 
 _setCache("key1", "+fromSW");
 _addCacheText("key2", "+fromSW");
+_writeLog("[sw.js]LastLine");
