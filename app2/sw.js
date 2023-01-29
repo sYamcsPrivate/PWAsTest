@@ -5,6 +5,7 @@ const CACHE_NAME = registration.scope + VERSION;
 const CACHE_ITEMS = [
   "./icon.png",
   "./manifest.json",
+  "./base.js",
   "./sw.js",
   "./",
 ];
@@ -30,7 +31,11 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
 
-      _writeLog("[sw.js]eventFetch(response) : " + response.url);
+      try {
+        _writeLog("[sw.js]eventFetch(response.url) : " + response.url);
+      } catch {
+        _writeLog("[sw.js]eventFetch(response) : " + response);
+      }
 
       return response ? response : fetch(event.request);
     })

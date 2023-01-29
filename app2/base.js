@@ -42,7 +42,7 @@ const _getCache = async(key) => {
     mode: "same-origin",
     cache: "only-if-cached",
   });
-  return await new Promise( async (resolve, reject) => {
+  return await new Promise(async(resolve, reject) => {
     await fetch(req).then((res) => {
       if (res.ok) {
         _writeLog("[base.js]_getCache-res.ok : " + res);
@@ -78,7 +78,7 @@ const _getCacheName = async() => {
   _writeLog("[base.js]_getCacheName(cachename) : " + res);
 
   while (res === undefined) {
-    _sleep(1000);
+    await _sleep(1000);
     res = await _getCacheText("CACHE_NAME");
     //res = _getCacheText("CACHE_NAME").then((res) => res).catch((err) => err);
   }
