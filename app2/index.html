@@ -77,9 +77,8 @@ log.page
 <script type="text/javascript">
 const _dispLog = async() => {
   await _writeLog("[index.html]_dispLog-start");
-  let textLog = await _getCacheText("log.txt");
-  let htmlLog = textLog.replaceAll("\n", "<br>");
-  document.getElementById("_system-disp-element").innerHTML = htmlLog;
+  let log = await _getCacheText("log.txt");
+  document.getElementById("_system-disp-element").innerHTML = log;
   await _writeLog("[index.html]_dispLog-end");
 }
 const _addEventLog = async() => {
@@ -94,12 +93,13 @@ const _addEventLog = async() => {
         for (const touch of e.touches) {
           positionX = touch.clientX;
           positionY = touch.clientY;
+          await _writeLog("[index.html]touch X:" + positionX + ", Y:" + positionY);
         }
       } else {
         positionX = e.pageX;
         positionY = e.pageY;
+        await _writeLog("[index.html]click X:" + positionX + ", Y:" + positionY);
       }
-      await _writeLog("[index.html]touch/click X:" + positionX + ", Y:" + positionY);
       await _dispLog();
     });
   }

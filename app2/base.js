@@ -92,6 +92,6 @@ const _addCacheText = async(key, value) => {
 }
 const _writeLog = async(log) => {
   let argsLog = _getDateTime() + "|" + log;
-  await _addCacheText("log.txt", argsLog + "\n");
+  await _addCacheText("log.txt", argsLog + "<br>");
   console.log(argsLog);
 }
