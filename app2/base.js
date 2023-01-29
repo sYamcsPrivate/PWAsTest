@@ -26,82 +26,62 @@ const _getDateTime = () => {
   let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
   return res;
 }
-
-
-
-/*
-const _getCachePromise = (req) => {
-  let reqPath = "./" + req;
-  return new Promise( async (resolve, reject) => {
-    fetch(reqPath)
-    .then(res => res.text())
-    .then(res => resolve(res))
-    .catch(err => reject(err));
-  });
+const _writeLog = (log) => {
+  console.log(_getDateTime() + "|" + log);
 }
-const _getCache = async(key) => {
-  await _getCachePromise(key).then ( (value) => {
-
-    console.log(_getDateTime() + "|value:" + value);
-
-    return value;
-  }).catch(() => {
-    return undefined;
-  });
+const _sleep = async(ms) => {
+  await new Promise(resolve => setTimeout(resolve, ms));
 }
-*/
 
 
-/*
-const _getCache = async(key) => {
-  let req = "./" + key;
-  await caches.match(new Request(req)).then((res) => {
-    console.log(_getDateTime() + "|_getCacheThen:" + res);
-    return res ? res : "";
-  }).catch((err) => {
-    console.log(_getDateTime() + "|_getCacheCatch:" + err);
-    return "";
-  });
-}
-*/
 
-const _getCache = async(key) => {
+const _getCache = (key) => {
+  _writeLog("[base.js]_getCache-Start");
   let req = new Request("./" + key, {
     method: "GET",
     mode: "same-origin",
     cache: "only-if-cached",
   });
-  return fetch(req).then((res) => {
-    let resText = res.ok ? res.text() : undefined;
-    console.log(_getDateTime() + "|_getCacheThen-Type:" + res.type);
-    console.log(_getDateTime() + "|_getCacheThen-Ok:" + res.ok);
-    console.log(_getDateTime() + "|_getCacheThen-Text:" + resText);
-    return resText;
-  }).then((text) => {
-    console.log(_getDateTime() + "|_getCacheThen-ThenText:" + text);
-    return text;
-  }).catch((err) => {
-    console.log(_getDateTime() + "|_getCacheCatch:" + err);
-    return undefined;
+  return new Promise(async(resolve, reject) => {
+    fetch(req).then((res) => {
+      if (res.ok) {
+        resolve(res);
+      } else {
+        reject();
+      }
+    }).catch((err) => {
+      reject();
+    });
   });
 }
-const _getCacheName = async() => {
-  console.log(_getDateTime() + "|_getCacheNameStart");
-  let res = await _getCache("CACHE_NAME");
-  console.log(_getDateTime() + "|_getCacheNameRes:" + res);
+const _getCacheText = (key) => {
+  _writeLog("[base.js]_getCacheText-Start");
+  return _getCache(key)
+  .then((res) => res.text())
+  .then((text) => text)
+  .catch(() => undefined);
+}
+const _getCacheName = () => {
+  _writeLog("[base.js]_getCacheName-Start");
+
+  let res = _getCacheText("CACHE_NAME");
+
+  _writeLog("[base.js]_getCacheName(cachename) : " + res);
+
   while (res === undefined) {
-    await new Promise(s => setTimeout(s, 5000))
-    res = await _getCache("CACHE_NAME");
+    _sleep(1000);
+    res = _getCacheText("CACHE_NAME");
   }
   return res;
 };
 const _setCache = async(key, value) => {
+  _writeLog("[base.js]_setCache-Start");
   let req = "./" + key;
-  let cacheName = await _getCacheName();
+  let cachename = _getCacheName();
 
-  console.log(_getDateTime() + "|cacheName:" + cacheName);
+  _writeLog("[base.js]_setCacheName(cachename) : " + cachename);
 
-  await caches.open(cacheName).then(async (cache) => {
+  await caches.open(cachename).then(async(cache) => {
     await cache.put(req, new Response(value));
   });
 };

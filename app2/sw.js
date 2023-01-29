@@ -8,27 +8,28 @@ const CACHE_ITEMS = [
   "./",
 ];
 self.addEventListener("install", (event) => {
+  _writeLog("[sw.js]eventInstall-Start");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
 
-      console.log(_getDateTime() + "|install - set CacheName");
-
       //return cache.addAll(CACHE_ITEMS);
 
       let res = cache.addAll(CACHE_ITEMS);
-      console.log(_getDateTime() + "|install - set All" + res);
+
+      _writeLog("[sw.js]eventInstall-addAllFinish");
       return res;
 
     })
   );
 });
 self.addEventListener("fetch", (event) => {
-  console.log(_getDateTime() + "|event.request:" + event.request.url);
+  _writeLog("[sw.js]eventFetch-Start");
+  _writeLog("[sw.js]eventFetch(event.request.url) : " + event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
 
-      console.log(_getDateTime() + "|fetch:" + response);
+      _writeLog("[sw.js]eventFetch(response) : " + response);
 
       return response ? response : fetch(event.request);
     })

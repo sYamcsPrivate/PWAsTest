@@ -98,12 +98,13 @@ index.html js start
 
 
 const _regSw = () => {
+  _writeLog("[index.html]_regSw-Start");
   return new Promise(async(resolve, reject) => {
     navigator.serviceWorker.register("./sw.js").then((registration) => {
-      console.log(_getDateTime() + "|ServiceWorker registration successful with scope: ", registration.scope);
+      _writeLog("[index.html]_regSw-Then(registration.scope) : " + registration.scope);
       resolve();
     }).catch((err) => {
-      console.log(_getDateTime() + "|ServiceWorker registration failed: ", err);
+      _writeLog("[index.html]_regSw-Catch(err) : " + err);
       reject();
     });
   })
@@ -111,7 +112,6 @@ const _regSw = () => {
 
 window.onload = () => {
   _regSw().then(async() => {
-    //await new Promise(s => setTimeout(s, 5000))
     _setCache("keyDom", "valueDom");
   });
 };
