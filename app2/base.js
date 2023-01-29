@@ -43,7 +43,7 @@ const _getCache = (key) => {
     cache: "only-if-cached",
   });
   return new Promise(async(resolve, reject) => {
-    fetch(req).then((res) => {
+    await fetch(req).then((res) => {
       if (res.ok) {
         resolve(res);
       } else {
@@ -57,7 +57,7 @@ const _getCache = (key) => {
 const _getCacheText = (key) => {
   _writeLog("[base.js]_getCacheText-Start");
   return new Promise(async(resolve, reject) => {
-    _getCache(key).then((res) => {
+    await _getCache(key).then((res) => {
       res.text();
     }).then((text) => {
       _writeLog("[base.js]_getCacheText-Then : " + text);
