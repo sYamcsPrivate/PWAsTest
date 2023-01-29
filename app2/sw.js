@@ -1,6 +1,5 @@
 importScripts('base.js');
 const VERSION = "0.0.0.6";
-//const CACHE_NAME = `${registration.scope}${VERSION}`;
 const CACHE_NAME = registration.scope + VERSION;
 const CACHE_ITEMS = [
   "./icon.png",
@@ -13,7 +12,8 @@ self.addEventListener("install", (event) => {
   _writeLog("[sw.js]eventInstall-start");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async(cache) => {
-      await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
+      //await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
+      await cache.add("./CACHE_NAME", new Response(CACHE_NAME));
 
       //return cache.addAll(CACHE_ITEMS);
 
