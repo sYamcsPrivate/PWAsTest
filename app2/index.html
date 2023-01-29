@@ -84,13 +84,22 @@ const _dispLog = async() => {
 }
 const _addEventLog = () => {
   _writeLog("[index.html]_addEventLog-start");
-  const touchArea = document.getElementById("_log");
+  const touchArea = document.getElementById("_system-body");
   const HANDLE_START = ["touchstart", "mousedown"];
   for (let handleStart of HANDLE_START) {
     touchArea.addEventListener(handleStart, (e) => {
-      for (const touch of e.touches) {
-      _writeLog("[index.html]touch/click X:" + touch.clientX + ", Y:" + touch.clientY);
+      let positionX = 0;
+      let positionY = 0;
+      if (e.type == "touchstart") {
+        for (const touch of e.touches) {
+          positionX = touch.clientX;
+          positionY = touch.clientY;
+        }
+      } else {
+        positionX = e.pageX;
+        positionY = e.pageY;
       }
+      _writeLog("[index.html]touch/click X:" + positionX + ", Y:" + positionY);
       _dispLog();
     });
   }
@@ -154,10 +163,10 @@ window.onload = async() => {
     _writeLog("[index.html]window.onload-catch(e) : " + e);
   }
 
-  await _setCache("key1", "+index.html");
-  _writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
-  await _addCacheText("key2", "+index.html");
-  _writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
+  //await _setCache("key1", "+index.html");
+  //_writeLog("[index.html]window.onload-_getCacheText(key1) : " + await _getCacheText("key1"));
+  //await _addCacheText("key2", "+index.html");
+  //_writeLog("[index.html]window.onload-_getCacheText(key2) : " + await _getCacheText("key2"));
 
   _logMain();
 };

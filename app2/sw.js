@@ -20,6 +20,6 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
-_setCache("key1", "+sw.js");
-_addCacheText("key2", "+sw.js");
-_writeLog("[sw.js]LastLine");
+//_setCache("key1", "+sw.js");
+//_addCacheText("key2", "+sw.js");
+//_writeLog("[sw.js]LastLine");
