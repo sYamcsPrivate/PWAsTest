@@ -15,14 +15,9 @@ self.addEventListener("install", (event) => {
   );
 });
 self.addEventListener("fetch", (event) => {
-  _writeLog("[sw.js]eventFetch(event.request.url) : " + event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
-      try {
-        _writeLog("[sw.js]eventFetch(response.url) : " + response.url);
-      } catch {
-        _writeLog("[sw.js]eventFetch(response) : " + response);
-      }
+      _writeLog("[sw.js]eventFetch");
       return response ? response : fetch(event.request);
     })
   );
