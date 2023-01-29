@@ -75,7 +75,11 @@ const _getCacheName = async() => {
 
   _writeLog("[base.js]_getCacheName(cachename) : " + res);
 
-  if (res === undefined) await location.reload(false);
+  if (res === undefined) {
+    _writeLog("[base.js]_getCacheName : Cachename is undefined and will be reloaded after 10 seconds");
+    await _sleep(10000);
+    await location.reload(false);
+  }
 
 /*
   while (res === undefined) {
