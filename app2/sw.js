@@ -1,5 +1,5 @@
 importScripts('base.js');
-const VERSION = "0.0.0.5";
+const VERSION = "0.0.0.6";
 //const CACHE_NAME = `${registration.scope}${VERSION}`;
 const CACHE_NAME = registration.scope + VERSION;
 const CACHE_ITEMS = [
@@ -30,7 +30,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
 
-      _writeLog("[sw.js]eventFetch(response) : " + response);
+      _writeLog("[sw.js]eventFetch(response) : " + response.url);
 
       return response ? response : fetch(event.request);
     })
