@@ -57,7 +57,6 @@ const _getCacheText = async(key) => {
     let data = await cache.match(req);
     if (data === undefined) return undefined;
     let text = await data.text();
-    console.log("[base.js]_getCacheText(key) : " + key);
     return text;
   } catch(e) {
     console.log("[base.js]_getCacheText-catch(e) : " + e);
@@ -69,7 +68,6 @@ const _setCache = async(key, value) => {
     let req = "./" + key;
     let cache = await caches.open(_getCacheName());
     await cache.put(req, new Response(value));
-    console.log("[base.js]_setCache(key, value) : " + key + ", " + value);
     return true;
   } catch(e) {
     console.log("[base.js]_setCache-catch(e) : " + e);
