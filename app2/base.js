@@ -35,7 +35,7 @@ const _sleep = async(ms) => {
 
 
 
-const _getCache = (key) => {
+const _getCache = async(key) => {
   _writeLog("[base.js]_getCache-Start");
   let req = new Request("./" + key, {
     method: "GET",
@@ -45,11 +45,14 @@ const _getCache = (key) => {
   return new Promise(async(resolve, reject) => {
     await fetch(req).then((res) => {
       if (res.ok) {
+        _writeLog("[base.js]_getCache-res.ok : " + res);
         resolve(res);
       } else {
+        _writeLog("[base.js]_getCache-res.ng : " + res);
         reject("not response.ok");
       }
     }).catch((err) => {
+      _writeLog("[base.js]_getCache-Catch(err) : " + err);
       reject(err);
     });
   });
@@ -57,13 +60,13 @@ const _getCache = (key) => {
 const _getCacheText = async(key) => {
   _writeLog("[base.js]_getCacheText-Start");
   await _getCache(key).then((res) => {
-    _writeLog("[base.js]_getCacheText-Then : " + res);
+    _writeLog("[base.js]_getCacheText-Then(res) : " + res);
     res.text();
   }).then((res) => {
-    _writeLog("[base.js]_getCacheText-Then-Then : " + res);
+    _writeLog("[base.js]_getCacheText-Then-Then(res) : " + res);
     return res;
   }).catch((err) => {
-    _writeLog("[base.js]_getCacheText-Catch : " + err);
+    _writeLog("[base.js]_getCacheText-Catch(err) : " + err);
     return undefined;
   });
 }
@@ -86,7 +89,7 @@ const _setCache = async(key, value) => {
   let req = "./" + key;
   let cachename = _getCacheName();
 
-  _writeLog("[base.js]_setCacheName(cachename) : " + cachename);
+  _writeLog("[base.js]_setCache(cachename) : " + cachename);
 
   await caches.open(cachename).then(async(cache) => {
     await cache.put(req, new Response(value));
