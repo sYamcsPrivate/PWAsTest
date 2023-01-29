@@ -9,7 +9,7 @@ const CACHE_ITEMS = [
   "./",
 ];
 self.addEventListener("install", (event) => {
-  _writeLog("[sw.js]eventInstall-Start");
+  _writeLog("[sw.js]eventInstall-start");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.put("./CACHE_NAME", new Response(CACHE_NAME));
@@ -25,7 +25,7 @@ self.addEventListener("install", (event) => {
   );
 });
 self.addEventListener("fetch", (event) => {
-  _writeLog("[sw.js]eventFetch-Start");
+  _writeLog("[sw.js]eventFetch-start");
   _writeLog("[sw.js]eventFetch(event.request.url) : " + event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
