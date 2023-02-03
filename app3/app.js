@@ -61,7 +61,7 @@ const log=(args)=>{
 
 const viewer=(args)=>{
   log("viewer: "+args)
-  let convlog = strlog.split("\n").join("<br>")
+  let convlog = storelog.split("\n").join("<br>")
   document.getElementById("viewer").textContent(convlog);
 }
 
