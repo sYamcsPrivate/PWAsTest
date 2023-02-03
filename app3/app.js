@@ -1,13 +1,64 @@
 (()=>{
 
-//----
-// window
+const VERSION = "0.0.0.1";
 
-let strlog="";
-const log=(args)=>{
-  console.log("log: "+args)
-  strlog=strlog+args+"\n"
+let CACHENAME = "";
+const getCacheName=()=>{
+  let res = "";
+  if (CACHENAME == "") {
+    try {
+      let position = window.location.href.indexOf("?");
+      if (position < 0) {
+        res = window.location.href + VERSION;
+      } else {
+        res = window.location.href.substr(0, position) + VERSION;
+      }
+    } catch {
+      res = registration.scope + VERSION;
+    }
+    CACHENAME = res;
+  } else {
+    res = CACHENAME;
+  }
+  return res;
 }
+
+const getDateTime=()=>{
+  let toDoubleDigits=(i)=>{
+    let res = "" + i;
+    if (res < 10) {
+      res = "0" + i;
+    }
+    return res;
+  }
+  let toTripleDigits=(i)=>{
+    let res = "" + i;
+    if (res < 10) {
+      res = "00" + i;
+    } else if (res < 100) {
+      res = "0" + i;
+    }
+    return res;
+  }
+  let DD = new Date();
+  let Year = DD.getFullYear();
+  let Month = toDoubleDigits(DD.getMonth() + 1);
+  let Day = toDoubleDigits(DD.getDate());
+  let Hours = toDoubleDigits(DD.getHours());
+  let Minutes = toDoubleDigits(DD.getMinutes());
+  let Seconds = toDoubleDigits(DD.getSeconds());
+  let mSeconds = toTripleDigits(DD.getMilliseconds());
+  let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
+  return res;
+}
+
+let storelog="";
+const log=(args)=>{
+  let str = getDateTime() + "|" + args
+  console.log(str)
+  storelog=storelog+str+"\n"
+}
+
 const viewer=(args)=>{
   log("viewer: "+args)
   let convlog = strlog.split("\n").join("<br>")
@@ -78,7 +129,7 @@ if (!isdoc) {
   ];
   self.addEventListener("install", event=>{
     event.waitUntil(
-      caches.open(_getCacheName()).then(cache=>cache.addAll(CACHE_ITEMS))
+      caches.open(getCacheName()).then(cache=>cache.addAll(CACHE_ITEMS))
     );
   });
   self.addEventListener("fetch", event=>{
