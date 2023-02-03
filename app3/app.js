@@ -51,7 +51,7 @@ body{
 
 const swreg=()=>{
   log("swreg: start")
-  navigator.serviceWorker.register("./_.js")
+  navigator.serviceWorker.register("./app.js")
   .then(res=>log("swreg: end, sw.scope: "+res.scope))
   .catch(res=>log("swreg: end, sw.error: "+res))
 }
@@ -59,7 +59,7 @@ const swreg=()=>{
 const main=(args=false)=>{
   log("main: "+args)
   if (args) swreg()
-  addcontents()
+  addContents()
   addEvents()
 }
 
