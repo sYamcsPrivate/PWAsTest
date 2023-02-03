@@ -92,7 +92,7 @@ if (!isdoc) {
 
 //----
 // object
-_=Object.assign(main, {
+app=Object.assign(main, {
   "log": log,
   "viewer": viewer,
 })})()
