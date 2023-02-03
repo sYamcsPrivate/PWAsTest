@@ -62,7 +62,7 @@ const log=(args)=>{
 const viewer=(args)=>{
   log("viewer: "+args)
   let convlog = storelog.split("\n").join("<br>")
-  document.getElementById("viewer").textContent(convlog);
+  document.getElementById("viewer").textContent=convlog;
 }
 
 const addEvents=()=>{
@@ -95,7 +95,7 @@ body{
 </style>
 <div class="fullscreen">
 <div id="viewer" class="text"></div>
-<div>
+</div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
 `)
 }
