@@ -59,16 +59,20 @@ const log=(args)=>{
   storelog=storelog+str+"\n"
 }
 
-const viewer=(args)=>{
-  log("viewer: "+args)
-  let convlog = storelog.split("\n").join("<br>")
-  document.getElementById("viewer").textContent=convlog;
+const viewer=()=>{
+  log("viewer: start")
+  const convlog = storelog.split("\n").join("<br>")
+  document.getElementById("viewer").innerHTML=`<span id="text">${convlog}<br></span>`
+  const viewer = document.getElementById("viewer")
+  log(viewer.scrollHeight)
+  viewer.scrollTop = viewer.scrollHeight
 }
 
 const addEvents=()=>{
   log("addEvents: start")
   document.body.addEventListener("click",()=>{
     log("body: click")
+    viewer()
   });
 }
 
@@ -77,15 +81,17 @@ log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", `
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
-body{
-  margin: 0;
-  padding: 0;
-}
 .fullscreen {
-  height: 100vh;
+  height: 99vh;
 }
-.text {
-  margin: 0;
+#viewer {
+  position: fixed;
+  width: calc(100% - 30px);
+  height: calc(100% - 15px);
+  overflow: auto;
+  overflow-x:hidden;
+  word-break: break-all; 
+  margin: 5px;
   background: #FFF;
   padding: 2px 10px 0;
   font-size: 0.85rem;
@@ -94,7 +100,7 @@ body{
 }
 </style>
 <div class="fullscreen">
-<div id="viewer" class="text"></div>
+<div id="viewer"><span id="text"></span></div>
 </div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
 `)
