@@ -1,9 +1,8 @@
 (()=>{
 
-
-
 //----
 // window
+
 let strlog="";
 const log=(args)=>{
   console.log("log: "+args)
@@ -22,7 +21,9 @@ const addEvents=()=>{
   });
 }
 
-const addContents=()=>{document.body.insertAdjacentHTML("beforeend", `
+const addContents=()=>{
+log("addContents: start")
+document.body.insertAdjacentHTML("beforeend", `
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
 body{
@@ -45,7 +46,8 @@ body{
 <div id="viewer" class="text"></div>
 <div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
-`)}}
+`)
+}
 
 const swreg=()=>{
   log("swreg: start")
@@ -65,15 +67,13 @@ const main=(args=false)=>{
 
 //----
 // sw
-
 const isdoc = self.hasOwnProperty("document")
-log("_.js: start, self.document: " + isdoc)
-
+log("app.js: start, self.document: " + isdoc)
 if (!isdoc) {
   const CACHE_ITEMS = [
     "./icon.png",
     "./manifest.json",
-    "./_.js",
+    "./app.js",
     "./",
   ];
   self.addEventListener("install", event=>{
@@ -87,9 +87,6 @@ if (!isdoc) {
     );
   });
 }
-
-
-
 //----
 // object
 app=Object.assign(main, {
