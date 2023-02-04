@@ -104,15 +104,17 @@ const getChaheKeys=(isClear=false)=>{
   try {
     caches.keys().then(keys=>{
       let promises = []
-      keys.forEach(c=>{
-        if (c) {
-          log(c)
-          if (isClear && c!==cacheKey) promises.push(caches.delete(c))
+      keys.forEach(cs=>{
+        if (cs===cacheName) {
+          log("cacheName: " + cs)
+          cs.keys().then(c=>{
+            log("cacheKey: " + c)
+            if (isClear && c!==cacheKey) promises.push(caches.delete(c))
+          })
         }
       })
       log(`getChaheKeys(isClear:${isClear}): end`)
     })
-    return res
   } catch(e) {
     log(`getChaheKeys(isClear:${isClear}): catch(e): ${e}`)
     return false
@@ -158,6 +160,20 @@ const log=(args)=>{
 log("version: " + VERSION)
 log("self.document: " + isdoc)
 
+const swreg=()=>{
+  log("swreg: start")
+  navigator.serviceWorker.register("./app.js")
+  .then(res=>log("swreg: success: scope: "+res.scope))
+  .catch(res=>log("swreg: error: "+res))
+}
+
+const swdel=()=>{
+  log("swdel: start")
+  navigator.serviceWorker.getRegistration()
+  .then(registration=>registration.unregister())
+  .finally(()=>log("swdel: end"))
+}
+
 const f1=()=>{
   log("f1: start")
 }
@@ -168,12 +184,19 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
-  getChaheKeys().forEach(key=>log(key))
+  getChaheKeys()
 
   res = confirm("reload?")
   log("reload? res: " + res)
   if (res) {
-    location.reload()
+    location.reload(true) //true:サーバから再読込/false:キャッシュから再読込
+    return
+  }
+
+  res = confirm("clear service worker?")
+  log("clear service worker? res: " + res)
+  if (res) {
+    swdel()
     return
   }
 
@@ -364,13 +387,6 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 </div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
 `)
-}
-
-const swreg=()=>{
-  log("swreg: start")
-  navigator.serviceWorker.register("./app.js")
-  .then(res=>log("swreg: success: scope: "+res.scope))
-  .catch(res=>log("swreg: error: "+res))
 }
 
 const main=(args={
