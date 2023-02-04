@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.10";
+const VERSION = "0.0.0.11";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -192,7 +192,13 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
-  //getCacheKeys()
+
+  res = confirm("view cache keys?")
+  log("view cache keys? res: " + res)
+  if (res) {
+    getCacheKeys()
+    return
+  }
 
   res = confirm("reload?")
   log("reload? res: " + res)
@@ -256,7 +262,6 @@ const addEvents=()=>{
   });
   document.getElementById(`${p}toggle`).addEventListener("click",()=>{
     log("toggle: click")
-    getCacheKeys()
     const rapper = document.getElementById(`${p}app`);
     rapper.classList.toggle(`${p}notshow`);
     if (isHideToggle) hideToggle()
