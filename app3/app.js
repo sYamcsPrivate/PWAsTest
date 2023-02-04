@@ -151,17 +151,22 @@ const f3=()=>{
   if (res) {
     location.reload()
   } else {
+
     res = confirm("log clear?")
     if (res) varLog = ""
+    setCacheObj()
     log("log clear? res: " + res)
+
     res = prompt("post(URL)", varPost)
     if (res != null) varPost = res
     setCacheObj()
     log("post(URL)? res: " + res + ", post(URL): " + varPost)
+
     res = prompt("ID", varId)
     if (res != null) varId = res
     setCacheObj()
     log("ID? res: " + res + ", ID: " + varId)
+
   }
 }
 
@@ -204,6 +209,8 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 <style>
 #${p}app {
   font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
   position: fixed;
   bottom: 30px;
   right: 30px;
