@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.8";
+const VERSION = "0.0.0.9";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -83,7 +83,7 @@ const getCacheKeys=(isClear=false)=>{
       cache.forEach(cn=>{
         log(`cacheName:${cn}`)
         if (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cn.lastIndexOf("/")+1)) {
-          if (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cn.lastIndexOf("/")+1)) {
+          if (isClear && (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cn.lastIndexOf("/")+1))) {
             caches.delete(cn)
           }
         }
