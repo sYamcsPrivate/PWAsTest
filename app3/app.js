@@ -1,6 +1,6 @@
-(async()=>{
+(()=>{
 
-const VERSION = "0.0.0.2";
+const VERSION = "0.0.0.3";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -14,7 +14,7 @@ let isHideToggle = false;
 
 let isCache = false;
 let cacheName = "";
-let cacheKey = "app.js.obj"
+let cacheKey = "app.js.cache"
 let cacheObj = {}
 
 const setCacheObj=()=>{
@@ -26,78 +26,100 @@ const setCacheObj=()=>{
 }
 
 const getDateTime=()=>{
-  let toDoubleDigits=(i)=>{
-    let res = "" + i;
+  const toDoubleDigits=(i)=>{
+    let res = "" + i
     if (res < 10) {
-      res = "0" + i;
+      res = "0" + i
     }
-    return res;
+    return res
   }
-  let toTripleDigits=(i)=>{
-    let res = "" + i;
+  const toTripleDigits=(i)=>{
+    let res = "" + i
     if (res < 10) {
-      res = "00" + i;
+      res = "00" + i
     } else if (res < 100) {
-      res = "0" + i;
+      res = "0" + i
     }
-    return res;
+    return res
   }
-  let DD = new Date();
-  let Year = DD.getFullYear();
-  let Month = toDoubleDigits(DD.getMonth() + 1);
-  let Day = toDoubleDigits(DD.getDate());
-  let Hours = toDoubleDigits(DD.getHours());
-  let Minutes = toDoubleDigits(DD.getMinutes());
-  let Seconds = toDoubleDigits(DD.getSeconds());
-  let mSeconds = toTripleDigits(DD.getMilliseconds());
-  let res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds;
-  return res;
+  const DD = new Date()
+  const Year = DD.getFullYear()
+  const Month = toDoubleDigits(DD.getMonth() + 1)
+  const Day = toDoubleDigits(DD.getDate())
+  const Hours = toDoubleDigits(DD.getHours())
+  const Minutes = toDoubleDigits(DD.getMinutes())
+  const Seconds = toDoubleDigits(DD.getSeconds())
+  const mSeconds = toTripleDigits(DD.getMilliseconds())
+  const res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds
+  return res
 }
 
 const getCacheName=()=>{
   let res = "";
   if (cacheName == "") {
     try {
-      let position = window.location.href.indexOf("?");
+      const position = window.location.href.indexOf("?")
       if (position < 0) {
-        res = window.location.href + VERSION;
+        res = window.location.href + VERSION
       } else {
-        res = window.location.href.substr(0, position) + VERSION;
+        res = window.location.href.substr(0, position) + VERSION
       }
     } catch {
-      res = registration.scope + VERSION;
+      res = registration.scope + VERSION
     }
-    cacheName = res;
+    cacheName = res
   } else {
-    res = cacheName;
+    res = cacheName
   }
-  return res;
+  return res
 }
 
 const getCache = async(key) => { //jsonオブジェクトで返る
   try {
-    let req = "./" + key;
-    let cache = await caches.open(getCacheName());
-    let data = await cache.match(req);
-    if (data === undefined) return undefined;
-    let obj = await data.json();
-    return obj;
+    const req = "./" + key
+    const cache = await caches.open(getCacheName())
+    const data = await cache.match(req)
+    if (data === undefined) return undefined
+    const obj = await data.json()
+    return obj
   } catch(e) {
-    console.log("getCache-catch(e) : " + e);
-    return undefined;
+    console.log("getCache: catch(e): " + e)
+    return undefined
   }
 }
 const setCache = async(key, value) => { //jsonオブジェクトで渡す
   try {
-    let req = "./" + key;
-    let cache = await caches.open(getCacheName());
-    await cache.put(req, new Response(JSON.stringify(value)));
-    return true;
+    const req = "./" + key
+    const cache = await caches.open(getCacheName())
+    await cache.put(req, new Response(JSON.stringify(value)))
+    return true
   } catch(e) {
-    console.log("setCache-catch(e) : " + e);
-    return false;
+    console.log("setCache: catch(e): " + e)
+    return false
   }
-};
+}
+const getChaheKeys=(isClear=false)=>{
+  //console.log("getChaheKeys: start")
+  log(`getChaheKeys(isClear:${isClear}): start`)
+  try {
+    let res = []
+    caches.keys().then(keys=>{
+      let promises = []
+      keys.forEach(c=>{
+        if (c) {
+          res.push(c)
+          if (isClear && c!==cacheKey) promises.push(caches.delete(c))
+        }
+      })
+    })
+    log(`getChaheKeys(isClear:${isClear}): end, count: ${res.length}`)
+    return res
+  } catch(e) {
+    log(`getChaheKeys(isClear:${isClear}): catch(e): ${e}`)
+    return false
+  }
+}
+
 
 let isasync = false
 let fs=[]
@@ -147,28 +169,40 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
+  getChaheKeys().forEach(key=>log(key))
+
   res = confirm("reload?")
   log("reload? res: " + res)
   if (res) {
     location.reload()
-  } else {
-
-    res = confirm("log clear?")
-    if (res) varLog = ""
-    setCacheObj()
-    log("log clear? res: " + res)
-
-    res = prompt("post(URL)", varPost)
-    if (res != null) varPost = res
-    setCacheObj()
-    log("post(URL)? res: " + res + ", post(URL): " + varPost)
-
-    res = prompt("ID", varId)
-    if (res != null) varId = res
-    setCacheObj()
-    log("ID? res: " + res + ", ID: " + varId)
-
+    return
   }
+
+  res = confirm("clear cache?")
+  log("clear cache? res: " + res)
+  if (res) {
+    getChaheKeys(true)
+    return
+  }
+
+  res = confirm("clear log?")
+  log("clear log? res: " + res)
+  if (res) {
+    varLog = ""
+    setCacheObj()
+    return
+  }
+
+  res = prompt("post(URL)", varPost)
+  if (res != null) varPost = res
+  setCacheObj()
+  log("post(URL)? res: " + res + ", post(URL): " + varPost)
+
+  res = prompt("ID", varId)
+  if (res != null) varId = res
+  setCacheObj()
+  log("ID? res: " + res + ", ID: " + varId)
+
 }
 
 const hideToggle=()=>{
@@ -385,13 +419,14 @@ if (!isdoc) {
   self.addEventListener("install", event=>{
     event.waitUntil(
       caches.open(getCacheName()).then(cache=>cache.addAll(cacheItems))
-    );
-  });
+    )
+  })
   self.addEventListener("fetch", event=>{
+    if (event.request.method == "POST") return
     event.respondWith(
       caches.match(event.request).then(res=> res ? res : fetch(event.request))
-    );
-  });
+    )
+  })
 }
 //----
 // object
