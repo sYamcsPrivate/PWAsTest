@@ -201,6 +201,7 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
 #${p}app {
+  font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -247,6 +248,7 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
   font-size: 0.85rem;
   box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
   border-radius: 3px;
+  -webkit-overflow-scrolling: touch;
 }
 @media (min-width: 540px) {
   .${p}item.${p}viewer {
