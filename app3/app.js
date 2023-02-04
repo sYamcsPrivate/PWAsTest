@@ -74,6 +74,27 @@ const getCacheName=()=>{
   return res
 }
 
+const getCacheKeys=(isClear=false)=>{
+  //console.log("getCacheKeys: start")
+  log(`getCacheKeys(isClear:${isClear}): start`)
+  try {
+    log("cacheName: " + cacheName)
+    caches.open(cacheName).then(cache=>{
+      cache.keys().then(keys=>{
+        keys.forEach((request, index, array)=>{
+          //log(`cache request:${request}, index:${index}, array:${array}`)
+          log(`cache request.url:${request.url}`)
+          if (isClear && request.url.indexOf(cacheKey)==-1) promises.push(cache.delete(request))
+        });
+        log(`getCacheKeys(isClear:${isClear}): end, keys.length:$[keys.length]`)
+      })
+    })
+  } catch(e) {
+    log(`getCacheKeys(isClear:${isClear}): catch(e): ${e}`)
+    return false
+  }
+}
+
 const getCache = async(key) => { //jsonオブジェクトで返る
   try {
     const req = "./" + key
@@ -98,26 +119,6 @@ const setCache = async(key, value) => { //jsonオブジェクトで渡す
     return false
   }
 }
-const getChaheKeys=(isClear=false)=>{
-  //console.log("getChaheKeys: start")
-  log(`getChaheKeys(isClear:${isClear}): start`)
-  try {
-    log("cacheName: " + cacheName)
-    caches.open(cacheName).then(cache=>{
-      cache.keys().then(keys=>{
-        keys.forEach((request, index, array)=>{
-          //log(`cache request:${request}, index:${index}, array:${array}`)
-          log(`cache request.url:${request.url}`)
-          if (isClear && request.url.indexOf(cacheKey)==-1) promises.push(cache.delete(request))
-        });
-      })
-    })
-  } catch(e) {
-    log(`getChaheKeys(isClear:${isClear}): catch(e): ${e}`)
-    return false
-  }
-}
-
 
 let isasync = false
 let fs=[]
@@ -181,7 +182,7 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
-  getChaheKeys()
+  getCacheKeys()
 
   res = confirm("reload?")
   log("reload? res: " + res)
@@ -200,7 +201,7 @@ const f3=()=>{
   res = confirm("clear cache?")
   log("clear cache? res: " + res)
   if (res) {
-    getChaheKeys(true)
+    getCacheKeys(true)
     return
   }
 
