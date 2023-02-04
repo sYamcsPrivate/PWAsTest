@@ -1,4 +1,4 @@
-(()=>{
+(async()=>{
 
 const VERSION = "0.0.0.1";
 
@@ -104,10 +104,15 @@ const setCache = async(key, value) => {
   }
 };
 const setCacheText = async(key, value) => {
+
+/*
   let cacheText = await getCacheText(key);
   if (cacheText === undefined) cacheText = "";
   cacheText = cacheText + value;
   await setCache(key, cacheText);
+*/
+
+  await setCache(key, value);
 }
 
 
@@ -143,6 +148,8 @@ const view=()=>{
   }
 }
 
+varLog = await getCacheText(cacheLogName)
+if (varLog === undefined) varLog = ""
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
@@ -341,22 +348,17 @@ const main=(args={
   cache: false,
   pwa: false,
 })=>{
-  getCacheText(cacheLogName)
-  .then(res=>varLog=res)
-  .catch(()=>varLog="")
-  .finally(()=>{
-    log("main: hide: "+args.hide)
-    log("main: cache: "+args.cache)
-    log("main: pwa: "+args.pwa)
-    if (args.pwa) swreg()
-    addContents()
-    addEvents()
-    if (args.hide) {
-      isHideToggle = true
-      hideToggle()
-    }
-    isCache = args.cache ? true : false
-  })
+  log("main: hide: "+args.hide)
+  log("main: cache: "+args.cache)
+  log("main: pwa: "+args.pwa)
+  if (args.pwa) swreg()
+  addContents()
+  addEvents()
+  if (args.hide) {
+    isHideToggle = true
+    hideToggle()
+  }
+  isCache = args.cache ? true : false
 }
 
 
