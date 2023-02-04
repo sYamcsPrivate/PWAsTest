@@ -84,7 +84,7 @@ const getCacheKeys=(isClear=false)=>{
         keys.forEach((request, index, array)=>{
           //log(`cache request:${request}, index:${index}, array:${array}`)
           log(`cache request.url:${request.url}`)
-          if (isClear && request.url.indexOf(cacheKey)==-1) promises.push(cache.delete(request))
+          if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
         });
         log(`getCacheKeys(isClear:${isClear}): end, keys.length:$[keys.length]`)
       })
