@@ -2,6 +2,9 @@
 
 const VERSION = "0.0.0.1";
 
+const isdoc = self.hasOwnProperty("document")
+log("app.js: start, self.document: " + isdoc)
+
 let CACHENAME = "";
 const getCacheName=()=>{
   let res = "";
@@ -68,7 +71,7 @@ const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
   storelog=storelog+str+"\n"
-  view()
+  if (isdoc) view()
 }
 
 const f1=()=>{
@@ -276,8 +279,6 @@ const main=(args={
 
 //----
 // sw
-const isdoc = self.hasOwnProperty("document")
-log("app.js: start, self.document: " + isdoc)
 if (!isdoc) {
   const CACHE_ITEMS = [
     "./icon.png",
