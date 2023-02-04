@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.9";
+const VERSION = "0.0.0.10";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
