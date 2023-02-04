@@ -102,18 +102,15 @@ const getChaheKeys=(isClear=false)=>{
   //console.log("getChaheKeys: start")
   log(`getChaheKeys(isClear:${isClear}): start`)
   try {
-    caches.keys().then(keys=>{
-      let promises = []
-      keys.forEach(cs=>{
-        if (cs===cacheName) {
-          log("cacheName: " + cs)
-          cs.keys().then(c=>{
-            log("cacheKey: " + c)
-            if (isClear && c!==cacheKey) promises.push(caches.delete(c))
-          })
-        }
+    log("cacheName: " + cacheName)
+    const req = "./" + cacheKey
+    caches.open(cacheName).then(cache=>{
+      cache.keys().then(keys=>{
+        keys.forEach((request, index, array)=>{
+          log(`cache request:${request}, index:${index}, array:${array}`)
+          if (isClear && request!==req) promises.push(cache.delete(request))
+        });
       })
-      log(`getChaheKeys(isClear:${isClear}): end`)
     })
   } catch(e) {
     log(`getChaheKeys(isClear:${isClear}): catch(e): ${e}`)
