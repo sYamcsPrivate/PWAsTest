@@ -82,8 +82,8 @@ const getCacheKeys=(isClear=false)=>{
     caches.keys().then(cache=>{
       cache.forEach(cn=>{
         log(`cacheName:${cn}`)
-        if (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cn.lastIndexOf("/")+1)) {
-          if (isClear && (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cn.lastIndexOf("/")+1))) {
+        if (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1)) {
+          if (isClear && (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cacheName.lastIndexOf("/")+1))) {
             caches.delete(cn)
           }
         }
