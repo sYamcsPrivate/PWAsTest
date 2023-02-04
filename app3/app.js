@@ -200,16 +200,24 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
+
   res = prompt("post(URL)", postURL)
   if (res != null) postURL = res
+  setCacheObj()
   log("post(URL)? res: " + res + ", post(URL): " + postURL)
+
   res = prompt("folder(URL)", folderURL)
   if (res != null) folderURL = res
+  setCacheObj()
   log("folder(URL)? res: " + res + ", folder(URL): " + folderURL)
+
   res = prompt("ID", id)
   if (res != null) id = res
+  setCacheObj()
   log("ID? res: " + res + ", ID: " + id)
+
 }
+
 const hideToggle=()=>{
   log("hideToggle: start")
   const rapper = document.getElementById(`${p}app`);
