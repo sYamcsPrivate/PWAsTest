@@ -86,7 +86,7 @@ const getCacheKeys=(isClear=false)=>{
           log(`cache request.url:${request.url}`)
           if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
         });
-        log(`getCacheKeys(isClear:${isClear}): end, keys.length:$[keys.length]`)
+        log(`getCacheKeys(isClear:${isClear}): end, keys.length:${keys.length}`)
       })
     })
   } catch(e) {
