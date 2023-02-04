@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.12";
+const VERSION = "0.0.0.13";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -78,7 +78,7 @@ const getCacheKeys=(isClear=false)=>{
   //console.log("getCacheKeys: start")
   log(`getCacheKeys(isClear:${isClear}): start`)
   try {
-    log("cacheName(Self): " + cacheName)
+    log("cachename(Self): " + cacheName)
     caches.keys().then(cache=>{
       cache.forEach(cn=>{
         log(`cachename: ${cn}`)
