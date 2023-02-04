@@ -2,9 +2,6 @@
 
 const VERSION = "0.0.0.1";
 
-const isdoc = self.hasOwnProperty("document")
-log("app.js: start, self.document: " + isdoc)
-
 let CACHENAME = "";
 const getCacheName=()=>{
   let res = "";
@@ -73,6 +70,9 @@ const log=(args)=>{
   storelog=storelog+str+"\n"
   if (isdoc) view()
 }
+
+const isdoc = self.hasOwnProperty("document")
+log("app.js: start, self.document: " + isdoc)
 
 const f1=()=>{
   log("f1: start")
