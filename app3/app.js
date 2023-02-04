@@ -54,7 +54,6 @@ const getDateTime=()=>{
   return res;
 }
 
-
 const getCacheName=()=>{
   let res = "";
   if (cacheName == "") {
@@ -74,9 +73,6 @@ const getCacheName=()=>{
   }
   return res;
 }
-
-
-
 
 const getCache = async(key) => { //jsonオブジェクトで返る
   try {
