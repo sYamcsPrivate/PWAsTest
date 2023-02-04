@@ -102,17 +102,16 @@ const getChaheKeys=(isClear=false)=>{
   //console.log("getChaheKeys: start")
   log(`getChaheKeys(isClear:${isClear}): start`)
   try {
-    let res = []
     caches.keys().then(keys=>{
       let promises = []
       keys.forEach(c=>{
         if (c) {
-          res.push(c)
+          log(c)
           if (isClear && c!==cacheKey) promises.push(caches.delete(c))
         }
       })
+      log(`getChaheKeys(isClear:${isClear}): end`)
     })
-    log(`getChaheKeys(isClear:${isClear}): end, count: ${res.length}`)
     return res
   } catch(e) {
     log(`getChaheKeys(isClear:${isClear}): catch(e): ${e}`)
