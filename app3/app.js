@@ -346,22 +346,23 @@ const main=(args={
   cache: false,
   pwa: false,
 })=>{
-  getCacheText(cacheLogName)
-  .then(res=>varLog===undefined?varLog="":varLog=res+varLog)
-  .catch(()=>varLog="")
-  .finalley(()=>{
-    log("main: hide: "+args.hide)
-    log("main: cache: "+args.cache)
-    log("main: pwa: "+args.pwa)
-    if (args.pwa) swreg()
-    addContents()
-    addEvents()
-    if (args.hide) {
-      isHideToggle = true
-      hideToggle()
-    }
-    isCache = args.cache ? true : false
-  })
+  log("main: hide: "+args.hide)
+  log("main: cache: "+args.cache)
+  log("main: pwa: "+args.pwa)
+  if (args.pwa) swreg()
+  addContents()
+  addEvents()
+  if (args.hide) {
+    isHideToggle = true
+    hideToggle()
+  }
+  isCache = args.cache ? true : false
+  if (isCache) {
+    getCacheText(cacheLogName)
+    .then(res=>varLog===undefined?varLog="":varLog=res+varLog)
+    .catch(()=>varLog="")
+    .finally(()=>log(`${cacheLogName}: getter end`))
+  }
 }
 
 
