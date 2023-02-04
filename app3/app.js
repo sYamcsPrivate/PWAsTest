@@ -14,7 +14,7 @@ let isHideToggle = false;
 
 let isCache = false;
 let cacheName = "";
-let cacheKey = "app.js"
+let cacheKey = "app.js.obj"
 let cacheObj = {}
 
 const setCacheObj=()=>{
