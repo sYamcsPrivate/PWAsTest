@@ -1,6 +1,6 @@
 (async()=>{
 
-const VERSION = "0.0.0.1";
+const VERSION = "0.0.0.2";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -134,6 +134,7 @@ const log=(args)=>{
   if (isCache) sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`)
   if (isdoc) view()
 }
+log("version: " + VERSION)
 log("self.document: " + isdoc)
 
 const f1=()=>{
@@ -255,7 +256,7 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
   background: #FFF;
   padding: 2px 10px 0;
   /*font-size: 0.85rem;*/
-  font-size: 0.5rem;
+  font-size: 0.6rem;
   box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
   border-radius: 3px;
   -webkit-overflow-scrolling: touch;
