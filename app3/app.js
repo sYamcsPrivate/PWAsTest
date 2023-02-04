@@ -148,8 +148,6 @@ const view=()=>{
   }
 }
 
-varLog = await getCacheText(cacheLogName)
-if (varLog === undefined) varLog = ""
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
@@ -348,17 +346,22 @@ const main=(args={
   cache: false,
   pwa: false,
 })=>{
-  log("main: hide: "+args.hide)
-  log("main: cache: "+args.cache)
-  log("main: pwa: "+args.pwa)
-  if (args.pwa) swreg()
-  addContents()
-  addEvents()
-  if (args.hide) {
-    isHideToggle = true
-    hideToggle()
-  }
-  isCache = args.cache ? true : false
+  getCacheText(cacheLogName)
+  .then(res=>varLog===undefined?varLog="":varLog=res+varLog)
+  .catch(()=>varLog="")
+  .finalley(()=>{
+    log("main: hide: "+args.hide)
+    log("main: cache: "+args.cache)
+    log("main: pwa: "+args.pwa)
+    if (args.pwa) swreg()
+    addContents()
+    addEvents()
+    if (args.hide) {
+      isHideToggle = true
+      hideToggle()
+    }
+    isCache = args.cache ? true : false
+  })
 }
 
 
