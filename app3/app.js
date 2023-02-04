@@ -151,6 +151,10 @@ const f3=()=>{
   log("f3: start")
   let res
 
+  res = confirm("reload?")
+  log("reload? res: " + res)
+  if (res) location.reload()
+
   res = prompt("post(URL)", varPost)
   if (res != null) varPost = res
   setCacheObj()
@@ -160,10 +164,6 @@ const f3=()=>{
   if (res != null) varId = res
   setCacheObj()
   log("ID? res: " + res + ", ID: " + varId)
-
-  res = confirm("reload?")
-  log("reload? res: " + res)
-  if (res) location.reload()
 
 }
 
