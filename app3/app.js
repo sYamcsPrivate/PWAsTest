@@ -146,21 +146,20 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res
-
   res = confirm("reload?")
   log("reload? res: " + res)
-  if (res) location.reload()
-
-  res = prompt("post(URL)", varPost)
-  if (res != null) varPost = res
-  setCacheObj()
-  log("post(URL)? res: " + res + ", post(URL): " + varPost)
-
-  res = prompt("ID", varId)
-  if (res != null) varId = res
-  setCacheObj()
-  log("ID? res: " + res + ", ID: " + varId)
-
+  if (res) {
+    location.reload()
+  } else {
+    res = prompt("post(URL)", varPost)
+    if (res != null) varPost = res
+    setCacheObj()
+    log("post(URL)? res: " + res + ", post(URL): " + varPost)
+    res = prompt("ID", varId)
+    if (res != null) varId = res
+    setCacheObj()
+    log("ID? res: " + res + ", ID: " + varId)
+  }
 }
 
 const hideToggle=()=>{
