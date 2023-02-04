@@ -375,7 +375,7 @@ const setCacheItems=(args)=>cacheItems=args
 if (!isdoc) {
   self.addEventListener("install", event=>{
     event.waitUntil(
-      caches.open(getCacheName()).then(cache=>cache.addAll(CACHE_ITEMS))
+      caches.open(getCacheName()).then(cache=>cache.addAll(cacheItems))
     );
   });
   self.addEventListener("fetch", event=>{
