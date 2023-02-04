@@ -5,7 +5,7 @@ const VERSION = "0.0.0.1";
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
 
-let varLog = "";
+let varLog = ""
 let varPost = "https://..."
 let varId = "log.txt"
 
@@ -151,6 +151,9 @@ const f3=()=>{
   if (res) {
     location.reload()
   } else {
+    res = confirm("log clear?")
+    if (res) varLog = ""
+    log("log clear? res: " + res)
     res = prompt("post(URL)", varPost)
     if (res != null) varPost = res
     setCacheObj()
@@ -244,7 +247,8 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
   margin: 5px;
   background: #FFF;
   padding: 2px 10px 0;
-  font-size: 0.85rem;
+  /*font-size: 0.85rem;*/
+  font-size: 0.5rem;
   box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
   border-radius: 3px;
   -webkit-overflow-scrolling: touch;
