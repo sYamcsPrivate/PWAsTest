@@ -2,26 +2,20 @@
 
 const VERSION = "0.0.0.1";
 
-let CACHENAME = "";
-const getCacheName=()=>{
-  let res = "";
-  if (CACHENAME == "") {
-    try {
-      let position = window.location.href.indexOf("?");
-      if (position < 0) {
-        res = window.location.href + VERSION;
-      } else {
-        res = window.location.href.substr(0, position) + VERSION;
-      }
-    } catch {
-      res = registration.scope + VERSION;
-    }
-    CACHENAME = res;
-  } else {
-    res = CACHENAME;
-  }
-  return res;
-}
+const p = Math.random().toString(36).substring(2)
+const isdoc = self.hasOwnProperty("document")
+
+let postURL = "https://..."
+let folderURL = "https://..."
+let id = "log.txt"
+
+let isHideToggle = false;
+
+let varLog = "";
+
+let cacheName = "";
+let isCache = false;
+let cacheLogName = "app.js-log"
 
 const getDateTime=()=>{
   let toDoubleDigits=(i)=>{
@@ -52,27 +46,111 @@ const getDateTime=()=>{
   return res;
 }
 
+
+const getCacheName=()=>{
+  let res = "";
+  if (cacheName == "") {
+    try {
+      let position = window.location.href.indexOf("?");
+      if (position < 0) {
+        res = window.location.href + VERSION;
+      } else {
+        res = window.location.href.substr(0, position) + VERSION;
+      }
+    } catch {
+      res = registration.scope + VERSION;
+    }
+    cacheName = res;
+  } else {
+    res = cacheName;
+  }
+  return res;
+}
+
+
+
+
+const getCache = async(key) => {
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(getCacheName());
+    let data = await cache.match(req);
+    return data;
+  } catch(e) {
+    console.log("getCache-catch(e) : " + e);
+    return undefined;
+  }
+}
+const getCacheText = async(key) => {
+  try {
+    let data = await getCache(key);
+    if (data === undefined) return undefined;
+    let text = await data.text();
+    return text;
+  } catch(e) {
+    console.log("getCacheText-catch(e) : " + e);
+    return undefined;
+  }
+}
+const setCache = async(key, value) => {
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(getCacheName());
+    await cache.put(req, new Response(value));
+    return true;
+  } catch(e) {
+    console.log("setCache-catch(e) : " + e);
+    return false;
+  }
+};
+const setCacheText = async(key, value) => {
+  let cacheText = await getCacheText(key);
+  if (cacheText === undefined) cacheText = "";
+  cacheText = cacheText + value;
+  await setCache(key, cacheText);
+}
+
+
+
+
+let isasync = false
+let fs=[]
+const sync=(args)=>{
+  fs.push(args)
+  if (!isasync) {
+    isasync = true
+    const fr=()=>{
+      eval(fs.shift())
+      //.then(r=>console.log(r))
+      .catch(e=>console.log(e))
+      .finally(()=>fs.length<=0?isasync=false:fr())
+    }
+    fr()
+  }
+}
+
+
+
+
 const view=()=>{
   //console.log("view: start")
   //log("view: start")
-  if (document.getElementById("viewer") != null) {
-    const convlog = storelog.split("\n").join("<br>")
-    document.getElementById("viewer").innerHTML=`<span id="text">${convlog}<br></span>`
-    const viewer = document.getElementById("viewer")
+  if (document.getElementById(`${p}viewer`) != null) {
+    const convlog = varLog.split("\\n").join("<br>")
+    document.getElementById(`${p}viewer`).innerHTML=`<span id="${p}contents">${convlog}<br></span>`
+    const viewer = document.getElementById(`${p}viewer`)
     viewer.scrollTop = viewer.scrollHeight
   }
 }
 
-let storelog="";
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  storelog=storelog+str+"\n"
+  varLog=varLog+str+"\\n"
+  if (isCache) sync(`setCacheText("${cacheLogName}", "${varLog}")`)
   if (isdoc) view()
 }
-
-const isdoc = self.hasOwnProperty("document")
-log("app.js: start, self.document: " + isdoc)
+log("self.document: " + isdoc)
 
 const f1=()=>{
   log("f1: start")
@@ -81,41 +159,43 @@ const f2=()=>{
   log("f2: start")
 }
 
-let postURL = "https://..."
-let folderURL = "https://..."
-let fileName = "log.txt"
 const f3=()=>{
   log("f3: start")
   let res
-  res = prompt("ポスト先(URL)", postURL)
+  res = prompt("post(URL)", postURL)
   if (res != null) postURL = res
-  log("postURL? res: " + res + ", postURL: " + postURL)
-  res = prompt("フォルダ(URL)", folderURL)
+  log("post(URL)? res: " + res + ", post(URL): " + postURL)
+  res = prompt("folder(URL)", folderURL)
   if (res != null) folderURL = res
-  log("folderURL? res: " + res + ", folderURL: " + folderURL)
-  res = prompt("ファイル(名称)", fileName)
-  if (res != null) fileName = res
-  log("fileName? res: " + res + ", fileName: " + fileName)
+  log("folder(URL)? res: " + res + ", folder(URL): " + folderURL)
+  res = prompt("ID", id)
+  if (res != null) id = res
+  log("ID? res: " + res + ", ID: " + id)
 }
-
+const hideToggle=()=>{
+  log("hideToggle: start")
+  const rapper = document.getElementById(`${p}app`);
+  rapper.classList.toggle(`${p}notshowtoggle`);
+}
 const addEvents=()=>{
   log("addEvents: start")
-  document.getElementById("menu1").addEventListener("click",()=>{
+  document.getElementById(`${p}menu1`).addEventListener("click",()=>{
     log("menu1: click")
     f1()
   });
-  document.getElementById("menu2").addEventListener("click",()=>{
+  document.getElementById(`${p}menu2`).addEventListener("click",()=>{
     log("menu2: click")
     f2()
   });
-  document.getElementById("menu3").addEventListener("click",()=>{
+  document.getElementById(`${p}menu3`).addEventListener("click",()=>{
     log("menu3: click")
     f3()
   });
-  document.getElementById("toggle").addEventListener("click",()=>{
+  document.getElementById(`${p}toggle`).addEventListener("click",()=>{
     log("toggle: click")
-    const rapper = document.getElementById("menu");
-    rapper.classList.toggle("notshow");
+    const rapper = document.getElementById(`${p}app`);
+    rapper.classList.toggle(`${p}notshow`);
+    if (isHideToggle) hideToggle()
   });
 /*
   document.body.addEventListener("click",()=>{
@@ -124,16 +204,12 @@ const addEvents=()=>{
 */
 }
 
-const hideContents=()=>{
-  log("hideContents: start")
-  document.getElementById("app").style.visibility ="hidden";
-}
 const addContents=()=>{
 log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", `
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
-#menu {
+#${p}app {
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -142,7 +218,7 @@ document.body.insertAdjacentHTML("beforeend", `
   gap: 18px;
   z-index: 2;
 }
-.menuitem {
+.${p}item {
   display: flex;
   align-items: baseline;
   justify-content: flex-end;
@@ -150,7 +226,7 @@ document.body.insertAdjacentHTML("beforeend", `
   transition: all 0.5s ease;
   position: relative;
 }
-.menuitem a {
+.${p}item a {
   background: #b6b6b6;
   width: 58px;
   height: 58px;
@@ -162,8 +238,8 @@ document.body.insertAdjacentHTML("beforeend", `
   position: relative;
   font-size: 1.2rem;
 }
-/*#viewer {*/
-.menuitem.viewer {
+/*#${p}viewer {*/
+.${p}item.${p}viewer {
   position: fixed;
   width: calc(100% - 30px);
   height: calc(100% - 15px);
@@ -182,7 +258,7 @@ document.body.insertAdjacentHTML("beforeend", `
   border-radius: 3px;
 }
 @media (min-width: 540px) {
-  .menuitem.viewer {
+  .${p}item.${p}viewer {
     bottom: 40px;
     right: 100px;
     width: 80%;
@@ -191,13 +267,13 @@ document.body.insertAdjacentHTML("beforeend", `
     max-height: 600px;
   }
 }
-.menuitem.top a:hover, .menuitem.middle a:hover {
-  opacity: 0.8;
-}
-.menuitem a i {
+.${p}item a i {
   color: #FFF;
 }
-.menuitem.bottom a:before {
+.${p}item.${p}menu a:hover {
+  opacity: 0.8;
+}
+.${p}item.${p}toggle a:before {
   content: "\\f068";
   position: absolute;
   z-index: 1;
@@ -208,48 +284,45 @@ document.body.insertAdjacentHTML("beforeend", `
   font-weight: 900;
   color: #FFF;
 }
-
-#menu.notshow {
+#${p}app.${p}notshow {
   gap: 0;
 }
-#menu.notshow > .menuitem.viewer {
+#${p}app.${p}notshow > .${p}item.${p}viewer {
   bottom: 40px;
   right: 40px;
   width: 0px;
   height: 0px;
 }
-#menu.notshow > .menuitem.viewer span {
-  display: none;
-}
-
-#menu.notshow > .menuitem.top, div#menu.notshow > .menuitem.middle {
+#${p}app.${p}notshow > .${p}item.${p}viewer, #${p}app.${p}notshow > .${p}item.${p}menu {
   gap: 0;
   margin-bottom: -58px;
+  opacity: 0;
 }
-#menu.notshow > .menuitem.top a, div#menu.notshow > .menuitem.middle a {
+#${p}app.${p}notshow > .${p}item.${p}menu a {
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 15%), 0 1px 2px 0 rgb(0 0 0 / 22%);
 }
-#menu.notshow .menuitem.bottom a:before {
+#${p}app.${p}notshow > .${p}item.${p}toggle a:before {
   content: "\\f067";
 }
+#${p}app.${p}notshowtoggle > .${p}item.${p}toggle {
+  opacity: 0;
+}
 </style>
-<div id="app">
-  <div id="menu" class="notshow">
-    <div id="viewer" class="menuitem viewer">
-      <span id="text"></span>
-    </div>
-    <div id="menu1" class="menuitem top">
-      <a><i class="fa-solid fa-cloud-arrow-up"></i></a>
-    </div>
-    <div id="menu2" class="menuitem middle">
-      <a><i class="fa-solid fa-cloud-arrow-down"></i></a>
-    </div>
-    <div id="menu3" class="menuitem middle">
-      <a><i class="fa-solid fa-gear"></i></a>
-    </div>
-    <div id="toggle" class="menuitem bottom">
-      <a></a>
-    </div>
+<div id="${p}app" class="${p}notshow">
+  <div id="${p}viewer" class="${p}item ${p}viewer">
+    <span id="${p}contents"></span>
+  </div>
+  <div id="${p}menu1" class="${p}item ${p}menu">
+    <a><i class="fa-solid fa-cloud-arrow-up"></i></a>
+  </div>
+  <div id="${p}menu2" class="${p}item ${p}menu">
+    <a><i class="fa-solid fa-cloud-arrow-down"></i></a>
+  </div>
+  <div id="${p}menu3" class="${p}item ${p}menu">
+    <a><i class="fa-solid fa-gear"></i></a>
+  </div>
+  <div id="${p}toggle" class="${p}item ${p}toggle">
+    <a></a>
   </div>
 </div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
@@ -264,28 +337,41 @@ const swreg=()=>{
 }
 
 const main=(args={
-  pwa: false,
   hide: false,
+  cache: false,
+  pwa: false,
 })=>{
-  log("main: pwa: "+args.pwa)
-  log("main: hide: "+args.hide)
-  if (args.pwa) swreg()
-  addContents()
-  addEvents()
-  if (args.hide) hideContents()
+  getCacheText(cacheLogName)
+  .then(res=>varLog=res)
+  .catch(()=>varLog="")
+  .finally(()=>{
+    log("main: hide: "+args.hide)
+    log("main: cache: "+args.cache)
+    log("main: pwa: "+args.pwa)
+    if (args.pwa) swreg()
+    addContents()
+    addEvents()
+    if (args.hide) {
+      isHideToggle = true
+      hideToggle()
+    }
+    isCache = args.cache ? true : false
+  })
 }
 
 
 
 //----
 // sw
+let cacheItems = [
+  "./icon.png",
+  "./manifest.json",
+  "./app.js",
+  "./",
+];
+const getCacheItems=()=>cacheItems
+const setCacheItems=(args)=>cacheItems=args
 if (!isdoc) {
-  const CACHE_ITEMS = [
-    "./icon.png",
-    "./manifest.json",
-    "./app.js",
-    "./",
-  ];
   self.addEventListener("install", event=>{
     event.waitUntil(
       caches.open(getCacheName()).then(cache=>cache.addAll(CACHE_ITEMS))
@@ -301,6 +387,6 @@ if (!isdoc) {
 // object
 app=Object.assign(main, {
   "log": log,
-  "pwa": swreg,
-  "hide": hideContents,
+  "getCacheItems": getCacheItems,
+  "setCacheItems": setCacheItems,
 })})()

@@ -12,12 +12,23 @@
 <script defer src="./app.js"></script>
 <script>
 window.onload=()=>{
-  //app({pwa: true, hide: true})
+  //app({hide: true, cache: true, pwa: true})
   //app({hide: true})
+  app({cache: true})
+
+/*
+  app.log(app.getCacheItems())
+  app.setCacheItems([
+    "./icon.png",
+    "./manifest.json",
+    "./",
+  ]);
+  app.log(app.getCacheItems())
   app({pwa: true})
+*/
+
   //app()
-  //app.pwa()
-  //app.hide()
+
   app.log("test1 from index.html")
 }
 </script>
