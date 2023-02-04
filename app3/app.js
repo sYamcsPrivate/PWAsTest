@@ -5,17 +5,27 @@ const VERSION = "0.0.0.1";
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
 
+let varLog = "";
 let postURL = "https://..."
 let folderURL = "https://..."
 let id = "log.txt"
 
 let isHideToggle = false;
 
-let varLog = "";
 
-let cacheName = "";
 let isCache = false;
-let cacheLogName = "app.js-log"
+let cacheName = "";
+let cacheKey = "app.js"
+let cacheObj = {}
+
+const setCacheObj=()=>{
+  cacheObj = {
+    "log": varLog,
+    "post": postURL,
+    "folder": folderURL,
+    "id": id,
+  }
+}
 
 const getDateTime=()=>{
   let toDoubleDigits=(i)=>{
@@ -75,12 +85,39 @@ const getCache = async(key) => {
     let req = "./" + key;
     let cache = await caches.open(getCacheName());
     let data = await cache.match(req);
+    if (data === undefined) return undefined;
+    let obj = await data.json();
+    return obj;
+  } catch(e) {
+    console.log("getCache-catch(e) : " + e);
+    return undefined;
+  }
+}
+const setCache = async(key, value) => {
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(getCacheName());
+    await cache.put(req, new Response(JSON.stringify(value)));
+    return true;
+  } catch(e) {
+    console.log("setCache-catch(e) : " + e);
+    return false;
+  }
+};
+
+/*
+const getCache = async(key) => {
+  try {
+    let req = "./" + key;
+    let cache = await caches.open(getCacheName());
+    let data = await cache.match(req);
     return data;
   } catch(e) {
     console.log("getCache-catch(e) : " + e);
     return undefined;
   }
 }
+
 const getCacheText = async(key) => {
   try {
     let data = await getCache(key);
@@ -104,17 +141,12 @@ const setCache = async(key, value) => {
   }
 };
 const setCacheText = async(key, value) => {
-
-/*
   let cacheText = await getCacheText(key);
   if (cacheText === undefined) cacheText = "";
   cacheText = cacheText + value;
   await setCache(key, cacheText);
-*/
-
-  await setCache(key, value);
 }
-
+*/
 
 
 
@@ -152,7 +184,8 @@ const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
   varLog=varLog+str+"\\n"
-  if (isCache) sync(`setCacheText("${cacheLogName}", "${varLog}")`)
+  setCacheObj()
+  if (isCache) sync(`setCache("${cacheKey}", "${cacheObj}")`)
   if (isdoc) view()
 }
 log("self.document: " + isdoc)
@@ -211,7 +244,7 @@ const addEvents=()=>{
 
 const addContents=()=>{
 log("addContents: start")
-document.body.insertAdjacentHTML("beforeend", `
+document.body.insertAdjacentHTML("beforeend", String.raw`
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
 #${p}app {
@@ -279,7 +312,7 @@ document.body.insertAdjacentHTML("beforeend", `
   opacity: 0.8;
 }
 .${p}item.${p}toggle a:before {
-  content: "\\f068";
+  content: "\f068";
   position: absolute;
   z-index: 1;
   top: 50%;
@@ -307,7 +340,7 @@ document.body.insertAdjacentHTML("beforeend", `
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 15%), 0 1px 2px 0 rgb(0 0 0 / 22%);
 }
 #${p}app.${p}notshow > .${p}item.${p}toggle a:before {
-  content: "\\f067";
+  content: "\f067";
 }
 #${p}app.${p}notshowtoggle > .${p}item.${p}toggle {
   opacity: 0;
@@ -358,10 +391,16 @@ const main=(args={
   }
   isCache = args.cache ? true : false
   if (isCache) {
-    getCacheText(cacheLogName)
-    .then(res=>varLog===undefined?varLog="":varLog=res+varLog)
-    .catch(()=>varLog="")
-    .finally(()=>log(`${cacheLogName}: getter end`))
+    getCache(cacheKey)
+    .then(res=>{
+      if (res !== undefined) {
+        varLog = res.log + varLog
+        postURL = res.post
+        folderURL = res.folder
+        id = res.id
+        setCacheObj()
+      }
+    }).finally(()=>log(`${cacheKey}: getter end`))
   }
 }
 
