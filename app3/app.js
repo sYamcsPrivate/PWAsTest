@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.11";
+const VERSION = "0.0.0.12";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -81,7 +81,7 @@ const getCacheKeys=(isClear=false)=>{
     log("cacheName(Self): " + cacheName)
     caches.keys().then(cache=>{
       cache.forEach(cn=>{
-        log(`cacheName:${cn}`)
+        log(`cachename: ${cn}`)
         if (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1)) {
           if (isClear && (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cacheName.lastIndexOf("/")+1))) {
             caches.delete(cn)
@@ -92,8 +92,8 @@ const getCacheKeys=(isClear=false)=>{
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
-          //log(`cache request:${request}, index:${index}, array:${array}`)
-          log(`cache request.url:${request.url}`)
+          //log(`cache request: ${request}, index: ${index}, array: ${array}`)
+          log(`cachekey: ${request.url}`)
           if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
         })
         log(`getCacheKeys(isClear:${isClear}): end, keys.length:${keys.length}`)
@@ -193,8 +193,8 @@ const f3=()=>{
   log("f3: start")
   let res
 
-  res = confirm("view cache keys?")
-  log("view cache keys? res: " + res)
+  res = confirm("view cachekeys?")
+  log("view cachekeys? res: " + res)
   if (res) {
     getCacheKeys()
     return
