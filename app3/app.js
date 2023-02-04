@@ -6,9 +6,8 @@ const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
 
 let varLog = "";
-let postURL = "https://..."
-let folderURL = "https://..."
-let id = "log.txt"
+let varPost = "https://..."
+let varId = "log.txt"
 
 let isHideToggle = false;
 
@@ -21,9 +20,8 @@ let cacheObj = {}
 const setCacheObj=()=>{
   cacheObj = {
     "log": varLog,
-    "post": postURL,
-    "folder": folderURL,
-    "id": id,
+    "post": varPost,
+    "id": varId,
   }
 }
 
@@ -105,51 +103,6 @@ const setCache = async(key, value) => { //jsonオブジェクトで渡す
   }
 };
 
-/*
-const getCache = async(key) => {
-  try {
-    let req = "./" + key;
-    let cache = await caches.open(getCacheName());
-    let data = await cache.match(req);
-    return data;
-  } catch(e) {
-    console.log("getCache-catch(e) : " + e);
-    return undefined;
-  }
-}
-
-const getCacheText = async(key) => {
-  try {
-    let data = await getCache(key);
-    if (data === undefined) return undefined;
-    let text = await data.text();
-    return text;
-  } catch(e) {
-    console.log("getCacheText-catch(e) : " + e);
-    return undefined;
-  }
-}
-const setCache = async(key, value) => {
-  try {
-    let req = "./" + key;
-    let cache = await caches.open(getCacheName());
-    await cache.put(req, new Response(value));
-    return true;
-  } catch(e) {
-    console.log("setCache-catch(e) : " + e);
-    return false;
-  }
-};
-const setCacheText = async(key, value) => {
-  let cacheText = await getCacheText(key);
-  if (cacheText === undefined) cacheText = "";
-  cacheText = cacheText + value;
-  await setCache(key, cacheText);
-}
-*/
-
-
-
 let isasync = false
 let fs=[]
 const sync=(args)=>{
@@ -165,9 +118,6 @@ const sync=(args)=>{
     fr()
   }
 }
-
-
-
 
 const view=()=>{
   //console.log("view: start")
@@ -201,20 +151,19 @@ const f3=()=>{
   log("f3: start")
   let res
 
-  res = prompt("post(URL)", postURL)
-  if (res != null) postURL = res
+  res = prompt("post(URL)", varPost)
+  if (res != null) varPost = res
   setCacheObj()
-  log("post(URL)? res: " + res + ", post(URL): " + postURL)
+  log("post(URL)? res: " + res + ", post(URL): " + varPost)
 
-  res = prompt("folder(URL)", folderURL)
-  if (res != null) folderURL = res
+  res = prompt("ID", varId)
+  if (res != null) varId = res
   setCacheObj()
-  log("folder(URL)? res: " + res + ", folder(URL): " + folderURL)
+  log("ID? res: " + res + ", ID: " + varId)
 
-  res = prompt("ID", id)
-  if (res != null) id = res
-  setCacheObj()
-  log("ID? res: " + res + ", ID: " + id)
+  res = confirm("reload?")
+  log("reload? res: " + res)
+  if (res) location.reload()
 
 }
 
@@ -403,9 +352,8 @@ const main=(args={
     .then(res=>{
       if (res !== undefined) {
         varLog = res.log + varLog
-        postURL = res.post
-        folderURL = res.folder
-        id = res.id
+        varPost = res.post
+        varId = res.id
         setCacheObj()
       }
     }).finally(()=>log(`${cacheKey}: getter end`))
