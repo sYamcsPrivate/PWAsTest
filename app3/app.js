@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.3";
+const VERSION = "0.0.0.4";
 
 const p = Math.random().toString(36).substring(2)
 const isdoc = self.hasOwnProperty("document")
@@ -79,13 +79,18 @@ const getCacheKeys=(isClear=false)=>{
   log(`getCacheKeys(isClear:${isClear}): start`)
   try {
     log("cacheName: " + cacheName)
+    caches.keys().then(cache=>{
+      cache.forEach(cn=>{
+        if (cn!=cacheName) caches.delete(cn)
+      })
+    })
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
           //log(`cache request:${request}, index:${index}, array:${array}`)
           log(`cache request.url:${request.url}`)
           if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
-        });
+        })
         log(`getCacheKeys(isClear:${isClear}): end, keys.length:${keys.length}`)
       })
     })
