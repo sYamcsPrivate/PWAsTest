@@ -80,7 +80,7 @@ const getCacheName=()=>{
 
 
 
-const getCache = async(key) => {
+const getCache = async(key) => { //jsonオブジェクトで返る
   try {
     let req = "./" + key;
     let cache = await caches.open(getCacheName());
@@ -93,11 +93,11 @@ const getCache = async(key) => {
     return undefined;
   }
 }
-const setCache = async(key, value) => {
+const setCache = async(key, value) => { //json文字列で渡す
   try {
     let req = "./" + key;
     let cache = await caches.open(getCacheName());
-    await cache.put(req, new Response(JSON.stringify(value)));
+    await cache.put(req, new Response(value));
     return true;
   } catch(e) {
     console.log("setCache-catch(e) : " + e);
@@ -185,7 +185,7 @@ const log=(args)=>{
   console.log(str)
   varLog=varLog+str+"\\n"
   setCacheObj()
-  if (isCache) sync(`setCache("${cacheKey}", "${cacheObj}")`)
+  if (isCache) sync(`setCache("${cacheKey}", "${JSON.stringify(cacheObj)}")`)
   if (isdoc) view()
 }
 log("self.document: " + isdoc)
