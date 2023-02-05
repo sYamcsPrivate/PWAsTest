@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.20";
+const VERSION = "0.0.0.21";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -13,11 +13,11 @@ let posY = 0;
 
 let varLog = ""
 let varPost = "https://..."
-let varId = "log.txt"
+let varName = "log.txt"
 
 //forTest
 varPost = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-varId = "app.js.cache.data1"
+varName = "app.js.cache.data1"
 
 let cacheName = "";
 let cacheKey = "app.js.cache"
@@ -27,7 +27,7 @@ const setCacheObj=()=>{
   cacheObj = {
     "log": varLog,
     "post": varPost,
-    "id": varId,
+    "name": varName,
   }
 }
 
@@ -244,7 +244,7 @@ const f1=()=>{
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "set",
-    "id": varId,
+    "name": varName,
     "data": cacheObj,
   }
   doPost(varPost, req).catch(err=>{
@@ -259,7 +259,7 @@ const f2=()=>{
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "get",
-    "id": varId,
+    "name": varName,
     "data": {},
   }
   doPost(varPost, req).then(res=>{
@@ -317,12 +317,12 @@ const f3=()=>{
   res = prompt("post(URL)?", varPost)
   if (res != null) varPost = res
   setCacheObj()
-  log("post(URL)? res: " + res + ", post(URL): " + varPost)
+  log("post(URL)? res: " + res + ", URL: " + varPost)
 
-  res = prompt("ID?", varId)
-  if (res != null) varId = res
+  res = prompt("post(Name)?", varName)
+  if (res != null) varName = res
   setCacheObj()
-  log("ID? res: " + res + ", ID: " + varId)
+  log("post(Name)? res: " + res + ", Name: " + varName)
 
   log("f3: end")
 }
@@ -521,7 +521,7 @@ const main=(args={
       if (res !== undefined) {
         varLog = res.log + varLog
         varPost = res.post
-        varId = res.id
+        varName = res.name
         setCacheObj()
       }
     }).finally(()=>log(`${cacheKey}: getter end`))
