@@ -9,6 +9,10 @@ let varLog = ""
 let varPost = "https://..."
 let varId = "log.txt"
 
+//forTest
+varPost = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
+varId = "test5"
+
 let isHideToggle = false;
 
 
@@ -130,6 +134,38 @@ const setCache = async(key, value) => { //jsonオブジェクトで渡す
   }
 }
 
+let respost = {}
+const doPost = async(action, fin, id=varId, data=cacheObj, url=varPost) => { //jsonオブジェクトに生成する変数を渡して、jsonオブジェクトで返る
+  const finfunc = `${fin}`.split("\n").join("")
+  const req = {
+    "action": action,
+    "fin": finfunc,
+    "id": id,
+    "data": data,
+  }
+  //log("doPost: start: " + req)
+  log("doPost: start: " + req.action)
+  await fetch(url, {
+    "method": "post",
+    "Content-Type": "application/json",
+    "body": JSON.stringify(req),
+  })
+  .then(res=>res.json())
+  .then(res=>{
+    respost = Object.assign({},res)
+    if (respost.res == "OK") {
+      log("doPost: success: " + respost.req.action)
+      if (respost.req.fin) {
+        console.log(respost.req)
+        console.log(respost.req.fin)
+        eval(`(${respost.req.fin})()`)
+      }
+    } else {
+      log("doPost: error: " + JSON.stringify(res))
+    }
+  })
+}
+
 let isasync = false
 let fs=[]
 const sync=(args)=>{
@@ -182,11 +218,21 @@ const swdel=()=>{
   .finally(()=>log("swdel: end"))
 }
 
+const setFin=()=>{
+  log("setFin: start")
+}
 const f1=()=>{
   log("f1: start")
+  sync(`doPost("set", "setFin")`)
+}
+
+const getFin=()=>{
+  varLog = respost.data.log
+  log("getFin: start")
 }
 const f2=()=>{
   log("f2: start")
+  sync(`doPost("get", "getFin")`)
 }
 
 const f3=()=>{
@@ -229,12 +275,12 @@ const f3=()=>{
     return
   }
 
-  res = prompt("post(URL)", varPost)
+  res = prompt("post(URL)?", varPost)
   if (res != null) varPost = res
   setCacheObj()
   log("post(URL)? res: " + res + ", post(URL): " + varPost)
 
-  res = prompt("ID", varId)
+  res = prompt("ID?", varId)
   if (res != null) varId = res
   setCacheObj()
   log("ID? res: " + res + ", ID: " + varId)
