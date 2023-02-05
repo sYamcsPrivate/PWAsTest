@@ -1,9 +1,13 @@
 (()=>{
 
-const VERSION = "0.0.0.13";
+const VERSION = "0.0.0.17";
 
-const p = Math.random().toString(36).substring(2)
+//const p = Math.random().toString(36).substring(2)
+const p = ((Math.random()*26)+10).toString(36).replace(".","")
 const isdoc = self.hasOwnProperty("document")
+
+let isHideToggle = false;
+let isCache = false;
 
 let varLog = ""
 let varPost = "https://..."
@@ -11,12 +15,8 @@ let varId = "log.txt"
 
 //forTest
 varPost = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-varId = "test5"
+varId = "app.js.cache.data1"
 
-let isHideToggle = false;
-
-
-let isCache = false;
 let cacheName = "";
 let cacheKey = "app.js.cache"
 let cacheObj = {}
@@ -78,33 +78,60 @@ const getCacheName=()=>{
   return res
 }
 
-const getCacheKeys=(isClear=false)=>{
-  //console.log("getCacheKeys: start")
-  log(`getCacheKeys(isClear:${isClear}): start`)
+const logCacheNames=(isClear=false)=>{
+  log(`logCacheNames(isClear:${isClear}): start`)
   try {
-    log("cachename(Self): " + cacheName)
+    log("cachename(self): " + cacheName)
     caches.keys().then(cache=>{
       cache.forEach(cn=>{
-        log(`cachename: ${cn}`)
-        if (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1)) {
-          if (isClear && (cn.substring(cn.lastIndexOf("/")+1)!=cacheName.substring(cacheName.lastIndexOf("/")+1))) {
-            caches.delete(cn)
-          }
+        if (isClear && (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1))) {
+          caches.delete(cn)
+          log(`cachename: ${cn} -> clear`)
+        } else {
+          log(`cachename: ${cn}`)
         }
       })
-    })
+      log(`logCacheNames(isClear:${isClear}): names.length:${cache.length}`)
+    }).finally(()=>log(`logCacheNames(isClear:${isClear}): end`))
+  } catch(e) {
+    log(`logCacheNames(isClear:${isClear}): catch(e): ${e}`)
+    return false
+  }
+}
+const logCacheKeys=()=>{
+  log("logCacheKeys: start")
+  try {
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
-          //log(`cache request: ${request}, index: ${index}, array: ${array}`)
           log(`cachekey: ${request.url}`)
-          if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
+          //log(`cache request: ${request}, index: ${index}, array: ${array}`)
+          //if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
         })
-        log(`getCacheKeys(isClear:${isClear}): end, keys.length:${keys.length}`)
-      })
+        log(`logCacheKeys: keys.length:${keys.length}`)
+      }).finally(()=>log(`logCacheKeys: end`))
     })
   } catch(e) {
-    log(`getCacheKeys(isClear:${isClear}): catch(e): ${e}`)
+    log("logCacheKeys: catch(e): " + e)
+    return false
+  }
+}
+const logCacheKeyItems=()=>{
+  log(`logCacheKeyItems(${cacheKey}): start`)
+  try {
+    getCache(cacheKey).then(keys=>{
+      if (keys !== undefined) {
+        Object.keys(keys).forEach(key=>{
+          const value = keys.key.length < 10 ? keys.key : keys.key.substring(0, 10) + " ..."
+          log(`${key}: ${value}`)
+        })
+        log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(keys).length}`)
+      } else {
+        log(`logCacheKeyItems(${cacheKey}): items.length:0`)
+      }
+    }).finally(()=>log(`logCacheKeyItems(${cacheKey}): end`))
+  } catch(e) {
+    log(`logCacheKeyItems(${cacheKey}): catch(e): ${e}`)
     return false
   }
 }
@@ -134,36 +161,26 @@ const setCache = async(key, value) => { //jsonオブジェクトで渡す
   }
 }
 
-let respost = {}
-const doPost = async(action, fin, id=varId, data=cacheObj, url=varPost) => { //jsonオブジェクトに生成する変数を渡して、jsonオブジェクトで返る
-  const finfunc = `${fin}`.split("\n").join("")
-  const req = {
-    "action": action,
-    "fin": finfunc,
-    "id": id,
-    "data": data,
-  }
-  //log("doPost: start: " + req)
-  log("doPost: start: " + req.action)
-  await fetch(url, {
-    "method": "post",
-    "Content-Type": "application/json",
-    "body": JSON.stringify(req),
-  })
-  .then(res=>res.json())
-  .then(res=>{
-    respost = Object.assign({},res)
-    if (respost.res == "OK") {
-      log("doPost: success: " + respost.req.action)
-      if (respost.req.fin) {
-        console.log(respost.req)
-        console.log(respost.req.fin)
-        eval(`(${respost.req.fin})()`)
-      }
+const doPost = async(url, obj) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
+  log("doPost: start")
+  try {
+    const strJSON = await fetch(url, {
+      "method": "post",
+      "Content-Type": "application/json",
+      "body": JSON.stringify(obj),
+    })
+    const objJSON = await strJSON.json()
+    if (objJSON.res == "OK") {
+      log("doPost: success")
+      return objJSON
     } else {
       log("doPost: error: " + JSON.stringify(res))
+      throw new Error("response NG")
     }
-  })
+  } catch(e) {
+    console.log("doPost: catch(e): " + e)
+    throw e
+  }
 }
 
 let isasync = false
@@ -218,31 +235,50 @@ const swdel=()=>{
   .finally(()=>log("swdel: end"))
 }
 
-const setFin=()=>{
+const setFin=(args)=>{
   log("setFin: start")
+  document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
+  log("setFin: end")
 }
-const f1=()=>{
-  log("f1: start")
-  sync(`doPost("set", "setFin")`)
+const getFin=(args)=>{
+  log("getFin: start")
+  varLog = args.data.log
+  document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
+  log("getFin: end")
 }
 
-const getFin=()=>{
-  varLog = respost.data.log
-  log("getFin: start")
+const f1=()=>{
+  log("f1: start")
+  document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
+  const req = {
+    "action": "set",
+    "id": varId,
+    "data": cacheObj,
+  }
+  doPost(varPost, req).then(res=>setFin(res))
+  log("f1: end")
 }
 const f2=()=>{
   log("f2: start")
-  sync(`doPost("get", "getFin")`)
+  document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
+  const req = {
+    "action": "get",
+    "id": varId,
+    "data": {},
+  }
+  doPost(varPost, req).then(res=>getFin(res))
+  log("f2: end")
 }
-
 const f3=()=>{
   log("f3: start")
   let res
 
-  res = confirm("view cachekeys?")
-  log("view cachekeys? res: " + res)
+  res = confirm("view cache info?")
+  log("view cache info? res: " + res)
   if (res) {
-    getCacheKeys()
+    logCacheNames()
+    logCacheKeys()
+    logCacheKeyItems()
     return
   }
 
@@ -263,7 +299,7 @@ const f3=()=>{
   res = confirm("clear cache?")
   log("clear cache? res: " + res)
   if (res) {
-    getCacheKeys(true)
+    logCacheNames(true)
     return
   }
 
@@ -285,6 +321,7 @@ const f3=()=>{
   setCacheObj()
   log("ID? res: " + res + ", ID: " + varId)
 
+  log("f3: end")
 }
 
 const hideToggle=()=>{
@@ -509,4 +546,8 @@ app=Object.assign(main, {
   "log": log,
   "getCacheItems": getCacheItems,
   "setCacheItems": setCacheItems,
+  "getCache": getCache, //async関数のため自前でpromiseを受け取る
+  "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
+  "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
+  "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
 })})()
