@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.18";
+const VERSION = "0.0.0.19";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -180,7 +180,7 @@ const doPost = async(url, obj) => { //jsonオブジェクトを渡して、json�
       throw new Error("response NG")
     }
   } catch(e) {
-    console.log("doPost: catch(e): " + e)
+    log("doPost: catch(e): " + e)
     throw e
   }
 }
