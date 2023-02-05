@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.19";
+const VERSION = "0.0.0.20";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -237,18 +237,6 @@ const swdel=()=>{
   .finally(()=>log("swdel: end"))
 }
 
-const setFin=(args)=>{
-  log("setFin: start")
-  document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
-  log("setFin: end")
-}
-const getFin=(args)=>{
-  log("getFin: start")
-  varLog = args.data.log
-  document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
-  log("getFin: end")
-}
-
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
@@ -257,8 +245,12 @@ const f1=()=>{
     "id": varId,
     "data": cacheObj,
   }
-  doPost(varPost, req).then(res=>setFin(res))
-  log("f1: end")
+  doPost(varPost, req).catch(err=>{
+    alert("Failed to send. please try again")
+  }).finally(()=>{
+    document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
+    log("f1: end")
+  })
 }
 const f2=()=>{
   log("f2: start")
@@ -268,8 +260,14 @@ const f2=()=>{
     "id": varId,
     "data": {},
   }
-  doPost(varPost, req).then(res=>getFin(res))
-  log("f2: end")
+  doPost(varPost, req).then(res=>{
+    varLog=res.data.log
+  }).catch(err=>{
+    alert("Failed to receive. please try again")
+  }).finally(()=>{
+    document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
+    log("f2: end")
+  })
 }
 const f3=()=>{
   log("f3: start")
