@@ -123,8 +123,8 @@ const logCacheKeyItems=()=>{
       if (res !== undefined) {
         Object.keys(res).forEach(key=>{
           log("key: " + key)
-          log("typeof(res.key): " + typeof(res.key))
-          const value = res.key.length < 10 ? res.key : res.key.substring(0, 10) + " ..."
+          log("typeof(res[key]): " + typeof(res[key]))
+          const value = res[key].length < 10 ? res[key] : res[key].substring(0, 10) + " ..."
           log(`${key}: ${value}`)
         })
         log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(res).length}`)
