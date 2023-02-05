@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.17";
+const VERSION = "0.0.0.18";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -122,9 +122,9 @@ const logCacheKeyItems=()=>{
     getCache(cacheKey).then(res=>{
       if (res !== undefined) {
         Object.keys(res).forEach(key=>{
-          log("key: " + key)
-          log("typeof(res[key]): " + typeof(res[key]))
-          const value = res[key].length < 10 ? res[key] : res[key].substring(0, 10) + " ..."
+          //log("key: " + key)
+          //log("typeof(res[key]): " + typeof(res[key]))
+          const value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
           log(`${key}: ${value}`)
         })
         log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(res).length}`)
