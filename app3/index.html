@@ -80,19 +80,22 @@ window.onload=()=>{
     </div>
   `)
 
-  document.getElementById("touch").addEventListener("click",()=>{
-    varCount = varCount + 1
+  const view=()=>{
     app.log("touch count: " + varCount)
     document.getElementById("show").innerHTML=varCount
-
     cacheObj.count = varCount
     app.sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`)
+  }
 
+  document.getElementById("touch").addEventListener("click",()=>{
+    varCount = varCount + 1
+    view()
   });
 
   app.getCache(cacheKey).then(res=>{
     if (res !== undefined) {
       varCount = res.count
+      view()
     }
   }).finally(()=>app.log(`${cacheKey}: getter end`))
 
