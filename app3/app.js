@@ -308,6 +308,7 @@ const f3=()=>{
   if (res) {
     varLog = ""
     setCacheObj()
+    log("clear log? res: true")
     return
   }
 
