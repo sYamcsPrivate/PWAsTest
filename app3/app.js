@@ -122,6 +122,7 @@ const logCacheKeyItems=()=>{
     getCache(cacheKey).then(keys=>{
       if (keys !== undefined) {
         Object.keys(keys).forEach(key=>{
+          log(typeof(keys.key))
           const value = keys.key.length < 10 ? keys.key : keys.key.substring(0, 10) + " ..."
           log(`${key}: ${value}`)
         })
