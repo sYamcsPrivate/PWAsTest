@@ -119,14 +119,15 @@ const logCacheKeys=()=>{
 const logCacheKeyItems=()=>{
   log(`logCacheKeyItems(${cacheKey}): start`)
   try {
-    getCache(cacheKey).then(keys=>{
-      if (keys !== undefined) {
-        Object.keys(keys).forEach(key=>{
-          log(typeof(keys.key))
-          const value = keys.key.length < 10 ? keys.key : keys.key.substring(0, 10) + " ..."
+    getCache(cacheKey).then(res=>{
+      if (res !== undefined) {
+        Object.keys(res).forEach(key=>{
+          log("key: " + key)
+          log("typeof(res.key): " + typeof(res.key))
+          const value = res.key.length < 10 ? res.key : res.key.substring(0, 10) + " ..."
           log(`${key}: ${value}`)
         })
-        log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(keys).length}`)
+        log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(res).length}`)
       } else {
         log(`logCacheKeyItems(${cacheKey}): items.length:0`)
       }
