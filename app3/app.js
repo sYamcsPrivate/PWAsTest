@@ -8,6 +8,8 @@ const isdoc = self.hasOwnProperty("document")
 
 let isHideToggle = false;
 let isCache = false;
+let posX = 0;
+let posY = 0;
 
 let varLog = ""
 let varPost = "https://..."
@@ -373,6 +375,7 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
   flex-direction: column;
   gap: 18px;
   z-index: 2;
+  transition: all 0.5s ease;
 }
 .${p}item {
   display: flex;
@@ -462,6 +465,10 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 #${p}app.${p}notshow > .${p}item.${p}toggle a:before {
   content: "\f067";
 }
+#${p}app.${p}notshow {
+  bottom: calc(30px - ${posX}px);
+  right: calc(30px - ${posY}px);
+}
 #${p}app.${p}notshowtoggle > .${p}item.${p}toggle {
   opacity: 0;
 }
@@ -489,13 +496,19 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 
 const main=(args={
   hide: false,
+  posx: 0,
+  posy: 0,
   cache: false,
   pwa: false,
 })=>{
   log("main: hide: "+args.hide)
+  log("main: posx: "+args.posx)
+  log("main: posy: "+args.posy)
   log("main: cache: "+args.cache)
   log("main: pwa: "+args.pwa)
   if (args.pwa) swreg()
+  posX = args.posx ? args.posx : args.hide ? 65 : 0
+  posY = args.posy ? args.posy : args.hide ? 65 : 0
   addContents()
   addEvents()
   if (args.hide) {
@@ -504,8 +517,7 @@ const main=(args={
   }
   isCache = args.cache ? true : false
   if (isCache) {
-    getCache(cacheKey)
-    .then(res=>{
+    getCache(cacheKey).then(res=>{
       if (res !== undefined) {
         varLog = res.log + varLog
         varPost = res.post

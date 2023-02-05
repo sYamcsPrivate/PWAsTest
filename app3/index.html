@@ -12,11 +12,15 @@
 <script defer src="./app.js"></script>
 <script>
 window.onload=()=>{
-  //app({hide: true, cache: true, pwa: true})
+  app({hide: true, cache: true, pwa: true})
+  //app({cache: true, pwa: true})
   //app({hide: true})
-  //app({cache: true})
+  //app({posx:-65, posy:-65})
+  //app({posx:-65, posy:-65, hide: true})
+  //app()
 
 /*
+  app({cache: true})
   app.log(app.getCacheItems())
   app.setCacheItems([
     "./icon.png",
@@ -27,10 +31,75 @@ window.onload=()=>{
   app({pwa: true})
 */
 
-  //app()
-  app({cache: true, pwa: true})
 
-  app.log("test1 from index.html")
+
+  app.log("index.html: start")
+
+  const cacheKey = "index.html.cache"
+
+  let varCount = 0
+
+  let cacheObj = {
+    "count": varCount
+  }
+
+  
+  document.body.insertAdjacentHTML("beforeend", String.raw`
+    <style>
+      #pos {
+        font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+        text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        font-size: 7rem;
+        position: fixed;
+        top: 10%;
+        left: 10%;
+      }
+      .area {
+        width: 80vw;
+        height: 40vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #show {
+        background: #66bbbb;
+      }
+      #touch {
+        background: #eeee66;
+      }
+      #touch img {
+        width: 30%;
+        min-width: 256px;
+        height: auto;
+      }
+    </style>
+    <div id="pos">
+      <div id="show" class="area">0</div>
+      <div id="touch" class="area"><img src="./icon.png"></div>
+    </div>
+  `)
+
+  document.getElementById("touch").addEventListener("click",()=>{
+    varCount = varCount + 1
+    app.log("touch count: " + varCount)
+    document.getElementById("show").innerHTML=varCount
+
+    cacheObj.count = varCount
+    app.sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`)
+
+  });
+
+  app.getCache(cacheKey).then(res=>{
+    if (res !== undefined) {
+      varCount = res.count
+    }
+  }).finally(()=>app.log(`${cacheKey}: getter end`))
+
+  app.log("index.html: end")
+
+
+
 }
 </script>
 </html>
