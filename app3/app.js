@@ -178,7 +178,7 @@ const doPost = async(url, obj) => { //jsonオブジェクトを渡して、json�
       log("doPost: success")
       return objJSON
     } else {
-      log("doPost: error: " + JSON.stringify(res))
+      log("doPost: error: " + JSON.stringify(objJSON))
       throw new Error("response NG")
     }
   } catch(e) {
