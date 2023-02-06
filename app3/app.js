@@ -21,14 +21,31 @@ varName = "app.js.cache.data1"
 
 let cacheName = "";
 let cacheKey = "app.js.cache"
-let cacheObj = {}
 
-const setCacheObj=()=>{
-  cacheObj = {
-    "log": varLog,
-    "post": varPost,
-    "name": varName,
+let cacheObj = {}
+const setCacheObj=(args)=>{
+
+  if (args===undefined || args.log===undefined) {
+    cacheObj.log = varLog
+  } else {
+    cacheObj.log = args.log
+    varLog = args.log
   }
+
+  if (args===undefined || args.post===undefined) {
+    cacheObj.post = varPost
+  } else {
+    cacheObj.post = args.post
+    varPost = args.post
+  }
+
+  if (args===undefined || args.name===undefined) {
+    cacheObj.name = varName
+  } else {
+    cacheObj.name = args.name
+    varName = args.name
+  }
+
 }
 
 const getDateTime=()=>{
@@ -275,54 +292,46 @@ const f3=()=>{
   log("f3: start")
   let res
 
-  res = confirm("view cache info?")
-  log("view cache info? res: " + res)
-  if (res) {
-    logCacheNames()
-    logCacheKeys()
-    logCacheKeyItems()
-    return
-  }
+  log(`<button onClick='(()=>{
+    app.log("click: view cache info")
+    app.logCacheNames()
+    app.logCacheKeys()
+    app.logCacheKeyItems()
+  })()'>view cache info</button>`)
 
-  res = confirm("reload?")
-  log("reload? res: " + res)
-  if (res) {
-    location.reload(true) //true:サーバから再読込/false:キャッシュから再読込
-    return
-  }
+  log(`<button onClick='(()=>{ //true:サーバから再読込/false:キャッシュから再読込
+    app.log("click: reload")
+    location.reload(true)
+  })()'>reload</button>`)
 
-  res = confirm("clear service worker?")
-  log("clear service worker? res: " + res)
-  if (res) {
-    swdel()
-    return
-  }
+  log(`<button onClick='(()=>{
+    app.log("click: clear service worker")
+    app.swdel()
+  })()'>clear service worker</button>`)
 
-  res = confirm("clear cache?")
-  log("clear cache? res: " + res)
-  if (res) {
-    logCacheNames(true)
-    return
-  }
+  log(`<button onClick='(()=>{
+    app.log("click: clear cache")
+    app.logCacheNames(true)
+  })()'>clear cache</button>`)
 
-  res = confirm("clear log?")
-  log("clear log? res: " + res)
-  if (res) {
-    varLog = ""
-    setCacheObj()
-    log("clear log? res: true")
-    return
-  }
+  log(`<button onClick='(()=>{
+    app.setCacheObj({"log":""})
+    app.log("click: clear log")
+  })()'>clear log</button>`)
 
-  res = prompt("post(URL)?", varPost)
-  if (res != null) varPost = res
-  setCacheObj()
-  log("post(URL)? res: " + res + ", URL: " + varPost)
+  log(`<button onClick='(()=>{
+    app.log("click: setting post(URL)")
+    res = prompt("post(URL)?", app.cacheObj.post)
+    if (res != null) app.setCacheObj({"post":res})
+    app.log("setting post(URL): " + app.cacheObj.post)
+  })()'>setting post(URL)</button> ${cacheObj.post}`)
 
-  res = prompt("post(Name)?", varName)
-  if (res != null) varName = res
-  setCacheObj()
-  log("post(Name)? res: " + res + ", Name: " + varName)
+  log(`<button onClick='(()=>{
+    app.log("click: setting post(Name)")
+    res = prompt("post(Name)?", app.cacheObj.name)
+    if (res != null) app.setCacheObj({"name":res})
+    app.log("setting post(Name): " + app.cacheObj.name)
+  })()'>setting post(Name)</button> ${cacheObj.name}`)
 
   log("f3: end")
 }
@@ -427,6 +436,11 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
     max-width: 400px;
     max-height: 600px;
   }
+}
+.${p}item.${p}viewer button{
+  background: #FFF;
+  font-size: 0.5rem;
+  cursor: pointer;
 }
 .${p}item a i {
   color: #FFF;
@@ -556,11 +570,22 @@ if (!isdoc) {
 //----
 // object
 app=Object.assign(main, {
-  "log": log,
+  "swdel": swdel,
   "getCacheItems": getCacheItems,
   "setCacheItems": setCacheItems,
   "getCache": getCache, //async関数のため自前でpromiseを受け取る
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
+
+//導入予定
+//getCachePost
+//setCachePost
+
+  "logCacheNames": logCacheNames,
+  "logCacheKeys": logCacheKeys,
+  "logCacheKeyItems": logCacheKeyItems,
+  "setCacheObj": setCacheObj,
+  "cacheObj": cacheObj,
+  "log": log,
 })})()
