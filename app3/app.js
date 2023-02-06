@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.22";
+const VERSION = "0.0.0.23";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -439,7 +439,9 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 }
 .${p}item.${p}viewer button{
   background: #FFF;
-  font-size: 0.5rem;
+  font-size: 0.6rem;
+  box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
+  border-radius: 3px;
   cursor: pointer;
 }
 .${p}item a i {
