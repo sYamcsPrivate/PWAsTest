@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.29";
+const VERSION = "0.0.0.30";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -63,26 +63,29 @@ const getDateTime=()=>{
 const getPrefix=()=>{
   if (isdoc) {
     const href = window.location.href
-    if (href.slice(-1)=="/") {
-      return href
-    } else if (href.slice(-4)=="html") {
-      return href.substr(0, href.lastIndexOf("/")+1)
+    const pos = href.lastIndexOf("?")
+    if (pos<0) {
+      if (href.slice(-1)=="/") {
+        return href
+      } else if (href.slice(-4)=="html") {
+        return href.substr(0, href.lastIndexOf("/")+1)
+      } else {
+        return href + "/"
+      }
     } else {
-      return href + "/"
+      return href.substr(0, pos)
     }
   } else {
     return undefined
   }
 }
 if (isdoc) {
-  //localName = getPrefix().substring(window.location.href.indexOf("://")+3)
-  localName = ""
+  localName = getPrefix()
   cacheName = getPrefix() + VERSION
 }
 
 const getLocalKeyName=(key)=>{
-  //localName = (localName == "") ? getPrefix().substring(window.location.href.indexOf("://")+3) : localName
-  localName = ""
+  localName = getPrefix()
   return localName + key
 }
 
