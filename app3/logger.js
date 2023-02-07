@@ -6,14 +6,14 @@ const VERSION = "0.0.0.29";
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
 const isdoc = self.hasOwnProperty("document")
 
+let localName = ""
+let cacheName = "";
+
 let isHideToggle = false;
 let isLocal = false;
 let isCache = false;
 let posX = 0;
 let posY = 0;
-
-let cacheName = "";
-let localName = "";
 
 let recKey = "logger.js.rec"
 let recObj = {
@@ -74,9 +74,13 @@ const getPrefix=()=>{
     return undefined
   }
 }
+if (isdoc) {
+  localName = getPrefix().substring(window.location.href.indexOf("://")+3)
+  cacheName = getPrefix() + VERSION
+}
 
 const getLocalKeyName=(key)=>{
-  localName = (localName == "") ? getPrefix() : localName
+  localName = (localName == "") ? getPrefix().substring(window.location.href.indexOf("://")+3) : localName
   return localName + key
 }
 
