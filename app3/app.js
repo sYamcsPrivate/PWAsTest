@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.24";
+const VERSION = "0.0.0.25";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -11,41 +11,21 @@ let isCache = false;
 let posX = 0;
 let posY = 0;
 
-let varLog = ""
-let varPost = "https://..."
-let varName = "log.txt"
-
-//forTest
-varPost = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-varName = "app.js.cache.data1"
-
 let cacheName = "";
 let cacheKey = "app.js.cache"
+let cacheObj = {
+  "log": "",
+  "post": "https://...",
+  "name": cacheKey + ".data",
+}
 
-let cacheObj = {}
+//forTest
+cacheObj.post = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
+
 const setCacheObj=(args)=>{
-
-  if (args===undefined || args.log===undefined) {
-    cacheObj.log = varLog
-  } else {
-    cacheObj.log = args.log
-    varLog = args.log
-  }
-
-  if (args===undefined || args.post===undefined) {
-    cacheObj.post = varPost
-  } else {
-    cacheObj.post = args.post
-    varPost = args.post
-  }
-
-  if (args===undefined || args.name===undefined) {
-    cacheObj.name = varName
-  } else {
-    cacheObj.name = args.name
-    varName = args.name
-  }
-
+  if (args!==undefined && args.log!==undefined) cacheObj.log = args.log
+  if (args!==undefined && args.post!==undefined) cacheObj.post = args.post
+  if (args!==undefined && args.name!==undefined) cacheObj.name = args.name
 }
 
 const getDateTime=()=>{
@@ -157,7 +137,7 @@ const logCacheKeyItems=()=>{
   }
 }
 
-const getCache = async(key) => { //jsonオブジェクトで返る
+const getCache = async(key) => { //文字列を渡して、jsonオブジェクトで返る
   try {
     const req = "./" + key
     const cache = await caches.open(getCacheName())
@@ -170,7 +150,7 @@ const getCache = async(key) => { //jsonオブジェクトで返る
     return undefined
   }
 }
-const setCache = async(key, value) => { //jsonオブジェクトで渡す
+const setCache = async(key, value) => { //jsonオブジェクトを渡す
   try {
     const req = "./" + key
     const cache = await caches.open(getCacheName())
@@ -182,21 +162,21 @@ const setCache = async(key, value) => { //jsonオブジェクトで渡す
   }
 }
 
-const doPost = async(url, obj) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
+const doPost = async(url, req) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
   log("doPost: start")
   try {
     const strJSON = await fetch(url, {
       "method": "post",
       "Content-Type": "application/json",
-      "body": JSON.stringify(obj),
+      "body": JSON.stringify(req),
     })
     const objJSON = await strJSON.json()
     if (objJSON.res == "OK") {
       log("doPost: success")
-      return objJSON
+      return objJSON.data
     } else {
       log("doPost: error: " + JSON.stringify(objJSON))
-      throw new Error("response NG")
+      throw "response NG"
     }
   } catch(e) {
     log("doPost: catch(e): " + e)
@@ -224,7 +204,7 @@ const view=()=>{
   //console.log("view: start")
   //log("view: start")
   if (document.getElementById(`${p}viewer`) != null) {
-    const convlog = varLog.split("\\n").join("<br>")
+    const convlog = cacheObj.log.split("\\n").join("<br>")
     document.getElementById(`${p}viewer`).innerHTML=`<span id="${p}contents">${convlog}<br></span>`
     const viewer = document.getElementById(`${p}viewer`)
     viewer.scrollTop = viewer.scrollHeight
@@ -234,8 +214,7 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  varLog=varLog+str+"\\n"
-  setCacheObj()
+  cacheObj.log=cacheObj.log+str+"\\n"
   if (isCache) sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`)
   if (isdoc) view()
 }
@@ -261,10 +240,10 @@ const f1=()=>{
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "set",
-    "name": varName,
+    "name": cacheObj.name,
     "data": cacheObj,
   }
-  doPost(varPost, req).catch(err=>{
+  doPost(cacheObj.post, req).catch(err=>{
     alert("Failed to send. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
@@ -276,12 +255,10 @@ const f2=()=>{
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "get",
-    "name": varName,
+    "name": cacheObj.name,
     "data": {},
   }
-  doPost(varPost, req).then(res=>{
-    varLog=res.data.log
-  }).catch(err=>{
+  doPost(cacheObj.post, req).then(res=>cacheObj=(res)?res:cacheObj).catch(err=>{
     alert("Failed to receive. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
@@ -532,16 +509,7 @@ const main=(args={
     hideToggle()
   }
   isCache = args.cache ? true : false
-  if (isCache) {
-    getCache(cacheKey).then(res=>{
-      if (res !== undefined) {
-        varLog = res.log + varLog
-        varPost = res.post
-        varName = res.name
-        setCacheObj()
-      }
-    }).finally(()=>log(`${cacheKey}: getter end`))
-  }
+  if (isCache) getCache(cacheKey).then(res=>cacheObj=(res)?res:cacheObj).finally(()=>log(`${cacheKey}: getter end`))
 }
 
 
@@ -579,11 +547,6 @@ app=Object.assign(main, {
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
-
-//導入予定
-//getCachePost
-//setCachePost
-
   "logCacheNames": logCacheNames,
   "logCacheKeys": logCacheKeys,
   "logCacheKeyItems": logCacheKeyItems,
