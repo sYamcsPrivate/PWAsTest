@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.28";
+const VERSION = "0.0.0.29";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -145,11 +145,18 @@ const logLocalKeyItems=()=>{
 }
 
 const getCacheName=()=>{
-  try {
-    return (cacheName == "") ? getPrefix() + VERSION : cacheName
-  } catch {
-    return registration.scope + VERSION
+  let res
+  if (cacheName == "") {
+    res = getPrefix()
+    if (res === undefined || res === null) {
+      res = registration.scope + VERSION
+    } else {
+      res = res + VERSION
+    }
+  } else {
+    res = cacheName
   }
+  return res
 }
 
 const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで返る
@@ -296,6 +303,7 @@ const log=(args)=>{
   if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
   if (isdoc) view()
 }
+
 log("version: " + VERSION)
 log("self.document: " + isdoc)
 
@@ -670,12 +678,10 @@ logger=Object.assign(main, {
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
-
   "viewInfo": viewInfo,
   "delsw": delsw,
   "delCache": delCache,
   "delLocal": delLocal,
-
   "setRecObj": setRecObj,
   "recObj": recObj,
   "log": log,
