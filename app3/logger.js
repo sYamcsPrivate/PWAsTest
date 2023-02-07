@@ -1,31 +1,34 @@
 (()=>{
 
-const VERSION = "0.0.0.26";
+const VERSION = "0.0.0.28";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
 const isdoc = self.hasOwnProperty("document")
 
 let isHideToggle = false;
+let isLocal = false;
 let isCache = false;
 let posX = 0;
 let posY = 0;
 
 let cacheName = "";
-let cacheKey = "app.js.cache"
-let cacheObj = {
+let localName = "";
+
+let recKey = "logger.js.rec"
+let recObj = {
   "log": "",
   "post": "https://...",
-  "name": cacheKey + ".data",
+  "name": recKey + ".data",
 }
 
 //forTest
-cacheObj.post = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
+recObj.post = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
 
-const setCacheObj=(args)=>{
-  if (args!==undefined && args.log!==undefined) cacheObj.log = args.log
-  if (args!==undefined && args.post!==undefined) cacheObj.post = args.post
-  if (args!==undefined && args.name!==undefined) cacheObj.name = args.name
+const setRecObj=(args)=>{
+  if (args!==undefined && args.log!==undefined) recObj.log = args.log
+  if (args!==undefined && args.post!==undefined) recObj.post = args.post
+  if (args!==undefined && args.name!==undefined) recObj.name = args.name
 }
 
 const getDateTime=()=>{
@@ -57,24 +60,121 @@ const getDateTime=()=>{
   return res
 }
 
-const getCacheName=()=>{
-  let res = "";
-  if (cacheName == "") {
-    try {
-      const position = window.location.href.indexOf("?")
-      if (position < 0) {
-        res = window.location.href + VERSION
-      } else {
-        res = window.location.href.substr(0, position) + VERSION
-      }
-    } catch {
-      res = registration.scope + VERSION
-    }
-    cacheName = res
+const getPrefix=()=>{
+  const href = window.location.href
+  if (href.slice(-1)=="/") {
+    return href
+  } else if (href.slice(-4)=="html") {
+    return href.substr(0, href.lastIndexOf("/")+1)
   } else {
-    res = cacheName
+    return href + "/"
   }
-  return res
+}
+
+const getLocalKeyName=(key)=>{
+  localName = (localName == "") ? getPrefix() : localName
+  return localName + key
+}
+
+const getLocal=async(key)=>{ //文字列を渡して、jsonオブジェクトで返る
+  try {
+    return JSON.parse(localStorage.getItem(getLocalKeyName(key)))
+  } catch(e) {
+    console.log("getLocal: catch(e): " + e)
+    return undefined
+  }
+}
+const setLocal=async(key, value)=>{ //jsonオブジェクトを渡す
+  try {
+    localStorage.setItem(getLocalKeyName(key), JSON.stringify(value))
+    return true
+  } catch(e) {
+    console.log("setLocal: catch(e): " + e)
+    return false
+  }
+}
+const delLocal=async(key)=>{ //文字列を渡す
+  log(`delLocal(${key}): start`)
+  try {
+    if (getLocal(key)) {
+      localStorage.removeItem(getLocalKeyName(key))
+      log(`localname: ${key} -> clear`)
+    }
+    log(`delLocal(${key}): end`)
+    return true
+  } catch(e) {
+    console.log("delLocal: catch(e): " + e)
+    return false
+  }
+}
+const logLocalKeys=()=>{
+  log("logLocalKeys: start")
+  try {
+    Object.keys(localStorage).forEach(key=>{
+      log(`key: ${key}`)
+    })
+    log(`logLocalKeys: local.length:${localStorage.length}`)
+    log(`logLocalKeys: end`)
+  } catch(e) {
+    log("logLocalKeys: catch(e): " + e)
+    return false
+  }
+}
+const logLocalKeyItems=()=>{
+  log(`logLocalKeyItems(${recKey}): start`)
+  try {
+    getLocal(recKey).then(res=>{
+      if (res !== undefined && res !== null) {
+        Object.keys(res).forEach(key=>{
+          //log("key: " + key)
+          //log("typeof(res[key]): " + typeof(res[key]))
+          let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
+          value = value.split("\\n").join(" ")
+          value = value.split("<br>").join(" ")
+          log(`${key}: ${value}`)
+        })
+        log(`logLocalKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
+      } else {
+        log(`logLocalKeyItems(${recKey}): items.length:0`)
+      }
+    }).finally(()=>log(`logLocalKeyItems(${recKey}): end`))
+  } catch(e) {
+    log(`logLocalKeyItems(${recKey}): catch(e): ${e}`)
+    return false
+  }
+}
+
+const getCacheName=()=>{
+  try {
+    return (cacheName == "") ? getPrefix() + VERSION : cacheName
+  } catch {
+    return registration.scope + VERSION
+  }
+}
+
+const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで返る
+  try {
+    const req = "./" + key
+    const cache = await caches.open(getCacheName())
+    const data = await cache.match(req)
+    if (data === undefined) return undefined
+    const obj = await data.json()
+    return obj
+  } catch(e) {
+    console.log("getCache: catch(e): " + e)
+    return undefined
+  }
+}
+const setCache=async(key, value)=>{ //jsonオブジェクトを渡す
+  try {
+    const req = "./" + key
+    const cache = await caches.open(getCacheName())
+    await cache.put(req, new Response(JSON.stringify(value)))
+    return true
+  } catch(e) {
+    console.log("setCache: catch(e): " + e)
+    return false
+  }
 }
 
 const logCacheNames=(isClear=false)=>{
@@ -103,9 +203,9 @@ const logCacheKeys=()=>{
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
-          log(`cachekey: ${request.url}`)
+          log(`recKey: ${request.url}`)
           //log(`cache request: ${request}, index: ${index}, array: ${array}`)
-          //if (isClear && request.url.indexOf(cacheKey)==-1) cache.delete(request)
+          //if (isClear && request.url.indexOf(recKey)==-1) cache.delete(request)
         })
         log(`logCacheKeys: keys.length:${keys.length}`)
       }).finally(()=>log(`logCacheKeys: end`))
@@ -116,48 +216,25 @@ const logCacheKeys=()=>{
   }
 }
 const logCacheKeyItems=()=>{
-  log(`logCacheKeyItems(${cacheKey}): start`)
+  log(`logCacheKeyItems(${recKey}): start`)
   try {
-    getCache(cacheKey).then(res=>{
-      if (res !== undefined) {
+    getCache(recKey).then(res=>{
+      if (res !== undefined && res !== null) {
         Object.keys(res).forEach(key=>{
           //log("key: " + key)
           //log("typeof(res[key]): " + typeof(res[key]))
-          const value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
+          let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
+          value = value.split("\\n").join(" ")
+          value = value.split("<br>").join(" ")
           log(`${key}: ${value}`)
         })
-        log(`logCacheKeyItems(${cacheKey}): items.length:${Object.keys(res).length}`)
+        log(`logCacheKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
       } else {
-        log(`logCacheKeyItems(${cacheKey}): items.length:0`)
+        log(`logCacheKeyItems(${recKey}): items.length:0`)
       }
-    }).finally(()=>log(`logCacheKeyItems(${cacheKey}): end`))
+    }).finally(()=>log(`logCacheKeyItems(${recKey}): end`))
   } catch(e) {
-    log(`logCacheKeyItems(${cacheKey}): catch(e): ${e}`)
-    return false
-  }
-}
-
-const getCache = async(key) => { //文字列を渡して、jsonオブジェクトで返る
-  try {
-    const req = "./" + key
-    const cache = await caches.open(getCacheName())
-    const data = await cache.match(req)
-    if (data === undefined) return undefined
-    const obj = await data.json()
-    return obj
-  } catch(e) {
-    console.log("getCache: catch(e): " + e)
-    return undefined
-  }
-}
-const setCache = async(key, value) => { //jsonオブジェクトを渡す
-  try {
-    const req = "./" + key
-    const cache = await caches.open(getCacheName())
-    await cache.put(req, new Response(JSON.stringify(value)))
-    return true
-  } catch(e) {
-    console.log("setCache: catch(e): " + e)
+    log(`logCacheKeyItems(${recKey}): catch(e): ${e}`)
     return false
   }
 }
@@ -204,7 +281,7 @@ const view=()=>{
   //console.log("view: start")
   //log("view: start")
   if (document.getElementById(`${p}viewer`) != null) {
-    const convlog = cacheObj.log.split("\\n").join("<br>")
+    const convlog = recObj.log.split("\\n").join("<br>")
     document.getElementById(`${p}viewer`).innerHTML=`<span id="${p}contents">${convlog}<br></span>`
     const viewer = document.getElementById(`${p}viewer`)
     viewer.scrollTop = viewer.scrollHeight
@@ -214,36 +291,51 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  cacheObj.log=cacheObj.log+str+"\\n"
-  if (isCache) sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`)
+  recObj.log=recObj.log+str+"\\n"
+  if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
+  if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
   if (isdoc) view()
 }
 log("version: " + VERSION)
 log("self.document: " + isdoc)
 
-const swreg=()=>{
-  log("swreg: start")
-  navigator.serviceWorker.register("./app.js")
-  .then(res=>log("swreg: success: scope: "+res.scope))
-  .catch(res=>log("swreg: error: "+res))
+
+
+const viewInfo=()=>{
+  logCacheNames()
+  logCacheKeys()
+  logCacheKeyItems()
+  logLocalKeys()
+  logLocalKeyItems()
 }
 
-const swdel=()=>{
-  log("swdel: start")
+const regsw=()=>{
+  log("regsw: start")
+  navigator.serviceWorker.register("./logger.js")
+  .then(res=>log("regsw: success: scope: "+res.scope))
+  .catch(res=>log("regsw: error: "+res))
+}
+
+const delsw=()=>{
+  log("delsw: start")
   navigator.serviceWorker.getRegistration()
   .then(registration=>registration.unregister())
-  .finally(()=>log("swdel: end"))
+  .finally(()=>log("delsw: end"))
 }
+
+const delCache=()=>logCacheNames(true)
+
+
 
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "set",
-    "name": cacheObj.name,
-    "data": cacheObj,
+    "name": recObj.name,
+    "data": recObj,
   }
-  doPost(cacheObj.post, req).catch(err=>{
+  doPost(recObj.post, req).catch(err=>{
     alert("Failed to send. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
@@ -255,10 +347,10 @@ const f2=()=>{
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
     "action": "get",
-    "name": cacheObj.name,
+    "name": recObj.name,
     "data": {},
   }
-  doPost(cacheObj.post, req).then(res=>cacheObj=(res)?res:cacheObj).catch(err=>{
+  doPost(recObj.post, req).then(res=>recObj=(res)?res:recObj).catch(err=>{
     alert("Failed to receive. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
@@ -267,56 +359,72 @@ const f2=()=>{
 }
 const f3=()=>{
   log("f3: start")
-  let res
+  let res = `settings ...
 
-  log(`<button onClick='(()=>{
-    app.log("click: view cache info")
-    app.logCacheNames()
-    app.logCacheKeys()
-    app.logCacheKeyItems()
-  })()'>view cache info</button>`)
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: view info")
+    logger.viewInfo()
+  })()'>view info</button>
 
-  log(`<button onClick='(()=>{ //true:サーバから再読込/false:キャッシュから再読込
-    app.log("click: reload")
+<br><br>
+  <button onClick='(()=>{ //true:サーバから再読込/false:キャッシュから再読込
+    logger.log("click: reload")
     location.reload(true)
-  })()'>reload</button>`)
+  })()'>reload</button>
 
-  log(`<button onClick='(()=>{
-    app.log("click: clear service worker")
-    app.swdel()
-  })()'>clear service worker</button>`)
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: clear service worker")
+    logger.delsw()
+  })()'>clear service worker</button>
 
-  log(`<button onClick='(()=>{
-    app.log("click: clear cache")
-    app.logCacheNames(true)
-  })()'>clear cache</button>`)
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: clear cache")
+    logger.delCache()
+  })()'>clear cache</button>
 
-  log(`<button onClick='(()=>{
-    app.setCacheObj({"log":""})
-    app.log("click: clear log")
-  })()'>clear log</button>`)
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: clear local")
+    logger.delLocal("${recKey}")
+  })()'>clear local</button>
 
-  log(`<button onClick='(()=>{
-    app.log("click: setting post(URL)")
-    res = prompt("post(URL)?", app.cacheObj.post)
-    if (res != null) app.setCacheObj({"post":res})
-    app.log("setting post(URL): " + app.cacheObj.post)
-  })()'>setting post(URL)</button> ${cacheObj.post}`)
+<br><br>
+  <button onClick='(()=>{
+    logger.setRecObj({"log":""})
+    logger.log("click: clear log")
+  })()'>clear log</button>
 
-  log(`<button onClick='(()=>{
-    app.log("click: setting post(Name)")
-    res = prompt("post(Name)?", app.cacheObj.name)
-    if (res != null) app.setCacheObj({"name":res})
-    app.log("setting post(Name): " + app.cacheObj.name)
-  })()'>setting post(Name)</button> ${cacheObj.name}`)
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: setting post(URL)")
+    res = prompt("post(URL)?", logger.recObj.post)
+    if (res != null) logger.setRecObj({"post":res})
+    logger.log("setting post(URL): " + logger.recObj.post)
+  })()'>setting post(URL)</button><br>${recObj.post}
 
+<br><br>
+  <button onClick='(()=>{
+    logger.log("click: setting post(Name)")
+    res = prompt("post(Name)?", logger.recObj.name)
+    if (res != null) logger.setRecObj({"name":res})
+    logger.log("setting post(Name): " + logger.recObj.name)
+  })()'>setting post(Name)</button><br>${recObj.name}
+
+<br>
+`
+
+  log(res)
   log("f3: end")
 }
 
 const hideToggle=()=>{
   log("hideToggle: start")
-  const rapper = document.getElementById(`${p}app`);
+  const rapper = document.getElementById(`${p}logger`);
   rapper.classList.toggle(`${p}notshowtoggle`);
+  log("hideToggle: end")
 }
 const addEvents=()=>{
   log("addEvents: start")
@@ -334,7 +442,7 @@ const addEvents=()=>{
   });
   document.getElementById(`${p}toggle`).addEventListener("click",()=>{
     log("toggle: click")
-    const rapper = document.getElementById(`${p}app`);
+    const rapper = document.getElementById(`${p}logger`);
     rapper.classList.toggle(`${p}notshow`);
     if (isHideToggle) hideToggle()
   });
@@ -343,6 +451,7 @@ const addEvents=()=>{
     log("body: click")
   });
 */
+  log("addEvents: end")
 }
 
 const addContents=()=>{
@@ -350,7 +459,7 @@ log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", String.raw`
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
 <style>
-#${p}app {
+#${p}logger {
   font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -416,7 +525,8 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 }
 .${p}item.${p}viewer button{
   background: #FFF;
-  font-size: 0.6rem;
+  color: #000;
+  font-size: 1.5rem;
   box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
   border-radius: 3px;
   cursor: pointer;
@@ -438,35 +548,35 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
   font-weight: 900;
   color: #FFF;
 }
-#${p}app.${p}notshow {
+#${p}logger.${p}notshow {
   gap: 0;
 }
-#${p}app.${p}notshow > .${p}item.${p}viewer {
+#${p}logger.${p}notshow > .${p}item.${p}viewer {
   bottom: 40px;
   right: 40px;
   width: 0px;
   height: 0px;
 }
-#${p}app.${p}notshow > .${p}item.${p}viewer, #${p}app.${p}notshow > .${p}item.${p}menu {
+#${p}logger.${p}notshow > .${p}item.${p}viewer, #${p}logger.${p}notshow > .${p}item.${p}menu {
   gap: 0;
   margin-bottom: -58px;
   opacity: 0;
 }
-#${p}app.${p}notshow > .${p}item.${p}menu a {
+#${p}logger.${p}notshow > .${p}item.${p}menu a {
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 15%), 0 1px 2px 0 rgb(0 0 0 / 22%);
 }
-#${p}app.${p}notshow > .${p}item.${p}toggle a:before {
+#${p}logger.${p}notshow > .${p}item.${p}toggle a:before {
   content: "\f067";
 }
-#${p}app.${p}notshow {
+#${p}logger.${p}notshow {
   bottom: calc(30px - ${posX}px);
   right: calc(30px - ${posY}px);
 }
-#${p}app.${p}notshowtoggle > .${p}item.${p}toggle {
+#${p}logger.${p}notshowtoggle > .${p}item.${p}toggle {
   opacity: 0;
 }
 </style>
-<div id="${p}app" class="${p}notshow">
+<div id="${p}logger" class="${p}notshow">
   <div id="${p}viewer" class="${p}item ${p}viewer">
     <span id="${p}contents"></span>
   </div>
@@ -485,21 +595,35 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 </div>
 <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
 `)
+log("addContents: end")
 }
 
 const main=(args={
-  hide: false,
+  pwa: false,
+  rec: "local",
   posx: 0,
   posy: 0,
-  cache: false,
-  pwa: false,
+  hide: false,
 })=>{
-  log("main: hide: "+args.hide)
-  log("main: posx: "+args.posx)
-  log("main: posy: "+args.posy)
-  log("main: cache: "+args.cache)
-  log("main: pwa: "+args.pwa)
-  if (args.pwa) swreg()
+  log("main args.pwa: "+args.pwa)
+  log("main args.rec: "+args.rec)
+  log("main args.posx: "+args.posx)
+  log("main args.posy: "+args.posy)
+  log("main args.hide: "+args.hide)
+  if (args.pwa) regsw()
+  let rec = (args.rec && args.rec=="cache") ? "cache" : "local"
+  switch (rec) {
+    case "local":
+      isLocal = true
+      getLocal(recKey).then(res=>recObj=(res)?res:recObj).finally(()=>log(`${recKey}: get from local`))
+      break
+    case "cache":
+      isCache = true
+      getCache(recKey).then(res=>recObj=(res)?res:recObj).finally(()=>log(`${recKey}: get from cache`))
+      break
+    default:
+      break
+  }
   posX = args.posx ? args.posx : args.hide ? 65 : 0
   posY = args.posy ? args.posy : args.hide ? 65 : 0
   addContents()
@@ -508,8 +632,6 @@ const main=(args={
     isHideToggle = true
     hideToggle()
   }
-  isCache = args.cache ? true : false
-  if (isCache) getCache(cacheKey).then(res=>cacheObj=(res)?res:cacheObj).finally(()=>log(`${cacheKey}: getter end`))
 }
 
 
@@ -519,7 +641,7 @@ const main=(args={
 let cacheItems = [
   "./icon.png",
   "./manifest.json",
-  "./app.js",
+  "./logger.js",
   "./",
 ];
 const getCacheItems=()=>cacheItems
@@ -539,18 +661,22 @@ if (!isdoc) {
 }
 //----
 // object
-app=Object.assign(main, {
-  "swdel": swdel,
+logger=Object.assign(main, {
   "getCacheItems": getCacheItems,
   "setCacheItems": setCacheItems,
+  "getLocal": getLocal, //async関数のため自前でpromiseを受け取る
+  "setLocal": setLocal, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "getCache": getCache, //async関数のため自前でpromiseを受け取る
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
-  "logCacheNames": logCacheNames,
-  "logCacheKeys": logCacheKeys,
-  "logCacheKeyItems": logCacheKeyItems,
-  "setCacheObj": setCacheObj,
-  "cacheObj": cacheObj,
+
+  "viewInfo": viewInfo,
+  "delsw": delsw,
+  "delCache": delCache,
+  "delLocal": delLocal,
+
+  "setRecObj": setRecObj,
+  "recObj": recObj,
   "log": log,
 })})()

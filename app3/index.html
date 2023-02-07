@@ -9,31 +9,33 @@
 <title>PWAsTest - App3</title>
 </head>
 <body width="0px" height="0px" style="margin:0"></body>
-<script defer src="./app.js"></script>
+<script defer src="./logger.js"></script>
 <script>
 window.onload=()=>{
-  app({hide: true, cache: true, pwa: true})
-  //app({cache: true, pwa: true})
-  //app({hide: true})
-  //app({posx:-65, posy:-65})
-  //app({posx:-65, posy:-65, hide: true})
-  //app()
+  //logger({rec: "cache", pwa: true})
+  //logger({hide: true, rec: "local", pwa: false})
+  //logger({hide: true, rec: "local", pwa: true})
+  //logger({rec: "local", pwa: true})
+  //logger({hide: true})
+  //logger({posx:-65, posy:-65})
+  //logger({posx:-65, posy:-65, hide: true})
+  logger({pwa: true})
 
 /*
-  app({cache: true})
-  app.log(app.getCacheItems())
-  app.setCacheItems([
+  logger({rec: "local"})
+  logger.log(logger.getCacheItems())
+  logger.setCacheItems([
     "./icon.png",
     "./manifest.json",
     "./",
   ]);
-  app.log(app.getCacheItems())
-  app({pwa: true})
+  logger.log(logger.getCacheItems())
+  logger({pwa: true})
 */
 
 
 
-  app.log("index.html: start")
+  logger.log("index.html: start")
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <style>
@@ -136,9 +138,9 @@ window.onload=()=>{
   let isTimer = false
 
   const view=()=>{
-    app.log("touch count: " + cacheObj.count)
+    logger.log("touch count: " + cacheObj.count)
     document.getElementById("show").innerHTML=cacheObj.count
-    app.sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`) //キャッシュ記録の位置付け
+    logger.sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`) //キャッシュ記録の位置付け
   }
 
   const msaddclass=(q, c, ms)=>{
@@ -153,7 +155,7 @@ window.onload=()=>{
   document.getElementById("settings").addEventListener("click",()=>{
     let res = prompt("name?", cacheObj.name)
     cacheObj.name=(res)?res:cacheObj.name
-    app.log("name: " + cacheObj.name)
+    logger.log("name: " + cacheObj.name)
   })
 
   document.getElementById("show").addEventListener("click",()=>{
@@ -192,33 +194,33 @@ window.onload=()=>{
 
   //document.getElementById("send").addEventListener("click",()=>{
   const sendPost=()=>{
-    app.log(`sendpost: start, cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.log(`sendpost: start, cacheObj:${JSON.stringify(cacheObj)}`)
     const req = {
       "action": "set",
       "name": cacheObj.name,
       "data": cacheObj,
     }
-    app.doPost(postURL, req).catch(err=>{
+    logger.doPost(postURL, req).catch(err=>{
       alert("Failed to send. please try again")
     }).finally(()=>{
-      app.log(`sendpost: end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`sendpost: end, cacheObj:${JSON.stringify(cacheObj)}`)
     })
   }
 
   const getCachePost=()=>{
-    app.log(`getCachePost: start`)
+    logger.log(`getCachePost: start`)
     document.getElementById("show").innerHTML=`<font size="2">loading...</font>`
-    app.getCache(cacheKey).then(res=>{
+    logger.getCache(cacheKey).then(res=>{
       if (res) {
         cacheObj=res
       } else {
         throw ""
       }
-      app.log(`window.load.getCachePost: cache end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`window.load.getCachePost: cache end, cacheObj:${JSON.stringify(cacheObj)}`)
       msaddclass("#show", "flash", 50)
       view()
     }).catch(()=>{
-      app.doPost(postURL, {
+      logger.doPost(postURL, {
         "action": "get",
         "name": cacheObj.name,
         //"data": {},
@@ -227,7 +229,7 @@ window.onload=()=>{
         cacheObj=(res)?res:cacheObj
       //}).catch(err=>alert("Failed to recv. please try again"))
       }).finally(()=>{
-        app.log(`window.load.getCachePost: post end, cacheObj:${JSON.stringify(cacheObj)}`)
+        logger.log(`window.load.getCachePost: post end, cacheObj:${JSON.stringify(cacheObj)}`)
         msaddclass("#show", "flash", 50)
         view()
       })
@@ -235,7 +237,7 @@ window.onload=()=>{
   }
   getCachePost()
 
-  app.log("index.html: end")
+  logger.log("index.html: end")
 
 
 
