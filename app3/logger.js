@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.30";
+const VERSION = "0.0.0.33";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -106,19 +106,32 @@ const setLocal=async(key, value)=>{ //jsonオブジェクトを渡す
     return false
   }
 }
-const delLocal=(key)=>{ //文字列を渡す
-  log(`delLocal(${key}): start`)
+const delLocal=(key)=>{ //文字列を渡す(localStorageKey)
   try {
     if (localStorage.getItem(getLocalKeyName(key))!=null) {
       localStorage.removeItem(getLocalKeyName(key))
-      log(`localname: ${key} -> clear`)
+      log(`localname: ${getLocalKeyName(key)} -> clear`)
     } else {
-      log(`localname: ${key} -> nothing`)
+      log(`localname: ${getLocalKeyName(key)} -> nothing`)
     }
-    log(`delLocal(${key}): end`)
     return true
   } catch(e) {
     console.log("delLocal: catch(e): " + e)
+    return false
+  }
+}
+const delLocalAll=(name)=>{ //文字列を渡す(localStorageName)
+  log(`delLocalAll(${name}): start`)
+  try {
+    Object.keys(localStorage).forEach(key=>{
+      if (key.indexOf(name)>=0) {
+        localStorage.removeItem(key)
+        log(`localname: ${key} -> clear`)
+      }
+    })
+    log(`delLocalAll(${name}): end`)
+  } catch(e) {
+    console.log("delLocalAll: catch(e): " + e)
     return false
   }
 }
@@ -411,7 +424,7 @@ const f3=()=>{
 <br><br>
   <button onClick='(()=>{
     logger.log("click: clear local")
-    logger.delLocal("${recKey}")
+    logger.delLocalAll("${localName}")
   })()'>clear local</button>
 
 <br><br>
@@ -685,18 +698,20 @@ if (!isdoc) {
 //----
 // object
 logger=Object.assign(main, {
-  "getCacheItems": getCacheItems,
-  "setCacheItems": setCacheItems,
+  "regsw": regsw,
+  "delsw": delsw,
   "getLocal": getLocal, //async関数のため自前でpromiseを受け取る
   "setLocal": setLocal, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
+  "delLocal": delLocal,
+  "delLocalAll": delLocalAll,
+  "getCacheItems": getCacheItems,
+  "setCacheItems": setCacheItems,
   "getCache": getCache, //async関数のため自前でpromiseを受け取る
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
+  "delCache": delCache,
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
   "viewInfo": viewInfo,
-  "delsw": delsw,
-  "delCache": delCache,
-  "delLocal": delLocal,
   "setRecObj": setRecObj,
   "recObj": recObj,
   "log": log,
