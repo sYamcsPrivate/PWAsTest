@@ -118,9 +118,9 @@ window.onload=()=>{
         100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
       }
     </style>
-    <!-- <button id="send">send</button> -->
-    <!-- <button id="recv">send</button> -->
     <button id="settings">settings</button>
+    <button id="recv">recv</button>
+    <button id="send">send</button>
     <div id="pos">
       <div id=""></div>
       <div id="show" class="area">0</div>
@@ -192,20 +192,38 @@ window.onload=()=>{
     }
   });
 
-  //document.getElementById("send").addEventListener("click",()=>{
+  const recvPost=()=>{
+    logger.log(`recvPost: start, cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.doPost(postURL, {
+      "action": "get",
+      "name": cacheObj.name,
+      //"data": {},
+      "data": cacheObj,
+    }).then(res=>{
+      cacheObj=(res)?res:cacheObj
+    //}).catch(err=>alert("Failed to recv. please try again"))
+    }).finally(()=>{
+      logger.log(`recvPost:  end, cacheObj:${JSON.stringify(cacheObj)}`)
+      msaddclass("#show", "flash", 50)
+      view()
+    })
+  }
+
   const sendPost=()=>{
-    logger.log(`sendpost: start, cacheObj:${JSON.stringify(cacheObj)}`)
-    const req = {
+    logger.log(`sendPost: start, cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.doPost(postURL, {
       "action": "set",
       "name": cacheObj.name,
       "data": cacheObj,
-    }
-    logger.doPost(postURL, req).catch(err=>{
+    }).catch(err=>{
       alert("Failed to send. please try again")
     }).finally(()=>{
-      logger.log(`sendpost: end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`sendPost: end, cacheObj:${JSON.stringify(cacheObj)}`)
     })
   }
+
+  document.getElementById("recv").addEventListener("click",()=>recvPost())
+  document.getElementById("send").addEventListener("click",()=>sendPost())
 
   const getCachePost=()=>{
     logger.log(`getCachePost: start`)
@@ -216,24 +234,10 @@ window.onload=()=>{
       } else {
         throw ""
       }
-      logger.log(`window.load.getCachePost: cache end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`getCachePost: end(cache), cacheObj:${JSON.stringify(cacheObj)}`)
       msaddclass("#show", "flash", 50)
       view()
-    }).catch(()=>{
-      logger.doPost(postURL, {
-        "action": "get",
-        "name": cacheObj.name,
-        //"data": {},
-        "data": cacheObj,
-      }).then(res=>{
-        cacheObj=(res)?res:cacheObj
-      //}).catch(err=>alert("Failed to recv. please try again"))
-      }).finally(()=>{
-        logger.log(`window.load.getCachePost: post end, cacheObj:${JSON.stringify(cacheObj)}`)
-        msaddclass("#show", "flash", 50)
-        view()
-      })
-    })
+    }).catch(()=>recvPost())
   }
   getCachePost()
 
