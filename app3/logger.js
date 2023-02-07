@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.33";
+const VERSION = "0.0.0.35";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -110,9 +110,9 @@ const delLocal=(key)=>{ //文字列を渡す(localStorageKey)
   try {
     if (localStorage.getItem(getLocalKeyName(key))!=null) {
       localStorage.removeItem(getLocalKeyName(key))
-      log(`localname: ${getLocalKeyName(key)} -> clear`)
+      log(`localkey: ${getLocalKeyName(key)} -> clear`)
     } else {
-      log(`localname: ${getLocalKeyName(key)} -> nothing`)
+      log(`localkey: ${getLocalKeyName(key)} -> nothing`)
     }
     return true
   } catch(e) {
@@ -126,7 +126,7 @@ const delLocalAll=(name)=>{ //文字列を渡す(localStorageName)
     Object.keys(localStorage).forEach(key=>{
       if (key.indexOf(name)>=0) {
         localStorage.removeItem(key)
-        log(`localname: ${key} -> clear`)
+        log(`localkey: ${key} -> clear`)
       }
     })
     log(`delLocalAll(${name}): end`)
@@ -139,7 +139,7 @@ const logLocalKeys=()=>{
   log("logLocalKeys: start")
   try {
     Object.keys(localStorage).forEach(key=>{
-      log(`key: ${key}`)
+      log(`localkey: ${key}`)
     })
     log(`logLocalKeys: local.length:${localStorage.length}`)
     log(`logLocalKeys: end`)
@@ -159,7 +159,7 @@ const logLocalKeyItems=()=>{
           let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
           value = value.split("\\n").join(" ")
           value = value.split("<br>").join(" ")
-          log(`${key}: ${value}`)
+          log(`logLocalKeyItem: ${key}: ${value}`)
         })
         log(`logLocalKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
       } else {
@@ -238,7 +238,7 @@ const logCacheKeys=()=>{
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
-          log(`recKey: ${request.url}`)
+          log(`logCacheKey: recKey: ${request.url}`)
           //log(`cache request: ${request}, index: ${index}, array: ${array}`)
           //if (isClear && request.url.indexOf(recKey)==-1) cache.delete(request)
         })
@@ -261,7 +261,7 @@ const logCacheKeyItems=()=>{
           let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
           value = value.split("\\n").join(" ")
           value = value.split("<br>").join(" ")
-          log(`${key}: ${value}`)
+          log(`logCacheKeyItem: ${key}: ${value}`)
         })
         log(`logCacheKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
       } else {
