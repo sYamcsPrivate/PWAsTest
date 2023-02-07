@@ -75,12 +75,14 @@ const getPrefix=()=>{
   }
 }
 if (isdoc) {
-  localName = getPrefix().substring(window.location.href.indexOf("://")+3)
+  //localName = getPrefix().substring(window.location.href.indexOf("://")+3)
+  localName = ""
   cacheName = getPrefix() + VERSION
 }
 
 const getLocalKeyName=(key)=>{
-  localName = (localName == "") ? getPrefix().substring(window.location.href.indexOf("://")+3) : localName
+  //localName = (localName == "") ? getPrefix().substring(window.location.href.indexOf("://")+3) : localName
+  localName = ""
   return localName + key
 }
 
