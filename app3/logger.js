@@ -101,12 +101,14 @@ const setLocal=async(key, value)=>{ //jsonオブジェクトを渡す
     return false
   }
 }
-const delLocal=async(key)=>{ //文字列を渡す
+const delLocal=(key)=>{ //文字列を渡す
   log(`delLocal(${key}): start`)
   try {
-    if (getLocal(key)) {
+    if (localStorage.getItem(getLocalKeyName(key))!=null) {
       localStorage.removeItem(getLocalKeyName(key))
       log(`localname: ${key} -> clear`)
+    } else {
+      log(`localname: ${key} -> nothing`)
     }
     log(`delLocal(${key}): end`)
     return true
