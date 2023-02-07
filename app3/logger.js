@@ -61,13 +61,17 @@ const getDateTime=()=>{
 }
 
 const getPrefix=()=>{
-  const href = window.location.href
-  if (href.slice(-1)=="/") {
-    return href
-  } else if (href.slice(-4)=="html") {
-    return href.substr(0, href.lastIndexOf("/")+1)
+  if (isdoc) {
+    const href = window.location.href
+    if (href.slice(-1)=="/") {
+      return href
+    } else if (href.slice(-4)=="html") {
+      return href.substr(0, href.lastIndexOf("/")+1)
+    } else {
+      return href + "/"
+    }
   } else {
-    return href + "/"
+    return undefined
   }
 }
 
