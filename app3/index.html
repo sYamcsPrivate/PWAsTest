@@ -127,9 +127,9 @@ window.onload=()=>{
   `)
 
   const postURL  = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-  let postName = "user1"
   const cacheKey = "index.html.cache"
   let cacheObj = {
+    "name": "user1",
     "count": 0
   }
 
@@ -151,8 +151,9 @@ window.onload=()=>{
   }
 
   document.getElementById("settings").addEventListener("click",()=>{
-    let res = prompt("name?", postName)
-    postName=(res)?res:postName
+    let res = prompt("name?", cacheObj.name)
+    cacheObj.name=(res)?res:cacheObj.name
+    app.log("name: " + cacheObj.name)
   })
 
   document.getElementById("show").addEventListener("click",()=>{
@@ -194,7 +195,7 @@ window.onload=()=>{
     app.log(`sendpost: start, cacheObj:${JSON.stringify(cacheObj)}`)
     const req = {
       "action": "set",
-      "name": postName,
+      "name": cacheObj.name,
       "data": cacheObj,
     }
     app.doPost(postURL, req).catch(err=>{
@@ -219,7 +220,7 @@ window.onload=()=>{
     }).catch(()=>{
       app.doPost(postURL, {
         "action": "get",
-        "name": postName,
+        "name": cacheObj.name,
         //"data": {},
         "data": cacheObj,
       }).then(res=>{
