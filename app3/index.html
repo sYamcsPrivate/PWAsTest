@@ -42,26 +42,17 @@ window.onload=()=>{
         text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         position: fixed;
-        top: 20%;
+        top: 10%;
         left: 10%;
       }
       .area {
         font-size: 7rem;
         width: 80vw;
-        height: 30vh;
+        height: 40vh;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-      }
-      #name {
-        font-size: 4rem;
-        width: 80vw;
-        height: 5vh;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        background: #ffffff;
       }
       #show {
         background: #66bbbb;
@@ -127,8 +118,9 @@ window.onload=()=>{
     </style>
     <!-- <button id="send">send</button> -->
     <!-- <button id="recv">send</button> -->
+    <button id="settings">settings</button>
     <div id="pos">
-      <div id="name"></div>
+      <div id=""></div>
       <div id="show" class="area">0</div>
       <div id="touch" class="area"><img src="./icon.png"></div>
     </div>
@@ -158,11 +150,9 @@ window.onload=()=>{
     return e
   }
 
-  document.getElementById("name").innerHTML=postName
-  document.getElementById("name").addEventListener("click",()=>{
+  document.getElementById("settings").addEventListener("click",()=>{
     let res = prompt("name?", postName)
     postName=(res)?res:postName
-    document.getElementById("name").innerHTML=postName
   })
 
   document.getElementById("show").addEventListener("click",()=>{
