@@ -19,17 +19,19 @@ window.onload=()=>{
   //logger({hide: true})
   //logger({posx:-65, posy:-65})
   //logger({posx:-65, posy:-65, hide: true})
-  logger({pwa: true})
+  //logger({pwa: true})
+  logger({rec: "cache"})
+  //logger()
 
 /*
   logger({rec: "local"})
-  logger.log(logger.getCacheItems())
+  logger.log(logger.getLocalItems())
   logger.setCacheItems([
     "./icon.png",
     "./manifest.json",
     "./",
   ]);
-  logger.log(logger.getCacheItems())
+  logger.log(logger.getLocalItems())
   logger({pwa: true})
 */
 
@@ -129,18 +131,17 @@ window.onload=()=>{
   `)
 
   const postURL  = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-  const cacheKey = "index.html.cache"
-  let cacheObj = {
-    "name": "user1",
+  const recKey = "index.html.rec"
+  let recObj = {
     "count": 0
   }
 
   let isTimer = false
 
   const view=()=>{
-    logger.log("touch count: " + cacheObj.count)
-    document.getElementById("show").innerHTML=cacheObj.count
-    logger.sync(`setCache("${cacheKey}", ${JSON.stringify(cacheObj)})`) //キャッシュ記録の位置付け
+    logger.log("touch count: " + recObj.count)
+    document.getElementById("show").innerHTML=recObj.count
+    logger.sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`) //ローカル記録の位置付け
   }
 
   const msaddclass=(q, c, ms)=>{
@@ -153,93 +154,98 @@ window.onload=()=>{
   }
 
   document.getElementById("settings").addEventListener("click",()=>{
-    let res = prompt("name?", cacheObj.name)
-    cacheObj.name=(res)?res:cacheObj.name
-    logger.log("name: " + cacheObj.name)
+    let res = prompt("name?", recObj.name)
+    recObj.name=(res)?res:recObj.name
+    logger.log("name: " + recObj.name)
   })
 
+  let timerid1, timerid2
   document.getElementById("show").addEventListener("click",()=>{
-    if (!isTimer && cacheObj.count > 0) {
+    const stop=()=>{
+      clearInterval(timerid1)
+      clearInterval(timerid2)
+      isTimer = false
       msaddclass("#show", "flash", 50)
-      sendPost() //サーバ記録の位置付け
-      isTimer = true
-      const timerid1 = setInterval(()=>{
-        msaddclass("#touch img", "korokoro", 2500)
-        if (cacheObj.count <= 0) {
-          clearInterval(timerid1)
-        }
-      }, 2600);
-      const timerid2 = setInterval(()=>{
-        cacheObj.count = cacheObj.count - 1
-        view()
-        if (cacheObj.count <= 0) {
-          document.querySelector("#touch img").classList.remove("korokoro");
-          clearInterval(timerid1)
-          clearInterval(timerid2)
-          isTimer = false
-          msaddclass("#show", "flash", 50)
-          msaddclass("#touch img", "poyooon", 900)
-        }
-      }, 1000);
+      msaddclass("#touch img", "poyooon", 900)
+    }
+    if (recObj.count > 0) {
+      if (isTimer) {
+        stop()
+      } else {
+        msaddclass("#show", "flash", 50)
+        sendPost() //サーバ記録の位置付け
+        isTimer = true
+        timerid1 = setInterval(()=>{
+          msaddclass("#touch img", "korokoro", 2500)
+          if (recObj.count <= 0) {
+            clearInterval(timerid1)
+          }
+        }, 2600);
+        timerid2 = setInterval(()=>{
+          recObj.count = recObj.count - 1
+          view()
+          if (recObj.count <= 0) {
+            document.querySelector("#touch img").classList.remove("korokoro");
+            stop()
+          }
+        }, 1000);
+      }
     }
   });
 
   document.getElementById("touch").addEventListener("click",()=>{
     if (!isTimer) {
       msaddclass("#touch img", "purun", 800)
-      cacheObj.count = cacheObj.count + 1
+      recObj.count = recObj.count + 1
       view()
     }
   });
 
   const recvPost=()=>{
-    logger.log(`recvPost: start, cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
     logger.doPost(postURL, {
       "action": "get",
-      "name": cacheObj.name,
-      //"data": {},
-      "data": cacheObj,
+      "data": {
+        "name": recObj.name,
+      },
     }).then(res=>{
-      cacheObj=(res)?res:cacheObj
-    //}).catch(err=>alert("Failed to recv. please try again"))
+      recObj=(res)?res:recObj
+    //}).catch(err=>alert("Failed to receive. please try again"))
     }).finally(()=>{
-      logger.log(`recvPost:  end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`recvPost:  end, recObj:${JSON.stringify(recObj)}`)
       msaddclass("#show", "flash", 50)
       view()
     })
   }
 
   const sendPost=()=>{
-    logger.log(`sendPost: start, cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.log(`sendPost: start, recObj:${JSON.stringify(recObj)}`)
     logger.doPost(postURL, {
       "action": "set",
-      "name": cacheObj.name,
-      "data": cacheObj,
+      "data": recObj,
+    }).then(res=>{
+      recObj.name=(recObj.name)?recObj.name:res.name
     }).catch(err=>{
       alert("Failed to send. please try again")
     }).finally(()=>{
-      logger.log(`sendPost: end, cacheObj:${JSON.stringify(cacheObj)}`)
+      logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
     })
   }
 
   document.getElementById("recv").addEventListener("click",()=>recvPost())
   document.getElementById("send").addEventListener("click",()=>sendPost())
 
-  const getCachePost=()=>{
-    logger.log(`getCachePost: start`)
+  const getLocal=()=>{
+    logger.log(`getLocalPost: start`)
     document.getElementById("show").innerHTML=`<font size="2">loading...</font>`
-    logger.getCache(cacheKey).then(res=>{
-      if (res) {
-        cacheObj=res
-      } else {
-        throw ""
-      }
-      logger.log(`getCachePost: end(cache), cacheObj:${JSON.stringify(cacheObj)}`)
+    logger.getLocal(recKey).then(res=>{
+      if (res) recObj=res
+      logger.log(`getLocal: end, recObj:${JSON.stringify(recObj)}`)
       msaddclass("#show", "flash", 50)
       view()
-    }).catch(()=>recvPost())
+    })
   }
-  getCachePost()
+  getLocal()
 
   logger.log("index.html: end")
 

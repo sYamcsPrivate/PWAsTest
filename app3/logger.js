@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.35";
+const VERSION = "0.0.0.36";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -19,12 +19,12 @@ let recKey = "logger.js.rec"
 let recObj = {
   "log": "",
   "post": "https://...",
-  "name": recKey + ".data",
 }
 
 //forTest
 recObj.post = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
 
+const getRecObj=()=>recObj
 const setRecObj=(args)=>{
   if (args!==undefined && args.log!==undefined) recObj.log = args.log
   if (args!==undefined && args.post!==undefined) recObj.post = args.post
@@ -148,26 +148,31 @@ const logLocalKeys=()=>{
     return false
   }
 }
-const logLocalKeyItems=()=>{
-  log(`logLocalKeyItems(${recKey}): start`)
+
+const logLocalKeyItems=(name)=>{ //文字列を渡す(localStorageName)
+  log(`logLocalKeyItems(${name}): start`)
   try {
-    getLocal(recKey).then(res=>{
-      if (res !== undefined && res !== null) {
-        Object.keys(res).forEach(key=>{
-          //log("key: " + key)
-          //log("typeof(res[key]): " + typeof(res[key]))
-          let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
-          value = value.split("\\n").join(" ")
-          value = value.split("<br>").join(" ")
-          log(`logLocalKeyItem: ${key}: ${value}`)
+    let lslen=0
+    Object.keys(localStorage).forEach(lskey=>{
+      if (lskey.indexOf(name)>=0) {
+        lslen++
+        let obj = JSON.parse(localStorage.getItem(lskey))
+        Object.keys(obj).forEach(key=>{
+          let value = obj[key]
+          if (typeof(value)=="string"){
+            value = value.split("\\n").join(" ")
+            value = value.split("<br>").join(" ")
+            if (key.slice(-3)=="log") value = value.length < 150 ? value : value.substring(0, 150) + " ..."
+          }
+          log(`logLocalKeyItems(${name}): ${lskey}: ${key}: ${value}`)
         })
-        log(`logLocalKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
-      } else {
-        log(`logLocalKeyItems(${recKey}): items.length:0`)
+        log(`logLocalKeyItems(${name}): ${lskey}.length: ${Object.keys(obj).length}`)
       }
-    }).finally(()=>log(`logLocalKeyItems(${recKey}): end`))
+    })
+    log(`logLocalKeyItems(${name}): length:${lslen}`)
+    log(`logLocalKeyItems(${name}): end`)
   } catch(e) {
-    log(`logLocalKeyItems(${recKey}): catch(e): ${e}`)
+    log("logLocalKeyItems: catch(e): " + e)
     return false
   }
 }
@@ -253,17 +258,18 @@ const logCacheKeys=()=>{
 const logCacheKeyItems=()=>{
   log(`logCacheKeyItems(${recKey}): start`)
   try {
-    getCache(recKey).then(res=>{
-      if (res !== undefined && res !== null) {
-        Object.keys(res).forEach(key=>{
-          //log("key: " + key)
-          //log("typeof(res[key]): " + typeof(res[key]))
-          let value = res[key].length < 150 ? res[key] : res[key].substring(0, 150) + " ..."
-          value = value.split("\\n").join(" ")
-          value = value.split("<br>").join(" ")
+    getCache(recKey).then(obj=>{
+      if (obj !== undefined && obj !== null) {
+        Object.keys(obj).forEach(key=>{
+          let value = obj[key]
+          if (typeof(value)=="string"){
+            value = value.split("\\n").join(" ")
+            value = value.split("<br>").join(" ")
+            if (key.slice(-3)=="log") value = value.length < 150 ? value : value.substring(0, 150) + " ..."
+          }
           log(`logCacheKeyItem: ${key}: ${value}`)
         })
-        log(`logCacheKeyItems(${recKey}): items.length:${Object.keys(res).length}`)
+        log(`logCacheKeyItems(${recKey}): items.length:${Object.keys(obj).length}`)
       } else {
         log(`logCacheKeyItems(${recKey}): items.length:0`)
       }
@@ -283,7 +289,7 @@ const doPost = async(url, req) => { //jsonオブジェクトを渡して、json�
       "body": JSON.stringify(req),
     })
     const objJSON = await strJSON.json()
-    if (objJSON.res == "OK") {
+    if (objJSON.status == "OK") {
       log("doPost: success")
       return objJSON.data
     } else {
@@ -342,7 +348,7 @@ const viewInfo=()=>{
   logCacheKeys()
   logCacheKeyItems()
   logLocalKeys()
-  logLocalKeyItems()
+  logLocalKeyItems(localName)
 }
 
 const regsw=()=>{
@@ -366,12 +372,12 @@ const delCache=()=>logCacheNames(true)
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  const req = {
+  doPost(recObj.post, {
     "action": "set",
-    "name": recObj.name,
     "data": recObj,
-  }
-  doPost(recObj.post, req).catch(err=>{
+  }).then(res=>{
+    recObj.name=(recObj.name)?recObj.name:res.name
+  }).catch(err=>{
     alert("Failed to send. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
@@ -382,11 +388,15 @@ const f2=()=>{
   log("f2: start")
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
   const req = {
-    "action": "get",
-    "name": recObj.name,
-    "data": {},
   }
-  doPost(recObj.post, req).then(res=>recObj=(res)?res:recObj).catch(err=>{
+  doPost(recObj.post, {
+    "action": "get",
+    "data": {
+      "name": recObj.name,
+    },
+  }).then(res=>{
+    recObj=(res)?res:recObj
+  }).catch(err=>{
     alert("Failed to receive. please try again")
   }).finally(()=>{
     document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
@@ -436,17 +446,17 @@ const f3=()=>{
 <br><br>
   <button onClick='(()=>{
     logger.log("click: setting post(URL)")
-    res = prompt("post(URL)?", logger.recObj.post)
+    res = prompt("post(URL)?", logger.getRecObj().post)
     if (res != null) logger.setRecObj({"post":res})
-    logger.log("setting post(URL): " + logger.recObj.post)
+    logger.log("setting post(URL): " + logger.getRecObj().post)
   })()'>setting post(URL)</button><br>${recObj.post}
 
 <br><br>
   <button onClick='(()=>{
     logger.log("click: setting post(Name)")
-    res = prompt("post(Name)?", logger.recObj.name)
+    res = prompt("post(Name)?", logger.getRecObj().name)
     if (res != null) logger.setRecObj({"name":res})
-    logger.log("setting post(Name): " + logger.recObj.name)
+    logger.log("setting post(Name): " + logger.getRecObj().name)
   })()'>setting post(Name)</button><br>${recObj.name}
 
 <br>
@@ -713,6 +723,6 @@ logger=Object.assign(main, {
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
   "viewInfo": viewInfo,
   "setRecObj": setRecObj,
-  "recObj": recObj,
+  "getRecObj": getRecObj,
   "log": log,
 })})()
