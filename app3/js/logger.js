@@ -394,7 +394,7 @@ const viewInfo=()=>{
 
 const regsw=()=>{
   log("regsw: start")
-  navigator.serviceWorker.register("./js/logger.js")
+  navigator.serviceWorker.register("./js/logger.js", {scope: "../"})
   .then(res=>log("regsw: success: scope: "+res.scope))
   .catch(res=>log("regsw: error: "+res))
 }
