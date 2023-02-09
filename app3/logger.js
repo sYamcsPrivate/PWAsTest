@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.38";
+const VERSION = "0.0.0.40";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -135,6 +135,35 @@ const delLocalAll=(name)=>{ //文字列を渡す(localStorageName)
     return false
   }
 }
+
+const logObj=(args)=>{
+  let obj=args
+  const objLoop=(o)=>{
+    Object.keys(o).forEach(key=>{
+      switch (typeof(o[key])) {
+        case "object":
+          objLoop(o[key])
+          break
+        case "string":
+          o[key]=o[key].split("\n").join(" ")
+          break
+        default:
+          break
+      }
+      try {
+        let jo = JSON.parse(o[key])
+        if (typeof(jo.log)=="string" && jo.log.length>100) {
+          jo.log = jo.log.substring(0, 25) + " ..."
+          o[key]=JSON.stringify(jo)
+        }
+      } catch {}
+    })
+  }
+  objLoop(obj)
+  return JSON.stringify(obj, null, "&ensp;").split("\n").join("<br>")
+}
+
+/*
 const logLocalKeys=()=>{
   log("logLocalKeys: start")
   try {
@@ -148,33 +177,12 @@ const logLocalKeys=()=>{
     return false
   }
 }
+*/
 
 const logLocalKeyItems=(name)=>{ //文字列を渡す(localStorageName)
-  log(`logLocalKeyItems(${name}): start`)
-  try {
-    let lslen=0
-    Object.keys(localStorage).forEach(lskey=>{
-      if (lskey.indexOf(name)>=0) {
-        lslen++
-        let obj = JSON.parse(localStorage.getItem(lskey))
-        Object.keys(obj).forEach(key=>{
-          let value = obj[key]
-          if (typeof(value)=="string"){
-            value = value.split("\\n").join(" ")
-            value = value.split("<br>").join(" ")
-            if (key.slice(-3)=="log") value = value.length < 150 ? value : value.substring(0, 150) + " ..."
-          }
-          log(`logLocalKeyItems(${name}): ${lskey}: ${key}: ${value}`)
-        })
-        log(`logLocalKeyItems(${name}): ${lskey}.length: ${Object.keys(obj).length}`)
-      }
-    })
-    log(`logLocalKeyItems(${name}): length:${lslen}`)
-    log(`logLocalKeyItems(${name}): end`)
-  } catch(e) {
-    log("logLocalKeyItems: catch(e): " + e)
-    return false
-  }
+  log(`logLocalKeyItems: start`)
+  log("localStorage " + logObj(localStorage))
+  log(`logLocalKeyItems: end`)
 }
 
 const getCacheName=()=>{
@@ -243,9 +251,7 @@ const logCacheKeys=()=>{
     caches.open(cacheName).then(cache=>{
       cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
-          log(`logCacheKey: recKey: ${request.url}`)
-          //log(`cache request: ${request}, index: ${index}, array: ${array}`)
-          //if (isClear && request.url.indexOf(recKey)==-1) cache.delete(request)
+          log(`CacheKey: ${request.url}`)
         })
         log(`logCacheKeys: keys.length:${keys.length}`)
       }).finally(()=>log(`logCacheKeys: end`))
@@ -255,27 +261,18 @@ const logCacheKeys=()=>{
     return false
   }
 }
-const logCacheKeyItems=()=>{
-  log(`logCacheKeyItems(${recKey}): start`)
+const logCacheKeyItems=(args)=>{
+  log(`logCacheKeyItems(${args}): start`)
   try {
-    getCache(recKey).then(obj=>{
+    getCache(args).then(obj=>{
       if (obj !== undefined && obj !== null) {
-        Object.keys(obj).forEach(key=>{
-          let value = obj[key]
-          if (typeof(value)=="string"){
-            value = value.split("\\n").join(" ")
-            value = value.split("<br>").join(" ")
-            if (key.slice(-3)=="log") value = value.length < 150 ? value : value.substring(0, 150) + " ..."
-          }
-          log(`logCacheKeyItem: ${key}: ${value}`)
-        })
-        log(`logCacheKeyItems(${recKey}): items.length:${Object.keys(obj).length}`)
+        log("CacheKeyItems(${args}) " + logObj(obj))
       } else {
-        log(`logCacheKeyItems(${recKey}): items.length:0`)
+        log(`CacheKeyItems(${args}) {}`)
       }
-    }).finally(()=>log(`logCacheKeyItems(${recKey}): end`))
+    }).finally(()=>log(`logCacheKeyItems(${args}): end`))
   } catch(e) {
-    log(`logCacheKeyItems(${recKey}): catch(e): ${e}`)
+    log(`logCacheKeyItems(${args}): catch(e): ${e}`)
     return false
   }
 }
@@ -346,8 +343,8 @@ log("self.document: " + isdoc)
 const viewInfo=()=>{
   logCacheNames()
   logCacheKeys()
-  logCacheKeyItems()
-  logLocalKeys()
+  logCacheKeyItems(recKey)
+  //logLocalKeys()
   logLocalKeyItems(localName)
 }
 
