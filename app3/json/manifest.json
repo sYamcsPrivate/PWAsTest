@@ -2,14 +2,14 @@
   "name": "PWAsTest App3",
   "short_name": "App3",
   "description": "PWAsTest",
-  "scope": "./",
-  "start_url": "./?app",
+  "scope": "../",
+  "start_url": "../?app",
   "theme_color": "#9dad25",
   "background_color": "#FFFFFF",
   "display": "standalone",
   "icons": [
     {
-      "src": "./image/icon.png",
+      "src": "../image/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
