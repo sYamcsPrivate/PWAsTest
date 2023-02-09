@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.43";
+const VERSION = "0.0.0.44";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -171,7 +171,7 @@ const logLocalKeys=()=>{
   log("logLocalKeys: start")
   try {
     Object.keys(localStorage).forEach(key=>{
-      log(`localkey: ${key}`)
+      log(`LocalKey: ${key}`)
     })
     log(`logLocalKeys: local.length:${localStorage.length}`)
     log(`logLocalKeys: end`)
@@ -231,14 +231,14 @@ const setCache=async(key, value)=>{ //jsonオブジェクトを渡す
 const logCacheNames=(isClear=false)=>{
   log(`logCacheNames(isClear:${isClear}): start`)
   try {
-    log("cachename(self): " + cacheName)
+    log("CacheName(self): " + cacheName)
     caches.keys().then(cache=>{
       cache.forEach(cn=>{
         if (isClear && (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1))) {
           caches.delete(cn)
-          log(`cachename: ${cn} -> clear`)
+          log(`CacheName: ${cn} -> clear`)
         } else {
-          log(`cachename: ${cn}`)
+          log(`CacheName: ${cn}`)
         }
       })
       log(`logCacheNames(isClear:${isClear}): names.length:${cache.length}`)
