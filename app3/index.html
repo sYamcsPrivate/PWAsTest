@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, shrink-to-fit=no">
-<link rel="manifest" href="./json/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" href="./image/icon.png">
 <link rel="apple-touch-icon" href="./image/icon.png">
 <title>PWAsTest - App3</title>
 </head>
 <body width="0px" height="0px" style="margin:0"></body>
-<script defer src="./js/logger.js"></script>
+<script defer src="./logger.js"></script>
 <script>
 window.onload=()=>{
   //logger({rec: "cache", pwa: true})
@@ -27,7 +27,7 @@ window.onload=()=>{
   logger({rec: "local"})
   logger.log(logger.getLocalItems())
   logger.setCacheItems([
-    "./icon.png",
+    "./image/icon.png",
     "./manifest.json",
     "./",
   ]);

@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.47";
+const VERSION = "0.0.0.48";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -394,7 +394,7 @@ const viewInfo=()=>{
 
 const regsw=()=>{
   log("regsw: start")
-  navigator.serviceWorker.register("./js/logger.js", {scope: "./"})
+  navigator.serviceWorker.register("./logger.js")
   .then(res=>log("regsw: success: scope: "+res.scope))
   .catch(res=>log("regsw: error: "+res))
 }
@@ -717,7 +717,7 @@ const main=(args={
 
 
 //----
-// sw
+// sw - logger.js(serviceWorker.register)とmanifest.jsonはindex.htmlと同位置(root)に配置する必要あり
 let cacheItems = [
   "./image/icon.png",
   "./css/fontawesome-free-6.3.0-web-all.min.css",
@@ -729,8 +729,8 @@ let cacheItems = [
   "./webfonts/fa-solid-900.woff2",
   "./webfonts/fa-v4compatibility.ttf",
   "./webfonts/fa-v4compatibility.woff2",
-  "./js/logger.js",
-  "./json/manifest.json",
+  "./logger.js",
+  "./manifest.json",
   "./",
 ];
 const getCacheItems=()=>cacheItems
