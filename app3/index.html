@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, shrink-to-fit=no">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon.png">
-<link rel="apple-touch-icon" href="./icon.png">
+<link rel="manifest" href="./json/manifest.json">
+<link rel="icon" type="image/png" href="./image/icon.png">
+<link rel="apple-touch-icon" href="./image/icon.png">
 <title>PWAsTest - App3</title>
 </head>
 <body width="0px" height="0px" style="margin:0"></body>
-<script defer src="./logger.js"></script>
+<script defer src="./js/logger.js"></script>
 <script>
 window.onload=()=>{
   //logger({rec: "cache", pwa: true})
@@ -122,12 +122,12 @@ window.onload=()=>{
       }
     </style>
     <button id="settings">settings</button>
-    <button id="recv">recv</button>
     <button id="send">send</button>
+    <button id="recv">recv</button>
     <div id="pos">
       <div id=""></div>
       <div id="show" class="area">0</div>
-      <div id="touch" class="area"><img src="./icon.png"></div>
+      <div id="touch" class="area"><img src="./image/icon.png"></div>
     </div>
   `)
 
@@ -202,6 +202,43 @@ window.onload=()=>{
     }
   });
 
+
+
+
+
+
+
+  const sendPost=()=>{
+    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
+    logger.setPost(postURL, recObj).then(name=>{
+      logger.log("sendPost: success, name: " + name)
+      recObj.name=(recObj.name)?recObj.name:name
+    }).catch(err=>{
+      logger.log("sendPost: catch(e): " + err)
+    }).finally(()=>{
+      logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
+    })
+  }
+
+  const recvPost=()=>{
+    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
+    logger.getPost(postURL, recObj.name).then(obj=>{
+      logger.log("recvPost: success, obj.name: " + obj.name)
+      recObj=(obj)?obj:recObj
+    }).catch(err=>{
+      logger.log("recvPost: catch(e): " + err)
+    }).finally(()=>{
+      logger.log(`recvPost:  end, recObj:${JSON.stringify(recObj)}`)
+      msaddclass("#show", "flash", 50)
+      view()
+    })
+  }
+
+
+
+
+
+/*
   const recvPost=()=>{
     logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
     logger.doPost(postURL, {
@@ -232,9 +269,10 @@ window.onload=()=>{
       logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
     })
   }
+*/
 
-  document.getElementById("recv").addEventListener("click",()=>recvPost())
   document.getElementById("send").addEventListener("click",()=>sendPost())
+  document.getElementById("recv").addEventListener("click",()=>recvPost())
 
   const getLocal=()=>{
     logger.log(`getLocalPost: start`)

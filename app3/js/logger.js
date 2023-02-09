@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.44";
+const VERSION = "0.0.0.47";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -18,7 +18,9 @@ let posY = 0;
 let recKey = "logger.js.rec"
 let recObj = {
   "log": "",
-  "post": "https://...",
+  //"post": "",
+  //"name": "",
+  //"timestamp": "",
 }
 
 //forTest
@@ -29,6 +31,7 @@ const setRecObj=(args)=>{
   if (args!==undefined && args.log!==undefined) recObj.log = args.log
   if (args!==undefined && args.post!==undefined) recObj.post = args.post
   if (args!==undefined && args.name!==undefined) recObj.name = args.name
+  recObj.timestamp = getDateTime()
 }
 
 const getDateTime=()=>{
@@ -99,6 +102,7 @@ const getLocal=async(key)=>{ //文字列を渡して、jsonオブジェクトで
 }
 const setLocal=async(key, value)=>{ //jsonオブジェクトを渡す
   try {
+    value.timestamp = getDateTime()
     localStorage.setItem(getLocalKeyName(key), JSON.stringify(value))
     return true
   } catch(e) {
@@ -218,6 +222,7 @@ const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで
 }
 const setCache=async(key, value)=>{ //jsonオブジェクトを渡す
   try {
+    value.timestamp = getDateTime()
     const req = "./" + key
     const cache = await caches.open(getCacheName())
     await cache.put(req, new Response(JSON.stringify(value)))
@@ -283,6 +288,8 @@ const logCacheKeyItems=(args)=>{
 const doPost = async(url, req) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
   log("doPost: start")
   try {
+    if (!navigator.onLine) throw "offline now"
+    try {new URL(url)} catch {throw "post url error"}
     const strJSON = await fetch(url, {
       "method": "post",
       "Content-Type": "application/json",
@@ -290,14 +297,49 @@ const doPost = async(url, req) => { //jsonオブジェクトを渡して、json�
     })
     const objJSON = await strJSON.json()
     if (objJSON.status == "OK") {
-      log("doPost: success")
+      log("doPost: end")
       return objJSON.data
     } else {
       log("doPost: error: " + JSON.stringify(objJSON))
-      throw "response NG"
+      throw "response ng"
     }
   } catch(e) {
     log("doPost: catch(e): " + e)
+    throw e
+  }
+}
+
+const setPost=async(url, obj)=>{
+  log("setPost: start")
+  try {
+    obj.timestamp = getDateTime()
+    const objJSON = await doPost(url, {
+      "action": "set",
+      "data": obj,
+    })
+    log("setPost: end")
+    return objJSON.name
+  } catch(e) {
+    log("setPost: catch(e): " + e)
+    alert(e)
+    throw e
+  }
+}
+
+const getPost=async(url, name)=>{
+  log("getPost: start")
+  try {
+    const objJSON = await doPost(url, {
+      "action": "get",
+      "data": {
+        "name": name,
+      },
+    })
+    log("getPost: end")
+    return objJSON
+  } catch(e) {
+    log("getPost: catch(e): " + e)
+    alert(e)
     throw e
   }
 }
@@ -332,7 +374,8 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  recObj.log=recObj.log+str+"\\n"
+  //recObj.log=recObj.log+str+"\\n"
+  setRecObj({"log": recObj.log+str+"\\n"})
   if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
   if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
   if (isdoc) view()
@@ -340,8 +383,6 @@ const log=(args)=>{
 
 log("version: " + VERSION)
 log("self.document: " + isdoc)
-
-
 
 const viewInfo=()=>{
   logCacheNames()
@@ -353,7 +394,7 @@ const viewInfo=()=>{
 
 const regsw=()=>{
   log("regsw: start")
-  navigator.serviceWorker.register("./logger.js")
+  navigator.serviceWorker.register("./js/logger.js")
   .then(res=>log("regsw: success: scope: "+res.scope))
   .catch(res=>log("regsw: error: "+res))
 }
@@ -367,45 +408,37 @@ const delsw=()=>{
 
 const delCache=()=>logCacheNames(true)
 
-
-
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  doPost(recObj.post, {
-    "action": "set",
-    "data": recObj,
-  }).then(res=>{
-    recObj.name=(recObj.name)?recObj.name:res.name
+  setPost(recObj.post, recObj).then(name=>{
+    log("f1: success, name: " + name)
+    recObj.name=(recObj.name)?recObj.name:name
   }).catch(err=>{
-    alert("Failed to send. please try again")
+    log("f1: catch(e): " + err)
   }).finally(()=>{
     document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-up"></i></a>`
     log("f1: end")
   })
 }
+
 const f2=()=>{
   log("f2: start")
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  const req = {
-  }
-  doPost(recObj.post, {
-    "action": "get",
-    "data": {
-      "name": recObj.name,
-    },
-  }).then(res=>{
-    recObj=(res)?res:recObj
+  getPost(recObj.post, recObj.name).then(obj=>{
+    log("f2: success, obj.name: " + obj.name)
+    recObj=(obj)?obj:recObj
   }).catch(err=>{
-    alert("Failed to receive. please try again")
+    log("f2: catch(e): " + err)
   }).finally(()=>{
     document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-cloud-arrow-down"></i></a>`
     log("f2: end")
   })
 }
+
 const f3=()=>{
   log("f3: start")
-  let res = `settings ...
+  let res = `settings ... (version: ${VERSION})
 
 <br><br>
   <button onClick='(()=>{
@@ -503,7 +536,8 @@ const addEvents=()=>{
 const addContents=()=>{
 log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", String.raw`
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">
+<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css"> -->
+<link rel="stylesheet" href="./css/fontawesome-free-6.3.0-web-all.min.css">
 <style>
 #${p}logger {
   font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
@@ -639,7 +673,7 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
     <a></a>
   </div>
 </div>
-<script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/>
+<!-- <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/> -->
 `)
 log("addContents: end")
 }
@@ -685,9 +719,18 @@ const main=(args={
 //----
 // sw
 let cacheItems = [
-  "./icon.png",
-  "./manifest.json",
-  "./logger.js",
+  "./image/icon.png",
+  "./css/fontawesome-free-6.3.0-web-all.min.css",
+  "./webfonts/fa-brands-400.ttf",
+  "./webfonts/fa-brands-400.woff2",
+  "./webfonts/fa-regular-400.ttf",
+  "./webfonts/fa-regular-400.woff2",
+  "./webfonts/fa-solid-900.ttf",
+  "./webfonts/fa-solid-900.woff2",
+  "./webfonts/fa-v4compatibility.ttf",
+  "./webfonts/fa-v4compatibility.woff2",
+  "./js/logger.js",
+  "./json/manifest.json",
   "./",
 ];
 const getCacheItems=()=>cacheItems
@@ -705,11 +748,10 @@ if (!isdoc) {
     )
   })
 }
+
 //----
 // object
 logger=Object.assign(main, {
-  "regsw": regsw,
-  "delsw": delsw,
   "getLocal": getLocal, //async関数のため自前でpromiseを受け取る
   "setLocal": setLocal, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "delLocal": delLocal,
@@ -720,9 +762,13 @@ logger=Object.assign(main, {
   "setCache": setCache, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "delCache": delCache,
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
-  "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
-  "viewInfo": viewInfo,
+  "getPost": getPost, //async関数のため自前でpromiseを受け取る
+  "setPost": setPost, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "setRecObj": setRecObj,
   "getRecObj": getRecObj,
+  "regsw": regsw,
+  "delsw": delsw,
+  "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
+  "viewInfo": viewInfo,
   "log": log,
 })})()
