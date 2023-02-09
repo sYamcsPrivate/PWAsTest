@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.41";
+const VERSION = "0.0.0.42";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -151,7 +151,7 @@ const logObj=(args)=>{
           break
       }
       try {
-        let logconv=(args)=>(args.length>100) ? args.substring(0, 25) + " ..." : args
+        const logconv=(args)=>(args.length>100) ? args.substring(0, 25) + " ..." : args
         if (key=="log") {
           o.log=logconv(o.log)
         } else {
@@ -159,10 +159,7 @@ const logObj=(args)=>{
           jo.log = logconv(jo.log)
           o[key]=JSON.stringify(jo)
         }
-      } catch(e) {
-        log(typeof(o[key]))
-        log(o[key])
-      }
+      } catch {}
     })
   }
   objLoop(obj)
