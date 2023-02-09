@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.40";
+const VERSION = "0.0.0.41";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -151,12 +151,18 @@ const logObj=(args)=>{
           break
       }
       try {
-        let jo = JSON.parse(o[key])
-        if (typeof(jo.log)=="string" && jo.log.length>100) {
-          jo.log = jo.log.substring(0, 25) + " ..."
+        let logconv=(args)=>(args.length>100) ? args.substring(0, 25) + " ..." : args
+        if (key=="log") {
+          o.log=logconv(o.log)
+        } else {
+          let jo = JSON.parse(o[key])
+          jo.log = logconv(jo.log)
           o[key]=JSON.stringify(jo)
         }
-      } catch {}
+      } catch(e) {
+        log(typeof(o[key]))
+        log(o[key])
+      }
     })
   }
   objLoop(obj)
@@ -266,7 +272,7 @@ const logCacheKeyItems=(args)=>{
   try {
     getCache(args).then(obj=>{
       if (obj !== undefined && obj !== null) {
-        log("CacheKeyItems(${args}) " + logObj(obj))
+        log(`CacheKeyItems(${args}) ` + logObj(obj))
       } else {
         log(`CacheKeyItems(${args}) {}`)
       }
