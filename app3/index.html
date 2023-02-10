@@ -12,19 +12,13 @@
 <script defer src="./logger.js"></script>
 <script>
 window.onload=()=>{
-  //logger({rec: "cache", pwa: true})
-  //logger({hide: true, rec: "local", pwa: false})
-  //logger({hide: true, rec: "local", pwa: true})
-  //logger({rec: "local", pwa: true})
-  //logger({hide: true})
-  //logger({posx:-65, posy:-65})
   //logger({posx:-65, posy:-65, hide: true})
-  //logger({rec: "cache"})
-  //logger()
+  //logger({posx:-65, posy:-65})
+  //logger({hide: true})
   logger({pwa: true})
+  //logger()
 
 /*
-  logger({rec: "local"})
   logger.log(logger.getLocalItems())
   logger.setCacheItems([
     "./image/icon.png",
@@ -131,9 +125,8 @@ window.onload=()=>{
     </div>
   `)
 
-  const postURL  = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
-  const recKey = "index.html.rec"
   let recObj = {
+    "localname": "index.html.rec", //must
     "count": 0
   }
 
@@ -142,7 +135,7 @@ window.onload=()=>{
   const view=()=>{
     logger.log("touch count: " + recObj.count)
     document.getElementById("show").innerHTML=recObj.count
-    logger.sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`) //ローカル記録の位置付け
+    logger.setLocal(recObj) //ローカル記録の位置付け
   }
 
   const msaddclass=(q, c, ms)=>{
@@ -155,9 +148,9 @@ window.onload=()=>{
   }
 
   document.getElementById("settings").addEventListener("click",()=>{
-    let res = prompt("name?", recObj.name)
-    recObj.name=(res)?res:recObj.name
-    logger.log("name: " + recObj.name)
+    let res = prompt("postname?", recObj.postname)
+    recObj.postname=(res)?res:recObj.postname
+    logger.log("postname: " + recObj.postname)
   })
 
   let timerid1, timerid2
@@ -202,17 +195,11 @@ window.onload=()=>{
     }
   });
 
-
-
-
-
-
-
   const sendPost=()=>{
     logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
-    logger.setPost(postURL, recObj).then(name=>{
-      logger.log("sendPost: success, name: " + name)
-      recObj.name=(recObj.name)?recObj.name:name
+    logger.setPost(recObj).then(postname=>{
+      logger.log("sendPost: success, postname: " + postname)
+      recObj.postname=(recObj.postname)?recObj.postname:postname
     }).catch(err=>{
       logger.log("sendPost: catch(e): " + err)
     }).finally(()=>{
@@ -222,8 +209,8 @@ window.onload=()=>{
 
   const recvPost=()=>{
     logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
-    logger.getPost(postURL, recObj.name).then(obj=>{
-      logger.log("recvPost: success, obj.name: " + obj.name)
+    logger.getPost(recObj).then(obj=>{
+      logger.log("recvPost: success, obj.postname: " + obj.postname)
       recObj=(obj)?obj:recObj
     }).catch(err=>{
       logger.log("recvPost: catch(e): " + err)
@@ -234,55 +221,17 @@ window.onload=()=>{
     })
   }
 
-
-
-
-
-/*
-  const recvPost=()=>{
-    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
-    logger.doPost(postURL, {
-      "action": "get",
-      "data": {
-        "name": recObj.name,
-      },
-    }).then(res=>{
-      recObj=(res)?res:recObj
-    //}).catch(err=>alert("Failed to receive. please try again"))
-    }).finally(()=>{
-      logger.log(`recvPost:  end, recObj:${JSON.stringify(recObj)}`)
-      msaddclass("#show", "flash", 50)
-      view()
-    })
-  }
-
-  const sendPost=()=>{
-    logger.log(`sendPost: start, recObj:${JSON.stringify(recObj)}`)
-    logger.doPost(postURL, {
-      "action": "set",
-      "data": recObj,
-    }).then(res=>{
-      recObj.name=(recObj.name)?recObj.name:res.name
-    }).catch(err=>{
-      alert("Failed to send. please try again")
-    }).finally(()=>{
-      logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
-    })
-  }
-*/
-
   document.getElementById("send").addEventListener("click",()=>sendPost())
   document.getElementById("recv").addEventListener("click",()=>recvPost())
 
   const getLocal=()=>{
     logger.log(`getLocalPost: start`)
     document.getElementById("show").innerHTML=`<font size="2">loading...</font>`
-    logger.getLocal(recKey).then(res=>{
-      if (res) recObj=res
-      logger.log(`getLocal: end, recObj:${JSON.stringify(recObj)}`)
-      msaddclass("#show", "flash", 50)
-      view()
-    })
+    const res = logger.getLocal(recObj)
+    if (res) recObj=res
+    logger.log(`getLocal: end, recObj:${JSON.stringify(recObj)}`)
+    msaddclass("#show", "flash", 50)
+    view()
   }
   getLocal()
 

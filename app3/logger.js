@@ -1,38 +1,41 @@
 (()=>{
 
-const VERSION = "0.0.0.48";
+const VERSION = "0.0.0.49";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
 const isdoc = self.hasOwnProperty("document")
 
-let localName = ""
+let localPrefix = ""
 let cacheName = "";
 
 let isHideToggle = false;
-let isLocal = false;
-let isCache = false;
 let posX = 0;
 let posY = 0;
 
-let recKey = "logger.js.rec"
+
+
 let recObj = {
+  "localname": "logger.js.rec",
   "log": "",
-  //"post": "",
-  //"name": "",
+  //"postname": "",
+  //"posturl": "",
   //"timestamp": "",
 }
 
 //forTest
-recObj.post = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
+recObj.posturl = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
 
 const getRecObj=()=>recObj
 const setRecObj=(args)=>{
   if (args!==undefined && args.log!==undefined) recObj.log = args.log
-  if (args!==undefined && args.post!==undefined) recObj.post = args.post
-  if (args!==undefined && args.name!==undefined) recObj.name = args.name
+  if (args!==undefined && args.localname!==undefined) recObj.localname = args.localname
+  if (args!==undefined && args.postname!==undefined) recObj.postname = args.postname
+  if (args!==undefined && args.posturl!==undefined) recObj.posturl = args.posturl
   recObj.timestamp = getDateTime()
 }
+
+
 
 const getDateTime=()=>{
   const toDoubleDigits=(i)=>{
@@ -83,40 +86,39 @@ const getPrefix=()=>{
   }
 }
 if (isdoc) {
-  localName = getPrefix()
+  localPrefix = getPrefix()
   cacheName = getPrefix() + VERSION
 }
 
-const getLocalKeyName=(key)=>{
-  localName = getPrefix()
-  return localName + key
-}
 
-const getLocal=async(key)=>{ //文字列を渡して、jsonオブジェクトで返る
+
+const getLocalName=(name)=>localPrefix + name
+
+const getLocal=(obj)=>{ //jsonオブジェクトからlocalnameを取り出して、jsonオブジェクトで返る
   try {
-    return JSON.parse(localStorage.getItem(getLocalKeyName(key)))
+    return JSON.parse(localStorage.getItem(getLocalName(obj.localname)))
   } catch(e) {
     console.log("getLocal: catch(e): " + e)
     return undefined
   }
 }
-const setLocal=async(key, value)=>{ //jsonオブジェクトを渡す
+const setLocal=(obj)=>{ //jsonオブジェクトを渡す
   try {
-    value.timestamp = getDateTime()
-    localStorage.setItem(getLocalKeyName(key), JSON.stringify(value))
+    obj.timestamp = getDateTime()
+    localStorage.setItem(getLocalName(obj.localname), JSON.stringify(obj))
     return true
   } catch(e) {
     console.log("setLocal: catch(e): " + e)
     return false
   }
 }
-const delLocal=(key)=>{ //文字列を渡す(localStorageKey)
+const delLocal=(obj)=>{ //jsonオブジェクトからlocalnameを取り出して削除する
   try {
-    if (localStorage.getItem(getLocalKeyName(key))!=null) {
-      localStorage.removeItem(getLocalKeyName(key))
-      log(`localkey: ${getLocalKeyName(key)} -> clear`)
+    if (localStorage.getItem(getLocalName(obj.localname))!=null) {
+      localStorage.removeItem(getLocalName(obj.localname))
+      log(`localkey: ${getLocalName(obj.localname)} -> clear`)
     } else {
-      log(`localkey: ${getLocalKeyName(key)} -> nothing`)
+      log(`localkey: ${getLocalName(obj.localname)} -> nothing`)
     }
     return true
   } catch(e) {
@@ -124,7 +126,7 @@ const delLocal=(key)=>{ //文字列を渡す(localStorageKey)
     return false
   }
 }
-const delLocalAll=(name)=>{ //文字列を渡す(localStorageName)
+const delLocalAll=(name)=>{ //localPrefixを渡してprefixを含むもの全てを削除する
   log(`delLocalAll(${name}): start`)
   try {
     Object.keys(localStorage).forEach(key=>{
@@ -186,11 +188,13 @@ const logLocalKeys=()=>{
 }
 */
 
-const logLocalKeyItems=(name)=>{ //文字列を渡す(localStorageName)
+const logLocalKeyItems=()=>{
   log(`logLocalKeyItems: start`)
   log("localStorage " + logObj(localStorage))
   log(`logLocalKeyItems: end`)
 }
+
+
 
 const getCacheName=()=>{
   let res
@@ -220,7 +224,8 @@ const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで
     return undefined
   }
 }
-const setCache=async(key, value)=>{ //jsonオブジェクトを渡す
+
+const setCache=async(key, value)=>{ //jsonオブジェクトを渡す（非使用）
   try {
     value.timestamp = getDateTime()
     const req = "./" + key
@@ -233,11 +238,11 @@ const setCache=async(key, value)=>{ //jsonオブジェクトを渡す
   }
 }
 
-const logCacheNames=(isClear=false)=>{
+const logCacheNames=async(isClear=false)=>{
   log(`logCacheNames(isClear:${isClear}): start`)
   try {
     log("CacheName(self): " + cacheName)
-    caches.keys().then(cache=>{
+    return await caches.keys().then(cache=>{
       cache.forEach(cn=>{
         if (isClear && (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1))) {
           caches.delete(cn)
@@ -253,22 +258,24 @@ const logCacheNames=(isClear=false)=>{
     return false
   }
 }
-const logCacheKeys=()=>{
+const logCacheKeys=async()=>{
   log("logCacheKeys: start")
   try {
-    caches.open(cacheName).then(cache=>{
-      cache.keys().then(keys=>{
+    return await caches.open(cacheName).then(async(cache)=>{
+      return await cache.keys().then(keys=>{
         keys.forEach((request, index, array)=>{
           log(`CacheKey: ${request.url}`)
         })
         log(`logCacheKeys: keys.length:${keys.length}`)
-      }).finally(()=>log(`logCacheKeys: end`))
-    })
+      })
+    }).finally(()=>log(`logCacheKeys: end`))
   } catch(e) {
     log("logCacheKeys: catch(e): " + e)
     return false
   }
 }
+
+/*
 const logCacheKeyItems=(args)=>{
   log(`logCacheKeyItems(${args}): start`)
   try {
@@ -284,8 +291,14 @@ const logCacheKeyItems=(args)=>{
     return false
   }
 }
+*/
 
-const doPost = async(url, req) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
+
+
+const getPostURL=()=>recObj.posturl
+const setPostURL=(url)=>recObj.posturl=url
+
+const doPost = async(req, url=recObj.posturl) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
   log("doPost: start")
   try {
     if (!navigator.onLine) throw "offline now"
@@ -309,16 +322,16 @@ const doPost = async(url, req) => { //jsonオブジェクトを渡して、json�
   }
 }
 
-const setPost=async(url, obj)=>{
+const setPost=async(obj)=>{
   log("setPost: start")
   try {
     obj.timestamp = getDateTime()
-    const objJSON = await doPost(url, {
+    const objJSON = await doPost({
       "action": "set",
       "data": obj,
     })
     log("setPost: end")
-    return objJSON.name
+    return objJSON.postname
   } catch(e) {
     log("setPost: catch(e): " + e)
     alert(e)
@@ -326,13 +339,13 @@ const setPost=async(url, obj)=>{
   }
 }
 
-const getPost=async(url, name)=>{
+const getPost=async(obj)=>{
   log("getPost: start")
   try {
-    const objJSON = await doPost(url, {
+    const objJSON = await doPost({
       "action": "get",
       "data": {
-        "name": name,
+        "postname": obj.postname,
       },
     })
     log("getPost: end")
@@ -343,6 +356,8 @@ const getPost=async(url, name)=>{
     throw e
   }
 }
+
+
 
 let isasync = false
 let fs=[]
@@ -360,6 +375,8 @@ const sync=(args)=>{
   }
 }
 
+
+
 const view=()=>{
   //console.log("view: start")
   //log("view: start")
@@ -374,22 +391,24 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  //recObj.log=recObj.log+str+"\\n"
   setRecObj({"log": recObj.log+str+"\\n"})
-  if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
-  if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
+  setLocal(recObj)
+  //if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
+  //if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
   if (isdoc) view()
 }
 
 log("version: " + VERSION)
 log("self.document: " + isdoc)
 
-const viewInfo=()=>{
-  logCacheNames()
-  logCacheKeys()
-  logCacheKeyItems(recKey)
-  //logLocalKeys()
-  logLocalKeyItems(localName)
+
+
+const viewInfo=async()=>{
+  log("viewInfo: start")
+  await logCacheNames()
+  await logCacheKeys()
+  await logLocalKeyItems()
+  log("viewInfo: end")
 }
 
 const regsw=()=>{
@@ -408,12 +427,14 @@ const delsw=()=>{
 
 const delCache=()=>logCacheNames(true)
 
+
+
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  setPost(recObj.post, recObj).then(name=>{
-    log("f1: success, name: " + name)
-    recObj.name=(recObj.name)?recObj.name:name
+  setPost(recObj).then(postname=>{
+    log("f1: success, postname: " + postname)
+    recObj.postname=(recObj.postname)?recObj.postname:postname
   }).catch(err=>{
     log("f1: catch(e): " + err)
   }).finally(()=>{
@@ -425,8 +446,8 @@ const f1=()=>{
 const f2=()=>{
   log("f2: start")
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  getPost(recObj.post, recObj.name).then(obj=>{
-    log("f2: success, obj.name: " + obj.name)
+  getPost(recObj).then(obj=>{
+    log("f2: success, obj.postname: " + obj.postname)
     recObj=(obj)?obj:recObj
   }).catch(err=>{
     log("f2: catch(e): " + err)
@@ -467,7 +488,9 @@ const f3=()=>{
 <br><br>
   <button onClick='(()=>{
     logger.log("click: clear local")
-    logger.delLocalAll("${localName}")
+    const res = confirm("clear local?")
+    logger.log("clear local?: " + res)
+    if (res) logger.delLocalAll("${localPrefix}")
   })()'>clear local</button>
 
 <br><br>
@@ -478,19 +501,19 @@ const f3=()=>{
 
 <br><br>
   <button onClick='(()=>{
-    logger.log("click: setting post(URL)")
-    res = prompt("post(URL)?", logger.getRecObj().post)
-    if (res != null) logger.setRecObj({"post":res})
-    logger.log("setting post(URL): " + logger.getRecObj().post)
-  })()'>setting post(URL)</button><br>${recObj.post}
+    logger.log("click: post url")
+    const res = prompt("post url?", logger.getPostURL())
+    if (res != null) logger.setPostURL(res)
+    logger.log("post url: " + logger.getPostURL())
+  })()'>post url</button><br>${recObj.posturl}
 
 <br><br>
   <button onClick='(()=>{
-    logger.log("click: setting post(Name)")
-    res = prompt("post(Name)?", logger.getRecObj().name)
-    if (res != null) logger.setRecObj({"name":res})
-    logger.log("setting post(Name): " + logger.getRecObj().name)
-  })()'>setting post(Name)</button><br>${recObj.name}
+    logger.log("click: post name")
+    const res = prompt("post name?", logger.getRecObj().postname)
+    if (res != null) logger.setRecObj({"postname":res})
+    logger.log("post name: " + logger.getRecObj().postname)
+  })()'>post name</button><br>${recObj.postname}
 
 <br>
 `
@@ -498,6 +521,8 @@ const f3=()=>{
   log(res)
   log("f3: end")
 }
+
+
 
 const hideToggle=()=>{
   log("hideToggle: start")
@@ -530,6 +555,7 @@ const addEvents=()=>{
     log("body: click")
   });
 */
+
   log("addEvents: end")
 }
 
@@ -678,34 +704,24 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 log("addContents: end")
 }
 
+
+
 const main=(args={
   pwa: false,
-  rec: "local",
   posx: 0,
   posy: 0,
   hide: false,
 })=>{
+  recObj=getLocal(recObj)
   log("main args.pwa: "+args.pwa)
-  log("main args.rec: "+args.rec)
   log("main args.posx: "+args.posx)
   log("main args.posy: "+args.posy)
   log("main args.hide: "+args.hide)
   if (args.pwa) regsw()
-  let rec = (args.rec && args.rec=="cache") ? "cache" : "local"
-  switch (rec) {
-    case "local":
-      isLocal = true
-      getLocal(recKey).then(res=>recObj=(res)?res:recObj).finally(()=>log(`${recKey}: get from local`))
-      break
-    case "cache":
-      isCache = true
-      getCache(recKey).then(res=>recObj=(res)?res:recObj).finally(()=>log(`${recKey}: get from cache`))
-      break
-    default:
-      break
-  }
+
   posX = args.posx ? args.posx : args.hide ? 65 : 0
   posY = args.posy ? args.posy : args.hide ? 65 : 0
+
   addContents()
   addEvents()
   if (args.hide) {
@@ -764,8 +780,10 @@ logger=Object.assign(main, {
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "getPost": getPost, //async関数のため自前でpromiseを受け取る
   "setPost": setPost, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
-  "setRecObj": setRecObj,
+  "getPostURL": getPostURL,
+  "setPostURL": setPostURL,
   "getRecObj": getRecObj,
+  "setRecObj": setRecObj,
   "regsw": regsw,
   "delsw": delsw,
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）

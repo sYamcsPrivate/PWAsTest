@@ -1,3 +1,12 @@
+/*
+
+[利用アプリ]
+https://syamcsprivate.github.io/PWAsTest/app3
+
+[利用アプリのコード]
+https://github.com/sYamcsPrivate/PWAsTest/app3
+
+*/
 
 /*
 [参考]windowsコマンドプロンプトcurlでpost検証した実績
@@ -24,14 +33,14 @@ const getContents=(args)=>{
   let isExist=false, folder, file, data=""
   try {
     if (!args.hasOwnProperty("data")) throw "data undefined"
-    if (!args.data.hasOwnProperty("name")) throw "name undefined"
-    if (args.data.name=="") throw "name empty"
+    if (!args.data.hasOwnProperty("postname")) throw "postname undefined"
+    if (args.data.postname=="") throw "postname empty"
     //const folderid = args.folder.substr(args.folder.lastIndexOf('/')+1)
     folder = DriveApp.getFolderById(folderid);
     const files = folder.getFiles()
     while (files.hasNext()) {
       file = files.next()
-      if (file.getName() === args.data.name) { //nameをファイル名として存在チェック
+      if (file.getName() === args.data.postname) { //postnameをファイル名として存在チェック
         isExist = true
         data = file.getBlob().getDataAsString("utf-8"); //ファイルをutf-8で読み込み
         break
@@ -51,7 +60,7 @@ const get=(args)=>{
       if (contents.exist) {
         return {"status": "OK", "data": JSON.parse(contents.data)};
       } else {
-        return {"status": "NG", "data": "name not found"};
+        return {"status": "NG", "data": "postname not found"};
       }
     } else {
       throw contents.data
@@ -68,12 +77,12 @@ const set=(args)=>{
     if (contents.status=="OK") {
       if (contents.exist) {
         contents.file.setTrashed(true);
-        console.log(`set: ${args.data.name} deleted`)
+        console.log(`set: ${args.data.postname} deleted`)
       }
-    } else if (contents.data=="name undefined" || contents.data=="name empty") {
+    } else if (contents.data=="postname undefined" || contents.data=="postname empty") {
       let f=true
       do {
-        args.data.name = Math.random().toString(36).substring(2)
+        args.data.postname = Math.random().toString(36).substring(2)
         contents = getContents(args)
         if (contents.status=="OK" && !contents.exist) f=false
       } while(f)
@@ -81,9 +90,9 @@ const set=(args)=>{
       throw contents.data
     }
     const data = JSON.stringify(args.data); //受信したdataを文字列変換
-    const file = DriveApp.createFile(args.data.name, data, MimeType.PLAIN_TEXT); //IDをファイル名にしてプレーンテキストでファイル作成
+    const file = DriveApp.createFile(args.data.postname, data, MimeType.PLAIN_TEXT); //IDをファイル名にしてプレーンテキストでファイル作成
     file.moveTo(contents.folder)
-    return {"status": "OK", "data": {"name": args.data.name}};
+    return {"status": "OK", "data": {"postname": args.data.postname}};
   } catch(e) {
     return {"status": "NG", "data": e};
   }
@@ -106,12 +115,11 @@ const main=(args)=>{
   return res
 }
 
-
 /*
 const reqJson = {
   action: "get",
   data: {
-    name: "e04y9huo1pk",
+    postname: "6cvgl7tzxye",
   },
 }
 */
@@ -120,7 +128,7 @@ const reqJson = {
 const reqJson = {
   action: "set",
   data: {
-    "name": "test3.txt",
+    "postname": "test3.txt",
     "key1": "xxxx",
     "log": "3023-02-03.20:15:10.010|start\\n3023-02-03.20:20:10.010|end\\n",
   }
@@ -131,7 +139,7 @@ const reqJson = {
 const reqJson = {
   action: "set",
   data: {
-    "name": "",
+    "postname": "",
     "key1": "xxxx",
     "log": "bbbb\\ncccc\\n",
   }
@@ -168,6 +176,9 @@ function doPost(e){
   let resJson = main(reqJson)
   return ContentService.createTextOutput(JSON.stringify(resJson)).setMimeType(ContentService.MimeType.JSON);
 }
+
+
+
 
 
 
