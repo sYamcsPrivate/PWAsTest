@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.54";
+const VERSION = "0.0.0.55";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -15,7 +15,7 @@ let posY = 0;
 
 
 
-let recObj = {
+let rec = {
   "localname": "logger.js.rec",
   //"localtimestamp": "",
   //"postname": "",
@@ -26,15 +26,27 @@ let recObj = {
 }
 
 //forTest
-recObj.posturl = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
+rec.posturl = "https://script.google.com/macros/s/AKfycbztpS68-LlWTOIcb-nF_rNwwBUY--M8x-J7O-Am_D8edkTUOndHAZ22oiyVwN36BB2_-Q/exec"
 
-const getRecObj=()=>recObj
-const setRecObj=(args)=>{
-  if (args!==undefined && args.log!==undefined) recObj.log = args.log
-  if (args!==undefined && args.localname!==undefined) recObj.localname = args.localname
-  if (args!==undefined && args.postname!==undefined) recObj.postname = args.postname
-  if (args!==undefined && args.posturl!==undefined) recObj.posturl = args.posturl
-  recObj.localtimestamp = getDateTime()
+const get=(key)=>key?rec[key]:rec
+const set=(key, value)=>{
+  if (typeof(key)=="object") {
+    let obj=key
+    Object.keys(obj).forEach(k=>{
+      rec.k = obj.k
+    })
+  } else {
+    rec[key] = value
+  }
+  rec.localtimestamp = getDateTime()
+
+/*
+  if (args!==undefined && args.log!==undefined) rec.log = args.log
+  if (args!==undefined && args.localname!==undefined) rec.localname = args.localname
+  if (args!==undefined && args.postname!==undefined) rec.postname = args.postname
+  if (args!==undefined && args.posturl!==undefined) rec.posturl = args.posturl
+*/
+
 }
 
 
@@ -104,7 +116,7 @@ const getLocal=(obj)=>{ //jsonオブジェクトからlocalnameを取り出し�
     return undefined
   }
 }
-if (getLocal(recObj)) recObj=getLocal(recObj)
+if (getLocal(rec)) rec=getLocal(rec)
 
 const setLocal=(obj)=>{ //jsonオブジェクトを渡す
   try {
@@ -280,10 +292,7 @@ const logCacheKeys=async()=>{
 
 
 
-const getPostURL=()=>recObj.posturl
-const setPostURL=(url)=>recObj.posturl=url
-
-const doPost = async(req, url=recObj.posturl) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
+const doPost = async(req, url=rec.posturl) => { //jsonオブジェクトを渡して、jsonオブジェクトで返る
   log("doPost: start")
   try {
     if (!navigator.onLine) throw "offline now"
@@ -366,7 +375,7 @@ const view=()=>{
   //console.log("view: start")
   //log("view: start")
   if (document.getElementById(`${p}viewer`) != null) {
-    const convlog = recObj.log.split("\\n").join("<br>")
+    const convlog = rec.log.split("\\n").join("<br>")
     document.getElementById(`${p}viewer`).innerHTML=`<span id="${p}contents">${convlog}<br></span>`
     const viewer = document.getElementById(`${p}viewer`)
     viewer.scrollTop = viewer.scrollHeight
@@ -376,14 +385,14 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  if (recObj.log) {
-    setRecObj({"log": recObj.log+str+"\\n"})
+  if (get("log")) {
+    set("log", get("log")+str+"\\n")
   } else {
-    setRecObj({"log": str+"\\n"})
+    set("log", str+"\\n")
   }
-  setLocal(recObj)
-  //if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
-  //if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
+  setLocal(rec)
+  //if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(rec)})`)
+  //if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(rec)})`)
   if (isdoc) view()
 }
 
@@ -421,9 +430,9 @@ const delCache=()=>logCacheNames(true)
 const f1=()=>{
   log("f1: start")
   document.getElementById(`${p}menu1`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  setPost(recObj).then(postname=>{
+  setPost(rec).then(postname=>{
     log("f1: success, postname: " + postname)
-    recObj.postname=(recObj.postname)?recObj.postname:postname
+    rec.postname=(rec.postname)?rec.postname:postname
   }).catch(err=>{
     log("f1: catch(e): " + err)
   }).finally(()=>{
@@ -435,9 +444,9 @@ const f1=()=>{
 const f2=()=>{
   log("f2: start")
   document.getElementById(`${p}menu2`).innerHTML=`<a><i class="fa-solid fa-spinner fa-spin"></i></a>`
-  getPost(recObj).then(obj=>{
+  getPost(rec).then(obj=>{
     log("f2: success, obj.postname: " + obj.postname)
-    recObj=(obj)?obj:recObj
+    rec=(obj)?obj:rec
   }).catch(err=>{
     log("f2: catch(e): " + err)
   }).finally(()=>{
@@ -484,25 +493,25 @@ const f3=()=>{
 
 <br><br>
   <button onClick='(()=>{
-    logger.setRecObj({"log":""})
+    logger.set("log", "")
     logger.log("click: clear log")
   })()'>clear log</button>
 
 <br><br>
   <button onClick='(()=>{
     logger.log("click: post url")
-    const res = prompt("post url?", logger.getPostURL())
-    if (res != null) logger.setPostURL(res)
-    logger.log("post url: " + logger.getPostURL())
-  })()'>post url</button><br>${recObj.posturl}
+    const res = prompt("post url?", logger.get("posturl"))
+    if (res != null) logger.set("posturl", res)
+    logger.log("post url: " + logger.get("posturl"))
+  })()'>post url</button><br>${rec.posturl}
 
 <br><br>
   <button onClick='(()=>{
     logger.log("click: post name")
-    const res = prompt("post name?", logger.getRecObj().postname)
-    if (res != null) logger.setRecObj({"postname":res})
-    logger.log("post name: " + logger.getRecObj().postname)
-  })()'>post name</button><br>${recObj.postname}
+    const res = prompt("post name?", logger.get("postname"))
+    if (res != null) logger.set("postname", res)
+    logger.log("post name: " + logger.get("postname"))
+  })()'>post name</button><br>${rec.postname}
 
 <br>
 `
@@ -537,7 +546,7 @@ const addEvents=()=>{
     log("toggle: click")
     const rapper = document.getElementById(`${p}logger`);
     rapper.classList.toggle(`${p}notshow`);
-    if (recObj.mainargs.hide) hideToggle()
+    if (rec.mainargs.hide) hideToggle()
   });
 /*
   document.body.addEventListener("click",()=>{
@@ -552,7 +561,7 @@ const addContents=()=>{
 log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", String.raw`
 ${(()=>{
-const cdn = getRecObj().mainargs.cdn
+const cdn = get("mainargs").cdn
 if (cdn==undefined || cdn==true) {
   return String.raw`<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">`
 } else {
@@ -732,15 +741,14 @@ log("addContents: end")
 
 
 
-const main=(args={
-  sw: false, //true時はcacheItemsをアプリそれぞれに応じて更新する必要あり
-  cdn: true,
-  pos: "right-bottom", //"right-bottom"(default), "right-top", "left-bottom", "left-top"
-  posx: 0,
-  posy: 0,
-  hide: false,
-})=>{
-  recObj.mainargs=args
+const main=(args={})=>{
+  args.sw=(args.sw)?args.sw:false //true時はcacheItemsをアプリそれぞれに応じて更新する必要あり
+  args.cdn=(args.cdn)?args.cdn:true
+  args.pos=(args.pos)?args.pos:"right-bottom", //"right-bottom"(default), "right-top", "left-bottom", "left-top"
+  args.posx=(args.posx)?args.posx:0
+  args.posy=(args.posy)?args.posy:0
+  args.hide=(args.hide)?args.hide:false
+  rec.mainargs=args
   log("main args.sw: "+args.sw)
   log("main args.cdn: "+args.cdn)
   log("main args.pos: "+args.pos)
@@ -748,9 +756,9 @@ const main=(args={
   log("main args.posy: "+args.posy)
   log("main args.hide: "+args.hide)
   if (args.sw) regsw()
-  pos = args.pos ? args.pos : "right-bottom"
-  posX = args.posx ? args.posx : 0
-  posY = args.posy ? args.posy : 0
+  pos = args.pos
+  posX = args.posx
+  posY = args.posy
   addContents()
   addEvents()
   if (args.hide) hideToggle()
@@ -808,13 +816,11 @@ logger=Object.assign(main, {
   "doPost": doPost,     //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
   "getPost": getPost, //async関数のため自前でpromiseを受け取る
   "setPost": setPost, //async関数のため自前でpromiseを受け取る、用途次第では以下のsync関数を利用すると設計しやすいかも
-  "getPostURL": getPostURL,
-  "setPostURL": setPostURL,
-  "getRecObj": getRecObj,
-  "setRecObj": setRecObj,
   "regsw": regsw,
   "delsw": delsw,
   "sync": sync,         //async関数をfifoで逐次実行する関数（当関数にコールバック関数や返り値考慮はないが、async関数自身から後続関数を処理することは可能）
   "viewInfo": viewInfo,
+  "get": get,
+  "set": set,
   "log": log,
 })})()

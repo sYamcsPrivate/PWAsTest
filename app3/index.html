@@ -6,21 +6,27 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" href="./image/icon.png">
 <link rel="apple-touch-icon" href="./image/icon.png">
+
+<!-- https://liginc.co.jp/web/design/font/15639 -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+
 <title>PWAsTest - App3</title>
 </head>
 <body width="0px" height="0px" style="margin:0"></body>
 <script defer src="./logger.js"></script>
 <script>
 window.onload=()=>{
+  logger({sw: true, cdn: false})
   //logger()
   //logger({posx:-65, posy:-65, hide: true})
   //logger({posx:-65, posy:-65})
   //logger({hide: true})
-
-  logger({sw: true, cdn: false, pos: "left-bottom"})
-
+  //logger({sw: true, cdn: false, pos: "left-bottom"})
   //logger({cdn: false, hide: false, posx: 65, posy: -130})
-  //logger({pos: "left-top", posx:-30, posy:-30})
+  //logger({pos: "left-top", posx:-65, posy:-65, hide:true})
   //logger({pos: "left-bottom", posx:-65, posy:65, hide:true})
   //logger({pos: "right-top", posx:65, posy:-65, hide:true})
 
@@ -44,20 +50,42 @@ window.onload=()=>{
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <style>
       .pos {
-        font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+        font-family: 'Archivo Black', sans-serif;
         text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         position: fixed;
-        top: 5%;
-        left: 5%;
+        left: 10vw;
+        top: 7vh;
         user-select: none;
       }
       .btns {
-        width: 90vw;
-        height: 6vh;
+        width: 80vw;
+        height: 10vh;
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .btn {
+        font-family: 'Archivo Black', sans-serif;
+        font-size: 2.5rem;
+        width: 37vw;
+        height: 8vh;
+        margin: 3px auto;
+        padding: 1px 6px;
+        background: #ffffff;
+        color: #000000;
+      }
+      .btn:active {
+        -webkit-transform: translate(2px, 3px);
+        -moz-transform: translate(1px, 1px);
+        transform: translate(1px, 1px);
+      }
+      .area {
+        font-size: 19rem;
+        width: 80vw;
+        height: 70vh;
+        background: #cdddbd;
+        transition: background-color 1.5s;
       }
       .rect {
         color: #000000;
@@ -68,26 +96,6 @@ window.onload=()=>{
         justify-content: center;
         cursor: pointer;
       }
-      .btn {
-        font-size: 1.2rem;
-        width: 20vw;
-        margin: 5px auto;
-        padding: 1px 6px;
-        background: #ffffff;
-        color: #000000;
-      }
-      .btn:active {
-        -webkit-transform: translate(1px, 1px);
-        -moz-transform: translate(1px, 1px);
-        transform: translate(1px, 1px);
-      }
-      .area {
-        font-size: 8rem;
-        width: 90vw;
-        height: 80vh;
-        background: #cdddbd;
-        transition: background-color 1.5s;
-      }
       .flash {
         background: #efffdf;
         transition-duration: 0s;
@@ -95,30 +103,17 @@ window.onload=()=>{
     </style>
     <div class="pos">
       <div class="btns">
-        <button id="setting" class="rect btn">Setting</button>
-        <button id="send" class="rect btn">Send</button>
-        <button id="recv" class="rect btn">Recv</button>
-        <button id="clear" class="rect btn">Clear</button>
+        <button id="refresh" class="btn rect">Refresh</button>
+        <button id="clear" class="btn rect">Clear</button>
       </div>
-      <div id="show" class="rect area">0</div>
+      <div id="show" class="area rect">0</div>
     </div>
   `)
 
 
 
-  let fConnect = false
-
-  let recObj = {
-    "localname": "index.html.rec", //must
-    "count": 0
-  }
-
-
-
-  const view=()=>{
-    logger.log("touch count: " + recObj.count)
-    document.getElementById("show").innerHTML=recObj.count
-    logger.setLocal(recObj) //ローカル記録の位置付け
+  let rec = {
+    count: 0,
   }
 
   const msaddclass=(q, c, ms)=>{
@@ -130,83 +125,42 @@ window.onload=()=>{
     return e
   }
 
-  const sendPost=()=>{
-    logger.log(`sendPost: start, recObj:${JSON.stringify(recObj)}`)
-    document.getElementById("show").innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
-    logger.setPost(recObj).then(postname=>{
-      logger.log("sendPost: success, postname: " + postname)
-      recObj.postname=(recObj.postname)?recObj.postname:postname
-    }).catch(err=>{
-      logger.log("sendPost: catch(e): " + err)
-    }).finally(()=>{
-      logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
-      msaddclass("#show", "flash", 50)
-      view()
-      fConnect = false
-    })
+  const view=()=>{
+    logger.set("app", rec)
+    logger.log("touch count: " + rec.count)
+    document.getElementById("show").innerHTML=rec.count
   }
 
-  const recvPost=()=>{
-    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
-    document.getElementById("show").innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
-    logger.getPost(recObj).then(obj=>{
-      logger.log("recvPost: success, obj.postname: " + obj.postname)
-      recObj=(obj)?obj:recObj
-    }).catch(err=>{
-      logger.log("recvPost: catch(e): " + err)
-    }).finally(()=>{
-      logger.log(`recvPost: end, recObj:${JSON.stringify(recObj)}`)
-      msaddclass("#show", "flash", 50)
-      view()
-      fConnect = false
-    })
+  const get=()=>{
+    logger.log("get: start")
+    document.getElementById("show").innerHTML=`<font size="4">loading...</font>`
+    const res = logger.get("app")
+    if (res) rec = res
+    logger.log(`getLocal: end, rec: ${JSON.stringify(rec)}`)
+    msaddclass("#show", "flash", 50)
+    view()
+    logger.log("get: end")
   }
 
-
-
-  document.getElementById("setting").addEventListener("click",()=>{
-    logger.log("setting click")
-    let res = prompt("postname?", recObj.postname)
-    recObj.postname=(res)?res:recObj.postname
-    logger.log("postname: " + recObj.postname)
-  })
-
-  document.getElementById("send").addEventListener("click",()=>{
-    logger.log("send click")
-    if (fConnect) {
-      logger.log("connection now, send fail")
-    } else {
-      fConnect = true
-      sendPost()
-    }
-  })
-
-  document.getElementById("recv").addEventListener("click",()=>{
-    logger.log("recv click")
-    if (fConnect) {
-      logger.log("connection now, recv fail")
-    } else {
-      fConnect = true
-      recvPost()
-    }
+  document.getElementById("refresh").addEventListener("click",()=>{
+    logger.log("refresh click")
+    rec.count = logger.get("app").count
+    view()
+    msaddclass("#show", "flash", 50)
   })
 
   document.getElementById("clear").addEventListener("click",()=>{
     logger.log("clear click")
-    recObj.count = 0
+    rec.count = 0
     view()
     msaddclass("#show", "flash", 50)
-  });
+  })
 
   document.getElementById("show").addEventListener("click",()=>{
     logger.log("show click")
-    if (fConnect) {
-      logger.log("connection now, count fail")
-    } else {
-      recObj.count = recObj.count + 1
-      view()
-    }
-  });
+    rec.count = rec.count + 1
+    view()
+  })
 
   document.addEventListener("dblclick", e=>{
     logger.log("double click")
@@ -215,19 +169,7 @@ window.onload=()=>{
 
 
 
-  const getLocal=()=>{
-    logger.log(`getLocal: start`)
-    document.getElementById("show").innerHTML=`<font size="2">loading...</font>`
-    const res = logger.getLocal(recObj)
-    if (res) recObj=res
-    logger.log(`getLocal: end, recObj:${JSON.stringify(recObj)}`)
-    msaddclass("#show", "flash", 50)
-    view()
-  }
-  getLocal()
-
-
-
+  get()
   logger.log("index.html: end")
 
 
