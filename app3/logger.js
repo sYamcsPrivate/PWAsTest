@@ -562,7 +562,7 @@ log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", String.raw`
 ${(()=>{
 const cdn = get("mainargs").cdn
-if (cdn==undefined || cdn==true) {
+if (cdn) {
   return String.raw`<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">`
 } else {
   return String.raw`<link rel="stylesheet" href="./css/fontawesome-free-6.3.0-web-all.min.css">`
@@ -742,12 +742,12 @@ log("addContents: end")
 
 
 const main=(args={})=>{
-  args.sw=(args.sw)?args.sw:false //true時はcacheItemsをアプリそれぞれに応じて更新する必要あり
-  args.cdn=(args.cdn)?args.cdn:true
-  args.pos=(args.pos)?args.pos:"right-bottom", //"right-bottom"(default), "right-top", "left-bottom", "left-top"
-  args.posx=(args.posx)?args.posx:0
-  args.posy=(args.posy)?args.posy:0
-  args.hide=(args.hide)?args.hide:false
+  args.sw=(args.sw!==undefined)?args.sw:false //true時はcacheItemsをアプリそれぞれに応じて更新する必要あり
+  args.cdn=(args.cdn!==undefined)?args.cdn:true
+  args.pos=(args.pos!==undefined)?args.pos:"right-bottom", //"right-bottom"(default), "right-top", "left-bottom", "left-top"
+  args.posx=(args.posx!==undefined)?args.posx:0
+  args.posy=(args.posy!==undefined)?args.posy:0
+  args.hide=(args.hide!==undefined)?args.hide:false
   rec.mainargs=args
   log("main args.sw: "+args.sw)
   log("main args.cdn: "+args.cdn)
