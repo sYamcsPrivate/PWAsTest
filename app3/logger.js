@@ -17,11 +17,12 @@ let posY = 0;
 
 let recObj = {
   "localname": "logger.js.rec",
-  //"log": "",
+  //"localtimestamp": "",
   //"postname": "",
+  //"posttimestamp": "",
   //"posturl": "",
-  //"timestamp": "",
   //"mainargs": {},
+  //"log": "",
 }
 
 //forTest
@@ -33,7 +34,7 @@ const setRecObj=(args)=>{
   if (args!==undefined && args.localname!==undefined) recObj.localname = args.localname
   if (args!==undefined && args.postname!==undefined) recObj.postname = args.postname
   if (args!==undefined && args.posturl!==undefined) recObj.posturl = args.posturl
-  recObj.timestamp = getDateTime()
+  recObj.localtimestamp = getDateTime()
 }
 
 
@@ -107,7 +108,7 @@ if (getLocal(recObj)) recObj=getLocal(recObj)
 
 const setLocal=(obj)=>{ //jsonオブジェクトを渡す
   try {
-    obj.timestamp = getDateTime()
+    obj.localtimestamp = getDateTime()
     localStorage.setItem(getLocalName(obj.localname), JSON.stringify(obj))
     return true
   } catch(e) {
@@ -230,7 +231,7 @@ const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで
 
 const setCache=async(key, value)=>{ //jsonオブジェクトを渡す（非使用）
   try {
-    value.timestamp = getDateTime()
+    value.posttimestamp = getDateTime()
     const req = "./" + key
     const cache = await caches.open(getCacheName())
     await cache.put(req, new Response(JSON.stringify(value)))
@@ -309,7 +310,7 @@ const doPost = async(req, url=recObj.posturl) => { //jsonオブジェクトを�
 const setPost=async(obj)=>{
   log("setPost: start")
   try {
-    obj.timestamp = getDateTime()
+    obj.posttimestamp = getDateTime()
     const objJSON = await doPost({
       "action": "set",
       "data": obj,
