@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.51";
+const VERSION = "0.0.0.52";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -17,7 +17,7 @@ let posY = 0;
 
 let recObj = {
   "localname": "logger.js.rec",
-  "log": "",
+  //"log": "",
   //"postname": "",
   //"posturl": "",
   //"timestamp": "",
@@ -103,6 +103,8 @@ const getLocal=(obj)=>{ //jsonオブジェクトからlocalnameを取り出し�
     return undefined
   }
 }
+if (getLocal(recObj)) recObj=getLocal(recObj)
+
 const setLocal=(obj)=>{ //jsonオブジェクトを渡す
   try {
     obj.timestamp = getDateTime()
@@ -373,7 +375,11 @@ const view=()=>{
 const log=(args)=>{
   let str = getDateTime() + "|" + args
   console.log(str)
-  setRecObj({"log": recObj.log+str+"\\n"})
+  if (recObj.log) {
+    setRecObj({"log": recObj.log+str+"\\n"})
+  } else {
+    setRecObj({"log": str+"\\n"})
+  }
   setLocal(recObj)
   //if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(recObj)})`)
   //if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(recObj)})`)
@@ -733,7 +739,6 @@ const main=(args={
   posy: 0,
   hide: false,
 })=>{
-  recObj=getLocal(recObj)
   recObj.mainargs=args
   log("main args.sw: "+args.sw)
   log("main args.cdn: "+args.cdn)
