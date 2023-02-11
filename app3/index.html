@@ -43,11 +43,6 @@ window.onload=()=>{
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <style>
-      button:active {
-        -webkit-transform: translate(1px, 1px);
-        -moz-transform: translate(1px, 1px);
-        transform: translate(1px, 1px);
-      }
       .pos {
         font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
         text-size-adjust: 100%;
@@ -55,6 +50,7 @@ window.onload=()=>{
         position: fixed;
         top: 5%;
         left: 5%;
+        user-select: none;
       }
       .btns {
         width: 90vw;
@@ -63,40 +59,46 @@ window.onload=()=>{
         align-items: center;
         justify-content: center;
       }
-      .btn {
-        font-size: 1rem;
+      .rect {
         color: #000000;
-        width: 20vw;
-        margin: 10px;
-        box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
-        border-radius: 6px;
-      }
-      .area {
-        font-size: 8rem;
-        width: 90vw;
-        height: 80vh;
         box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
         border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        background: #d0d0d0;
+      }
+      .btn {
+        font-size: 1.2rem;
+        width: 20vw;
+        margin: 10px;
+        background: #cccccc;
+      }
+      .btn:active {
+        -webkit-transform: translate(1px, 1px);
+        -moz-transform: translate(1px, 1px);
+        transform: translate(1px, 1px);
+      }
+      .area {
+        font-size: 8rem;
+        width: 90vw;
+        height: 80vh;
+        background: #cdddbd;
         transition: background-color 1.5s;
       }
       .flash {
-        background: #dfefcf;
+        background: #efffdf;
         transition-duration: 0s;
       }
     </style>
     <div class="pos">
       <div class="btns">
-        <button id="settings" class="btn">settings</button>
-        <button id="send" class="btn">send</button>
-        <button id="recv" class="btn">recv</button>
-        <button id="clear" class="btn">clear</button>
+        <div id="settings" class="rect btn">settings</div>
+        <div id="send" class="rect btn">send</div>
+        <div id="recv" class="rect btn">recv</div>
+        <div id="clear" class="rect btn">clear</div>
       </div>
-      <div id="show" class="area">0</div>
+      <div id="show" class="rect area">0</div>
     </div>
   `)
 
@@ -212,7 +214,7 @@ window.onload=()=>{
 
 
   const getLocal=()=>{
-    logger.log(`getLocalPost: start`)
+    logger.log(`getLocal: start`)
     document.getElementById("show").innerHTML=`<font size="2">loading...</font>`
     const res = logger.getLocal(recObj)
     if (res) recObj=res
