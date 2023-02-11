@@ -12,11 +12,17 @@
 <script defer src="./logger.js"></script>
 <script>
 window.onload=()=>{
+  //logger()
   //logger({posx:-65, posy:-65, hide: true})
   //logger({posx:-65, posy:-65})
   //logger({hide: true})
-  logger({pwa: true})
-  //logger()
+
+  logger({sw: true, pos: "left-bottom"})
+
+  //logger({cdn: false, hide: false, posx: 65, posy: -130})
+  //logger({pos: "left-top", posx:-30, posy:-30})
+  //logger({pos: "left-bottom", posx:-65, posy:65, hide:true})
+  //logger({pos: "right-top", posx:65, posy:-65, hide:true})
 
 /*
   logger.log(logger.getLocalItems())
@@ -26,111 +32,83 @@ window.onload=()=>{
     "./",
   ]);
   logger.log(logger.getLocalItems())
-  logger({pwa: true})
+  logger({sw: true})
 */
 
 
 
   logger.log("index.html: start")
-  document.addEventListener("dblclick", function(e){ e.preventDefault();}, { passive: false });
+
+
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <style>
-      #pos {
+      button:active {
+        -webkit-transform: translate(1px, 1px);
+        -moz-transform: translate(1px, 1px);
+        transform: translate(1px, 1px);
+      }
+      .pos {
         font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
         text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         position: fixed;
-        top: 10%;
-        left: 10%;
+        top: 5%;
+        left: 5%;
+      }
+      .btns {
+        width: 90vw;
+        height: 6vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn {
+        font-size: 1.5rem;
+        width: 20vw;
+        margin: 10px;
+        box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
+        border-radius: 6px;
       }
       .area {
-        font-size: 7rem;
-        width: 80vw;
-        height: 40vh;
+        font-size: 8rem;
+        width: 90vw;
+        height: 80vh;
+        box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        background: #d0d0d0;
+        transition: background-color 1.5s;
       }
-      #show {
-        background: #66bbbb;
-        transition: background-color 1s;
-      }
-      #show.flash{
-        background: #99eeee;
+      .flash {
+        background: #dfefcf;
         transition-duration: 0s;
       }
-      #touch {
-        background: #eeee66;
-      }
-      #touch img {
-        width: 30%;
-        min-width: 256px;
-        height: auto;
-      }
-
-      .purun {
-        animation: purun 0.8s linear 0s 1;
-      }
-      
-      @keyframes purun {
-        0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
-        15%  { transform: scale(0.9, 0.9) translate(0%, 5%); }
-        30%  { transform: scale(1.3, 0.8) translate(0%, 10%); }
-        50%  { transform: scale(0.8, 1.3) translate(0%, -10%); }
-        70%  { transform: scale(1.1, 0.9) translate(0%, 5%); }
-        100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
-      }
-      
-      .korokoro {
-        animation: korokoro 2.5s linear 0s 1;
-      }
-      
-      @keyframes korokoro {
-        0%   { transform: translate(0%, 0%); }
-        5%   { transform: translate(10%, 0%) rotate(10deg); }
-        25%  { transform: translate(20%, 0%) rotate(20deg); }
-        30%  { transform: translate(-10%, 0%) rotate(-10deg); }
-        35%  { transform: translate(-15%, 0%) rotate(-15deg); }
-        45%  { transform: translate(10%, 0%) rotate(10deg); }
-        50%  { transform: translate(15%, 0%) rotate(15deg); }
-        60%  { transform: translate(-5%, 0%) rotate(-5deg); }
-        65%  { transform: translate(-7%, 0%) rotate(-7deg); }
-        75%  { transform: translate(0%, 0%) rotate(0deg); }
-        100% { transform: translate(0%, 0%) rotate(0deg); }
-      }
-
-      .poyooon {
-        animation: poyooon 0.9s linear 0s 1;
-      }
-      @keyframes poyooon {
-        0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
-        10%  { transform: scale(1.1, 0.9) translate(0%, 5%); }
-        40%  { transform: scale(1.2, 0.8) translate(0%, 15%); }
-        50%  { transform: scale(1.0, 1.0) translate(0%, 0%); }
-        60%  { transform: scale(0.9, 1.2) translate(0%, -100%); }
-        75%  { transform: scale(0.9, 1.2) translate(0%, -20%); }
-        85%  { transform: scale(1.2, 0.8) translate(0%, 15%); }
-        100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
-      }
     </style>
-    <button id="settings">settings</button>
-    <button id="send">send</button>
-    <button id="recv">recv</button>
-    <div id="pos">
-      <div id=""></div>
+    <div class="pos">
+      <div class="btns">
+        <button id="settings" class="btn">settings</button>
+        <button id="send" class="btn">send</button>
+        <button id="recv" class="btn">recv</button>
+        <button id="clear" class="btn">clear</button>
+      </div>
       <div id="show" class="area">0</div>
-      <div id="touch" class="area"><img src="./image/icon.png"></div>
     </div>
   `)
+
+
+
+  let fConnect = false
 
   let recObj = {
     "localname": "index.html.rec", //must
     "count": 0
   }
 
-  let isTimer = false
+
 
   const view=()=>{
     logger.log("touch count: " + recObj.count)
@@ -147,56 +125,9 @@ window.onload=()=>{
     return e
   }
 
-  document.getElementById("settings").addEventListener("click",()=>{
-    let res = prompt("postname?", recObj.postname)
-    recObj.postname=(res)?res:recObj.postname
-    logger.log("postname: " + recObj.postname)
-  })
-
-  let timerid1, timerid2
-  document.getElementById("show").addEventListener("click",()=>{
-    const stop=()=>{
-      clearInterval(timerid1)
-      clearInterval(timerid2)
-      isTimer = false
-      msaddclass("#show", "flash", 50)
-      msaddclass("#touch img", "poyooon", 900)
-    }
-    if (recObj.count > 0) {
-      if (isTimer) {
-        stop()
-      } else {
-        msaddclass("#show", "flash", 50)
-        sendPost() //サーバ記録の位置付け
-        isTimer = true
-        timerid1 = setInterval(()=>{
-          msaddclass("#touch img", "korokoro", 2500)
-          if (recObj.count <= 0) {
-            clearInterval(timerid1)
-          }
-        }, 2600);
-        timerid2 = setInterval(()=>{
-          recObj.count = recObj.count - 1
-          view()
-          if (recObj.count <= 0) {
-            document.querySelector("#touch img").classList.remove("korokoro");
-            stop()
-          }
-        }, 1000);
-      }
-    }
-  });
-
-  document.getElementById("touch").addEventListener("click",()=>{
-    if (!isTimer) {
-      msaddclass("#touch img", "purun", 800)
-      recObj.count = recObj.count + 1
-      view()
-    }
-  });
-
   const sendPost=()=>{
-    logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
+    logger.log(`sendPost: start, recObj:${JSON.stringify(recObj)}`)
+    document.getElementById("show").innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
     logger.setPost(recObj).then(postname=>{
       logger.log("sendPost: success, postname: " + postname)
       recObj.postname=(recObj.postname)?recObj.postname:postname
@@ -204,25 +135,80 @@ window.onload=()=>{
       logger.log("sendPost: catch(e): " + err)
     }).finally(()=>{
       logger.log(`sendPost: end, recObj:${JSON.stringify(recObj)}`)
+      msaddclass("#show", "flash", 50)
+      view()
+      fConnect = false
     })
   }
 
   const recvPost=()=>{
     logger.log(`recvPost: start, recObj:${JSON.stringify(recObj)}`)
+    document.getElementById("show").innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`
     logger.getPost(recObj).then(obj=>{
       logger.log("recvPost: success, obj.postname: " + obj.postname)
       recObj=(obj)?obj:recObj
     }).catch(err=>{
       logger.log("recvPost: catch(e): " + err)
     }).finally(()=>{
-      logger.log(`recvPost:  end, recObj:${JSON.stringify(recObj)}`)
+      logger.log(`recvPost: end, recObj:${JSON.stringify(recObj)}`)
       msaddclass("#show", "flash", 50)
       view()
+      fConnect = false
     })
   }
 
-  document.getElementById("send").addEventListener("click",()=>sendPost())
-  document.getElementById("recv").addEventListener("click",()=>recvPost())
+
+
+  document.getElementById("settings").addEventListener("click",()=>{
+    logger.log("settings click")
+    let res = prompt("postname?", recObj.postname)
+    recObj.postname=(res)?res:recObj.postname
+    logger.log("postname: " + recObj.postname)
+  })
+
+  document.getElementById("send").addEventListener("click",()=>{
+    logger.log("send click")
+    if (fConnect) {
+      logger.log("connection now, send fail")
+    } else {
+      fConnect = true
+      sendPost()
+    }
+  })
+
+  document.getElementById("recv").addEventListener("click",()=>{
+    logger.log("recv click")
+    if (fConnect) {
+      logger.log("connection now, recv fail")
+    } else {
+      fConnect = true
+      recvPost()
+    }
+  })
+
+  document.getElementById("clear").addEventListener("click",()=>{
+    logger.log("clear click")
+    recObj.count = 0
+    view()
+    msaddclass("#show", "flash", 50)
+  });
+
+  document.getElementById("show").addEventListener("click",()=>{
+    logger.log("show click")
+    if (fConnect) {
+      logger.log("connection now, count fail")
+    } else {
+      recObj.count = recObj.count + 1
+      view()
+    }
+  });
+
+  document.addEventListener("dblclick", e=>{
+    logger.log("double click")
+    e.preventDefault()
+  }, {passive: false})
+
+
 
   const getLocal=()=>{
     logger.log(`getLocalPost: start`)
@@ -234,6 +220,8 @@ window.onload=()=>{
     view()
   }
   getLocal()
+
+
 
   logger.log("index.html: end")
 

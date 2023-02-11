@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.49";
+const VERSION = "0.0.0.51";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -9,7 +9,7 @@ const isdoc = self.hasOwnProperty("document")
 let localPrefix = ""
 let cacheName = "";
 
-let isHideToggle = false;
+let pos = "";
 let posX = 0;
 let posY = 0;
 
@@ -21,6 +21,7 @@ let recObj = {
   //"postname": "",
   //"posturl": "",
   //"timestamp": "",
+  //"mainargs": {},
 }
 
 //forTest
@@ -242,17 +243,17 @@ const logCacheNames=async(isClear=false)=>{
   log(`logCacheNames(isClear:${isClear}): start`)
   try {
     log("CacheName(self): " + cacheName)
-    return await caches.keys().then(cache=>{
-      cache.forEach(cn=>{
-        if (isClear && (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1))) {
-          caches.delete(cn)
-          log(`CacheName: ${cn} -> clear`)
-        } else {
-          log(`CacheName: ${cn}`)
-        }
-      })
-      log(`logCacheNames(isClear:${isClear}): names.length:${cache.length}`)
-    }).finally(()=>log(`logCacheNames(isClear:${isClear}): end`))
+    const cache = await caches.keys()
+    cache.forEach(cn=>{
+      if (isClear && (cn.substring(0, cn.lastIndexOf("/")+1)==cacheName.substring(0, cacheName.lastIndexOf("/")+1))) {
+        caches.delete(cn)
+        log(`CacheName: ${cn} -> clear`)
+      } else {
+        log(`CacheName: ${cn}`)
+      }
+    })
+    log(`logCacheNames(isClear:${isClear}): names.length:${cache.length}`)
+    log(`logCacheNames(isClear:${isClear}): end`)
   } catch(e) {
     log(`logCacheNames(isClear:${isClear}): catch(e): ${e}`)
     return false
@@ -261,37 +262,18 @@ const logCacheNames=async(isClear=false)=>{
 const logCacheKeys=async()=>{
   log("logCacheKeys: start")
   try {
-    return await caches.open(cacheName).then(async(cache)=>{
-      return await cache.keys().then(keys=>{
-        keys.forEach((request, index, array)=>{
-          log(`CacheKey: ${request.url}`)
-        })
-        log(`logCacheKeys: keys.length:${keys.length}`)
-      })
-    }).finally(()=>log(`logCacheKeys: end`))
+    const cache = await caches.open(cacheName)
+    const keys = await cache.keys()
+    keys.forEach((request, index, array)=>{
+      log(`CacheKey: ${request.url}`)
+    })
+    log(`logCacheKeys: keys.length:${keys.length}`)
+    log(`logCacheKeys: end`)
   } catch(e) {
     log("logCacheKeys: catch(e): " + e)
     return false
   }
 }
-
-/*
-const logCacheKeyItems=(args)=>{
-  log(`logCacheKeyItems(${args}): start`)
-  try {
-    getCache(args).then(obj=>{
-      if (obj !== undefined && obj !== null) {
-        log(`CacheKeyItems(${args}) ` + logObj(obj))
-      } else {
-        log(`CacheKeyItems(${args}) {}`)
-      }
-    }).finally(()=>log(`logCacheKeyItems(${args}): end`))
-  } catch(e) {
-    log(`logCacheKeyItems(${args}): catch(e): ${e}`)
-    return false
-  }
-}
-*/
 
 
 
@@ -548,7 +530,7 @@ const addEvents=()=>{
     log("toggle: click")
     const rapper = document.getElementById(`${p}logger`);
     rapper.classList.toggle(`${p}notshow`);
-    if (isHideToggle) hideToggle()
+    if (recObj.mainargs.hide) hideToggle()
   });
 /*
   document.body.addEventListener("click",()=>{
@@ -562,16 +544,24 @@ const addEvents=()=>{
 const addContents=()=>{
 log("addContents: start")
 document.body.insertAdjacentHTML("beforeend", String.raw`
-<!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css"> -->
-<link rel="stylesheet" href="./css/fontawesome-free-6.3.0-web-all.min.css">
+${(()=>{
+const cdn = getRecObj().mainargs.cdn
+if (cdn==undefined || cdn==true) {
+  return String.raw`<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.2.1/css/all.css">`
+} else {
+  return String.raw`<link rel="stylesheet" href="./css/fontawesome-free-6.3.0-web-all.min.css">`
+  }
+})()}
 <style>
 #${p}logger {
   font-family: 'M PLUS Rounded 1c', 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   position: fixed;
-  bottom: 30px;
   right: 30px;
+  left: inherit;
+  top: inherit;
+  bottom: 30px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -581,10 +571,22 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 .${p}item {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
   gap: 15px;
   transition: all 0.5s ease;
   position: relative;
+}
+
+.${p}item.${p}right-bottom {
+  justify-content: flex-end;
+}
+.${p}item.${p}right-top {
+  justify-content: flex-end;
+}
+.${p}item.${p}left-bottom {
+  justify-content: flex-start;
+}
+.${p}item.${p}left-top {
+  justify-content: flex-start;
 }
 .${p}item a {
   background: #b6b6b6;
@@ -601,32 +603,30 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 /*#${p}viewer {*/
 .${p}item.${p}viewer {
   position: fixed;
+  right: 0px;
+  bottom: 0px;
   width: calc(100% - 30px);
   height: calc(100% - 15px);
   overflow: auto;
   overflow-x:hidden;
   word-break: break-all;
   justify-content: start;
-  position: fixed;
-  bottom: 0px;
-  right: 0px;
   margin: 5px;
   background: #FFF;
   padding: 2px 10px 0;
-  /*font-size: 0.85rem;*/
   font-size: 0.6rem;
   box-shadow: 0 0 3px 0 rgb(0 0 0 / 12%), 0 2px 3px 0 rgb(0 0 0 / 22%);
   border-radius: 3px;
   -webkit-overflow-scrolling: touch;
 }
-@media (min-width: 540px) {
+@media (min-width: 650px) {
   .${p}item.${p}viewer {
-    bottom: 40px;
     right: 100px;
+    bottom: 40px;
     width: 80%;
     height: 80%;
-    max-width: 400px;
-    max-height: 600px;
+    max-width: 600px;
+    max-height: 800px;
   }
 }
 .${p}item.${p}viewer button{
@@ -674,32 +674,51 @@ document.body.insertAdjacentHTML("beforeend", String.raw`
 #${p}logger.${p}notshow > .${p}item.${p}toggle a:before {
   content: "\f067";
 }
-#${p}logger.${p}notshow {
-  bottom: calc(30px - ${posX}px);
-  right: calc(30px - ${posY}px);
+#${p}logger.${p}notshow.${p}right-bottom {
+  right: calc(30px - ${posX}px);
+  left: inherit;
+  top: inherit;
+  bottom: calc(30px - ${posY}px);
+}
+#${p}logger.${p}notshow.${p}right-top {
+  right: calc(30px - ${posX}px);
+  left: inherit;
+  top: calc(30px + ${posY}px);
+  bottom: inherit;
+}
+#${p}logger.${p}notshow.${p}left-bottom {
+  right: inherit;
+  left: calc(30px + ${posX}px);
+  top: inherit;
+  bottom: calc(30px - ${posY}px);
+}
+#${p}logger.${p}notshow.${p}left-top {
+  right: inherit;
+  left: calc(30px + ${posX}px);
+  top: calc(30px + ${posY}px);
+  bottom: inherit;
 }
 #${p}logger.${p}notshowtoggle > .${p}item.${p}toggle {
   opacity: 0;
 }
 </style>
-<div id="${p}logger" class="${p}notshow">
-  <div id="${p}viewer" class="${p}item ${p}viewer">
+<div id="${p}logger" class="${p}${pos} ${p}notshow">
+  <div id="${p}viewer" class="${p}${pos} ${p}item ${p}viewer">
     <span id="${p}contents"></span>
   </div>
-  <div id="${p}menu1" class="${p}item ${p}menu">
+  <div id="${p}menu1" class="${p}${pos} ${p}item ${p}menu">
     <a><i class="fa-solid fa-cloud-arrow-up"></i></a>
   </div>
-  <div id="${p}menu2" class="${p}item ${p}menu">
+  <div id="${p}menu2" class="${p}${pos} ${p}item ${p}menu">
     <a><i class="fa-solid fa-cloud-arrow-down"></i></a>
   </div>
-  <div id="${p}menu3" class="${p}item ${p}menu">
+  <div id="${p}menu3" class="${p}${pos} ${p}item ${p}menu">
     <a><i class="fa-solid fa-gear"></i></a>
   </div>
-  <div id="${p}toggle" class="${p}item ${p}toggle">
+  <div id="${p}toggle" class="${p}${pos} ${p}item ${p}toggle">
     <a></a>
   </div>
 </div>
-<!-- <script defer src="https://use.fontawesome.com/releases/v6.2.1/js/all.js"/> -->
 `)
 log("addContents: end")
 }
@@ -707,33 +726,36 @@ log("addContents: end")
 
 
 const main=(args={
-  pwa: false,
+  sw: false, //true時はcacheItemsをアプリそれぞれに応じて更新する必要あり
+  cdn: true,
+  pos: "right-bottom", //"right-bottom"(default), "right-top", "left-bottom", "left-top"
   posx: 0,
   posy: 0,
   hide: false,
 })=>{
   recObj=getLocal(recObj)
-  log("main args.pwa: "+args.pwa)
+  recObj.mainargs=args
+  log("main args.sw: "+args.sw)
+  log("main args.cdn: "+args.cdn)
+  log("main args.pos: "+args.pos)
   log("main args.posx: "+args.posx)
   log("main args.posy: "+args.posy)
   log("main args.hide: "+args.hide)
-  if (args.pwa) regsw()
-
-  posX = args.posx ? args.posx : args.hide ? 65 : 0
-  posY = args.posy ? args.posy : args.hide ? 65 : 0
-
+  if (args.sw) regsw()
+  pos = args.pos ? args.pos : "right-bottom"
+  posX = args.posx ? args.posx : 0
+  posY = args.posy ? args.posy : 0
   addContents()
   addEvents()
-  if (args.hide) {
-    isHideToggle = true
-    hideToggle()
-  }
+  if (args.hide) hideToggle()
 }
 
 
 
 //----
-// sw - logger.js(serviceWorker.register)とmanifest.jsonはindex.htmlと同位置(root)に配置する必要あり
+// sw
+//  main({sw:true})で起動する場合、logger.js(serviceWorker.register)とmanifest.jsonは、
+//  index.htmlに相当するhtmlファイルと同位置(root)に配置する必要あり
 let cacheItems = [
   "./image/icon.png",
   "./css/fontawesome-free-6.3.0-web-all.min.css",
