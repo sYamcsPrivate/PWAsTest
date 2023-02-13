@@ -114,7 +114,30 @@ window.onload=()=>{
   let rec = {
     count: 0,
   }
-  let frec = true
+
+
+
+  const get=()=>{
+    //logger.log("get: start")
+    const res = logger.get("app")
+    if (res) rec =res
+    logger.log(`get: rec: ${JSON.stringify(rec)}`)
+    //logger.log("get: end")
+  }
+
+  const set=()=>{
+    //logger.log("set: start")
+    logger.set("app", rec)
+    //logger.log("set: end")
+  }
+
+  const view=()=>{
+    //logger.log("view: start")
+    get()
+    logger.log("view: count: " + rec.count)
+    document.getElementById("show").innerHTML=rec.count
+    //logger.log("view: end")
+  }
 
   const msaddclass=(q, c, ms)=>{
     const e = document.querySelector(q);
@@ -125,64 +148,34 @@ window.onload=()=>{
     return e
   }
 
-  const set=()=>{ //localへのset中はlocalチェックを外す
-    //logger.log("set: start")
-    frec = false
-    logger.set("app", rec)
-    frec = true
-    //logger.log("set: end")
-  }
 
-  const view=()=>{
-    //logger.log("view: start")
+
+  document.getElementById("clear").addEventListener("click",()=>{ //local更新とflashのみ
+    logger.log("clear click")
+    rec.count = 0
     set()
-    logger.log("view: count: " + rec.count)
-    document.getElementById("show").innerHTML=rec.count
-    //logger.log("view: end")
-  }
+    msaddclass("#show", "flash", 50)
+  }, false) //下位から上位へイベント伝播(バブリング)
 
-  const get=()=>{
-    //logger.log("get: start")
-    const res = logger.get("app")
-    if (res) {
-      if (res!=rec) {
-        rec =res
-        logger.log(`get: rec: ${JSON.stringify(rec)}`)
-        view()
-        msaddclass("#show", "flash", 50)
-      }
-    }
-    //logger.log("get: end")
-  }
+  document.getElementById("show").addEventListener("click",()=>{ //local更新のみ
+    //logger.log("show click")
+    rec.count = rec.count + 1
+    set()
+  }, false) //下位から上位へイベント伝播(バブリング)
 
-
+  document.body.addEventListener("click",()=>{ //bodyClickでlocal内容を表示->logger側で受信した結果もapp-viewへ反映
+    //logger.log("body: click")
+    view()
+  }, false) //下位から上位へイベント伝播(バブリング)
 
   document.addEventListener("dblclick", e=>{
     logger.log("double click")
     e.preventDefault()
   }, {passive: false})
 
-  document.body.addEventListener("click",()=>{ //bodyClickでlogger側で受信した結果をapp側に反映(app側set中はチェックskip
-    //logger.log("body: click")
-    if (frec) get()
-  });
-
-  document.getElementById("clear").addEventListener("click",()=>{
-    logger.log("clear click")
-    rec.count = 0
-    view()
-    msaddclass("#show", "flash", 50)
-  })
-
-  document.getElementById("show").addEventListener("click",()=>{
-    //logger.log("show click")
-    rec.count = rec.count + 1
-    view()
-  })
 
 
-
-  get()
+  view()
   logger.log("index.html: end")
 
 
