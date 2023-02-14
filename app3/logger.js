@@ -1,6 +1,6 @@
 (()=>{
 
-const VERSION = "0.0.0.60";
+const VERSION = "0.0.0.61";
 
 //const p = Math.random().toString(36).substring(2)
 const p = ((Math.random()*26)+10).toString(36).replace(".","")
@@ -17,9 +17,10 @@ let posY = 0;
 
 let rec = {
   "localname": "logger.js.rec",
-  //"localtimestamp": "",
+  //"localtime": "",
+  //"sendtime": "",
+  //"recvtime": "",
   //"postname": "",
-  //"posttimestamp": "",
   //"posturl": "",
   //"mainargs": {},
   //"log": "",
@@ -38,15 +39,7 @@ const set=(key, value)=>{
   } else {
     rec[key] = value
   }
-  rec.localtimestamp = getDateTime()
-
-/*
-  if (args!==undefined && args.log!==undefined) rec.log = args.log
-  if (args!==undefined && args.localname!==undefined) rec.localname = args.localname
-  if (args!==undefined && args.postname!==undefined) rec.postname = args.postname
-  if (args!==undefined && args.posturl!==undefined) rec.posturl = args.posturl
-*/
-
+  rec.localtime = getDateTime()
 }
 
 
@@ -120,7 +113,7 @@ if (getLocal(rec)) rec=getLocal(rec)
 
 const setLocal=(obj)=>{ //jsonオブジェクトを渡す
   try {
-    obj.localtimestamp = getDateTime()
+    obj.localtime = getDateTime()
     localStorage.setItem(getLocalName(obj.localname), JSON.stringify(obj))
     return true
   } catch(e) {
@@ -243,7 +236,7 @@ const getCache=async(key)=>{ //文字列を渡して、jsonオブジェクトで
 
 const setCache=async(key, value)=>{ //jsonオブジェクトを渡す（非使用）
   try {
-    value.posttimestamp = getDateTime()
+    value.sendtime = getDateTime()
     const req = "./" + key
     const cache = await caches.open(getCacheName())
     await cache.put(req, new Response(JSON.stringify(value)))
@@ -319,7 +312,7 @@ const doPost = async(req, url=rec.posturl) => { //jsonオブジェクトを渡�
 const setPost=async(obj)=>{
   log("setPost: start")
   try {
-    obj.posttimestamp = getDateTime()
+    obj.sendtime = getDateTime()
     const objJSON = await doPost({
       "action": "set",
       "data": obj,
@@ -343,6 +336,7 @@ const getPost=async(obj)=>{
       },
     })
     log("getPost: end")
+    objJSON.recvtime = getDateTime()
     return objJSON
   } catch(e) {
     log("getPost: catch(e): " + e)
@@ -391,8 +385,6 @@ const log=(args)=>{
     set("log", str+"\\n")
   }
   setLocal(rec)
-  //if (isLocal) sync(`setLocal("${recKey}", ${JSON.stringify(rec)})`)
-  //if (isCache) sync(`setCache("${recKey}", ${JSON.stringify(rec)})`)
   if (isdoc) view()
 }
 
@@ -458,31 +450,26 @@ const f2=()=>{
 const f3=()=>{
   log("f3: start")
   let res = `settings ... (version: ${VERSION})
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: view info")
     logger.viewInfo()
   })()'>view info</button>
-
 <br><br>
   <button onClick='(()=>{ //true:サーバから再読込/false:キャッシュから再読込
     logger.log("click: reload")
     location.reload(true)
   })()'>reload</button>
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: clear service worker")
     logger.delsw()
   })()'>clear service worker</button>
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: clear cache")
     logger.delCache()
   })()'>clear cache</button>
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: clear local")
@@ -490,13 +477,11 @@ const f3=()=>{
     logger.log("clear local?: " + res)
     if (res) logger.delLocalAll("${localPrefix}")
   })()'>clear local</button>
-
 <br><br>
   <button onClick='(()=>{
     logger.set("log", "")
     logger.log("click: clear log")
   })()'>clear log</button>
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: post url")
@@ -504,7 +489,6 @@ const f3=()=>{
     if (res != null) logger.set("posturl", res)
     logger.log("post url: " + logger.get("posturl"))
   })()'>post url</button><br>${rec.posturl}
-
 <br><br>
   <button onClick='(()=>{
     logger.log("click: post name")
@@ -512,7 +496,6 @@ const f3=()=>{
     if (res != null) logger.set("postname", res)
     logger.log("post name: " + logger.get("postname"))
   })()'>post name</button><br>${rec.postname}
-
 <br>
 `
 
@@ -591,7 +574,6 @@ if (cdn) {
   transition: all 0.5s ease;
   position: relative;
 }
-
 .${p}item.${p}right-bottom {
   justify-content: flex-end;
 }
@@ -748,7 +730,7 @@ const main=(args={})=>{
   args.posx=(args.posx!==undefined)?args.posx:0
   args.posy=(args.posy!==undefined)?args.posy:0
   args.hide=(args.hide!==undefined)?args.hide:false
-  rec.mainargs=args
+  set("mainargs", args)
   log("main args.sw: "+args.sw)
   log("main args.cdn: "+args.cdn)
   log("main args.pos: "+args.pos)
