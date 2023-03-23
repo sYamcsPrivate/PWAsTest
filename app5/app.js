@@ -41,7 +41,7 @@ const getDateTime=()=>{
 
 
 //win
-if (typeof window !== "undefined") {
+if (typeof(window) !== "undefined") {
   Console.promise.then(()=>Console.settings({storage:true}))
   console.log("[win]start")
 
@@ -54,13 +54,13 @@ if (typeof window !== "undefined") {
   document.getElementById("btn1").addEventListener("click", async()=>{
     console.log(`[win]btn1Click`)
     const sw = await navigator.serviceWorker.ready
-    console.log(`[win]sw:${sw}`)
+    console.log(`[win]sw:${typeof(sw)}`)
     if (sw) {
       const msg = {type:"wait", time:5}
       console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
       bc1.postMessage(msg);
     } else {
-      console.log(`[win]swが準備できてないためreload推奨`)
+      console.log(`[win]sw準備ができてないためreload推奨`)
     }
   },false);
 
@@ -69,8 +69,12 @@ if (typeof window !== "undefined") {
   },false);
 
   console.log(`[win]Notification：${typeof(Notification)}`);
-  const res = await Notification.requestPermission()
-  console.log(`[win]通知許可ステータス：${res}`);
+  if (typeof(Notification) !== "undefined") {
+    const res = await Notification.requestPermission()
+    console.log(`[win]通知許可ステータス：${res}`);
+  } else {
+    console.log(`[win]通知できない`);
+  }
   console.log("[win]end")
 
 
@@ -123,9 +127,14 @@ if (typeof window !== "undefined") {
       setTimeout(()=>{
         const notify_body = getDateTime() + "|" + event.data.time + "秒経ちました"
         console.log(`[sw]ローカル通知テスト内容：${notify_body}`)
-        self.registration.showNotification("", {
-          body: notify_body,
-        });
+        if (typeof(self.registration.showNotification) !== "undefined") {
+          self.registration.showNotification("", {
+            body: notify_body,
+          });
+          console.log(`[sw]通知した`);
+        } else {
+          console.log(`[sw]通知できない`);
+        }
       }, time); 
     }
 
