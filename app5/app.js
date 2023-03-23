@@ -46,39 +46,31 @@ if (typeof window !== "undefined") {
   console.log("[win]start")
 
   const sw = await navigator.serviceWorker.register("./app.js")
-  console.log(`[win]swRegister:${sw}`)
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <button id="btn1">ローカル通知テスト</button>
   `)
 
-  document.addEventListener("DOMContentLoaded", async()=>{
-    console.log(`[win]Notification：${typeof(Notification)}`);
-
-    const res = await Notification.requestPermission()
-    console.log(`[win]通知許可ステータス：${res}`);
-
-    document.getElementById("btn1").addEventListener("click", async()=>{
-      console.log(`[win]btn1Click`)
-      const sw = await navigator.serviceWorker.ready
-      console.log(`[win]sw:${sw}`)
-      if (sw) {
-        const msg = {type:"wait", time:5}
-        console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
-        bc1.postMessage(msg);
-      } else {
-        console.log(`[win]swが準備できてないためreload推奨`)
-      }
-    },false);
-
+  document.getElementById("btn1").addEventListener("click", async()=>{
+    console.log(`[win]btn1Click`)
+    const sw = await navigator.serviceWorker.ready
+    console.log(`[win]sw:${sw}`)
+    if (sw) {
+      const msg = {type:"wait", time:5}
+      console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
+      bc1.postMessage(msg);
+    } else {
+      console.log(`[win]swが準備できてないためreload推奨`)
+    }
   },false);
 
   bc1.addEventListener("message", (event) => {
     console.log(`[win]受信メッセージ内容：${JSON.stringify(event.data)}`)
   },false);
 
-
-
+  console.log(`[win]Notification：${typeof(Notification)}`);
+  const res = await Notification.requestPermission()
+  console.log(`[win]通知許可ステータス：${res}`);
   console.log("[win]end")
 
 
