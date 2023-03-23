@@ -6,6 +6,35 @@ console.log("[common]start")
 
 const bc1 = new BroadcastChannel("bc1");
 
+const getDateTime=()=>{
+  const toDoubleDigits=(i)=>{
+    let res = "" + i
+    if (res < 10) {
+      res = "0" + i
+    }
+    return res
+  }
+  const toTripleDigits=(i)=>{
+    let res = "" + i
+    if (res < 10) {
+      res = "00" + i
+    } else if (res < 100) {
+      res = "0" + i
+    }
+    return res
+  }
+  const DD = new Date()
+  const Year = DD.getFullYear()
+  const Month = toDoubleDigits(DD.getMonth() + 1)
+  const Day = toDoubleDigits(DD.getDate())
+  const Hours = toDoubleDigits(DD.getHours())
+  const Minutes = toDoubleDigits(DD.getMinutes())
+  const Seconds = toDoubleDigits(DD.getSeconds())
+  const mSeconds = toTripleDigits(DD.getMilliseconds())
+  const res = Year + "/" + Month + "/" + Day + "-" + Hours + ":" + Minutes + ":" + Seconds + ":" + mSeconds
+  return res
+}
+
 
 
 //win
@@ -79,7 +108,7 @@ if (typeof window !== "undefined") {
     if (event.data.type === "wait") {
       const time = event.data.time * 1000;
       setTimeout(()=>{
-        const notify_body = event.data.time + "秒経ちました"
+        const notify_body = getDateTime() + "|" + event.data.time + "秒経ちました"
         console.log(`[sw]ローカル通知テスト内容：${notify_body}`)
         self.registration.showNotification("", {
           body: notify_body,
