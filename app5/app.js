@@ -4,7 +4,7 @@
 
 
 //common
-try {
+//try {
 console.log("[common]start")
 
 const bc1 = new BroadcastChannel("bc1");
@@ -46,7 +46,7 @@ if (typeof window !== "undefined") {
   console.log("[win]start")
 
   const sw = await navigator.serviceWorker.register("./app.js")
-  console.log(`[win]swregister:${sw}`)
+  console.log(`[win]swRegister:${sw}`)
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <button id="btn1">ローカル通知テスト</button>
@@ -59,8 +59,9 @@ if (typeof window !== "undefined") {
     console.log(`[win]通知許可ステータス：${res}`);
 
     document.getElementById("btn1").addEventListener("click", async()=>{
+      console.log(`[win]btn1Click`)
       const sw = await navigator.serviceWorker.ready
-      console.log(`[win]btn1Click sw:${sw}`)
+      console.log(`[win]sw:${sw}`)
       if (sw) {
         const msg = {type:"wait", time:5}
         console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
@@ -96,21 +97,31 @@ if (typeof window !== "undefined") {
     "./manifest.json",
   ];
 
-  self.addEventListener("install", event=>{
-    event.waitUntil(
-      caches.open(cacheName).then(cache=>cache.addAll(cacheItems))
-    )
+  self.addEventListener("install", (event)=>{
+    console.log("[sw]install start")
+    event.waitUntil((async()=>{
+      self.skipWaiting()
+      const cache = await caches.open(cacheName)
+      const res = await cache.addAll(cacheItems)
+      console.log("[sw]install end")
+      return res
+    })())
   })
-  self.addEventListener("activate", event=>{
-    event.waitUntil(
-      self.clients.claim()
-    )
+  self.addEventListener("activate", (event)=>{
+    console.log("[sw]activate start")
+    event.waitUntil((async()=>{
+      const res = await self.clients.claim()
+      console.log("[sw]activate end")
+      return res
+    })())
   })
-  self.addEventListener("fetch", event=>{
+  self.addEventListener("fetch", (event)=>{
     if (event.request.method == "POST") return
-    event.respondWith(
-      caches.match(event.request).then(res=> res ? res : fetch(event.request))
-    )
+    event.respondWith((async()=>{
+      const cacheres = await caches.match(event.request)
+      if (cacheres) return cacheres
+      return fetch(event.request)
+    })())
   })
 
   bc1.addEventListener("message", event=>{
@@ -136,8 +147,10 @@ if (typeof window !== "undefined") {
 console.log("[common]end")
 
 
-
+/*
 } catch(e) {
   console.log(`[catch]${e}`)
 }
+*/
+
 })()
