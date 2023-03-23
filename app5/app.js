@@ -46,18 +46,19 @@ if (typeof window !== "undefined") {
     <button id="btn1">ローカル通知テスト</button>
   `)
 
-  let sw=null
-
   document.addEventListener("DOMContentLoaded", async()=>{
     const res = await Notification.requestPermission()
     console.log(`[win]通知許可ステータス：${res}`);
-    await navigator.serviceWorker.register("./app.js");
-    sw = await navigator.serviceWorker.ready
 
     document.getElementById("btn1").addEventListener("click", async()=>{
-      const msg = {type:"wait", time:5}
-      console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
-      bc1.postMessage(msg);
+      const sw = await navigator.serviceWorker.ready
+      if (sw) {
+        const msg = {type:"wait", time:5}
+        console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
+        bc1.postMessage(msg);
+      } else {
+        console.log(`[win]swが準備できてないためreload推奨`)
+      }
     },false);
 
   },false);
