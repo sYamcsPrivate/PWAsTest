@@ -45,18 +45,22 @@ if (typeof window !== "undefined") {
   Console.promise.then(()=>Console.settings({storage:true}))
   console.log("[win]start")
 
-  await navigator.serviceWorker.register("./app.js")
+  const sw = await navigator.serviceWorker.register("./app.js")
+  console.log(`[win]swregister:${sw}`)
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <button id="btn1">ローカル通知テスト</button>
   `)
 
   document.addEventListener("DOMContentLoaded", async()=>{
+    console.log(`[win]Notification：${typeof(Notification)}`);
+
     const res = await Notification.requestPermission()
     console.log(`[win]通知許可ステータス：${res}`);
 
     document.getElementById("btn1").addEventListener("click", async()=>{
       const sw = await navigator.serviceWorker.ready
+      console.log(`[win]btn1Click sw:${sw}`)
       if (sw) {
         const msg = {type:"wait", time:5}
         console.log(`[win]送信メッセージ内容：${JSON.stringify(msg)}`)
