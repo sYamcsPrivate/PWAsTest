@@ -1,7 +1,10 @@
 "use strict";
 (async()=>{
 
+
+
 //common
+try {
 console.log("[common]start")
 
 const bc1 = new BroadcastChannel("bc1");
@@ -41,6 +44,8 @@ const getDateTime=()=>{
 if (typeof window !== "undefined") {
   Console.promise.then(()=>Console.settings({storage:true}))
   console.log("[win]start")
+
+  await navigator.serviceWorker.register("./app.js")
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
     <button id="btn1">ローカル通知テスト</button>
@@ -125,4 +130,10 @@ if (typeof window !== "undefined") {
 
 
 console.log("[common]end")
+
+
+
+} catch(e) {
+  console.log(`[catch]${e}`)
+}
 })()
