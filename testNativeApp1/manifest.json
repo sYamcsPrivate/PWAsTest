@@ -12,8 +12,8 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+testNativeApp1",
-      "url": "./?testNativeApp1=%s"
+      "protocol": "web+dino",
+      "url": "./%s"
     }
   ]
 }
