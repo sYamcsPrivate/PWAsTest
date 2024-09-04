@@ -1,0 +1,19 @@
+{
+  "name": "testNativeApp1",
+  "scope": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+testNativeApp1",
+      "url": "./?testNativeApp1=%s"
+    }
+  ]
+}
