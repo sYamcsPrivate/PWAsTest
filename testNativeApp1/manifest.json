@@ -12,8 +12,8 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+dino",
-      "url": "./%s"
+      "protocol": "app",
+      "url": "./?%s"
     }
   ]
 }
