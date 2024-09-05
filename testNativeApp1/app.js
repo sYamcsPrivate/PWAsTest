@@ -48,6 +48,20 @@ if (typeof(window) !== "undefined") {
   document.body.insertAdjacentHTML("beforeend", String.raw`
 <h1>ネイティブアプリテスト１</h1>
 <h2>とりまマニフェストファイルをほにゃほにゃしてみる系</h2>
+
+
+<p>
+以下、インストール済アプリを起動するリンク
+</p>
+
+<p>
+<a href="web+a://">PWA Link - testNativeApp1(web+a)</a>
+</p>
+
+<p>
+<a href="web+href://">PWA Link - testNativeApp1(web+href)</a>
+</p>
+
   `)
 
   const sw = await navigator.serviceWorker.register("./app.js")
