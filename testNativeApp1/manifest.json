@@ -12,7 +12,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "app",
+      "protocol": "web+app",
       "url": "./?%s"
     }
   ]
