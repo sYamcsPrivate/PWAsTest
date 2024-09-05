@@ -12,8 +12,8 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+app",
-      "url": "./?%s"
+      "protocol": "web+protocol_handler1",
+      "url": "./?protocol_handler=1"
     }
   ]
 }
