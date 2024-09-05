@@ -13,7 +13,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+protocol1",
-      "url": "./?protocol=1"
+      "url": "./?protocol=%s"
     }
   ]
 }
