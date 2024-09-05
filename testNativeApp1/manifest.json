@@ -12,8 +12,8 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+1",
-      "url": "./?link=%s&protocol=1"
+      "protocol": "web+01",
+      "url": "./?link=%s&protocol=01"
     }
   ]
 }
