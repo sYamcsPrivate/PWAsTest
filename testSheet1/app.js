@@ -84,7 +84,7 @@ if (typeof(window) === "undefined") {
 
 //win
 } else {
-  Console.promise.then(()=>Console.settings({storage:true}))
+  Console.promise.then(()=>Console.settings({storage:true, show:false, pos:"right-top", posx:65, posy:-65}))
 
 
 
@@ -110,6 +110,8 @@ const app=async()=>{
 }
 .area_pop {
   padding: 10px;
+  max-width: 95vw;
+  max-height: 95vh;
 }
 .flex_top_fix {
   display: flex;
@@ -121,7 +123,8 @@ const app=async()=>{
 .flex_right_down {
   display: flex;
   justify-content: flex-end;
-  padding-top: 15px;
+  padding-top: 10px;
+  padding-bottom: 15px;
 }
 .button {
   margin: 5px;
@@ -160,29 +163,49 @@ const app=async()=>{
   top: 35px;
 }
 .table_pop_wrap {
-  overflow: auto;
   padding: 5px;
+  overflow-y: auto;
 }
 *:popover-open {
+  width: 90%;
   border: none;
   /* margin-left: 10px;
   margin-right: 10px; */
   position: absolute;
-  overflow: auto;
+  overflow-y: auto;
 }
 *::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
 
 }
 textarea {
-  width: 140px;
-  /* height: 30px; */
+  width: 99%;
+  field-sizing: content;
+  overflow-y: hidden;
+  resize: none;
+}
+.rect {
+  border: none;
+  border: 1px solid #333;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px;
+  margin: 5px;
+}
+hr{
+  border: none;
+  border-bottom: 1px solid #333;
+  margin-inline: 10px;
+  width: calc(100% - 20px);
 }
 </style>
 <div class="pos">
   <div class="area" id="show"></div>
 </div>
-<div id="pop1" popover>
+<div id="pop1" popover="auto">
   <div class="area_pop" id="show_pop"></div>
 </div>
   `)
@@ -206,6 +229,25 @@ textarea {
   }
 
   const makePopTableHTML=(args)=>{
+    let tableHTML = String.raw`<div class="table_pop_wrap">`
+    arr[0].forEach((col, colIndex)=>{
+      tableHTML = tableHTML + String.raw`<div class="rect">`
+      tableHTML = tableHTML + String.raw`<div>` + col + String.raw`</div>`
+      if (args === "add") {
+        tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`"></textarea>`
+      } else if (args === "edit") {
+        tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
+      } else {
+        tableHTML = tableHTML + String.raw`<textarea readonly="true" id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
+/*
+        tableHTML = tableHTML + String.raw`<hr>`
+        tableHTML = tableHTML + String.raw`<div id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
+*/
+      }
+      tableHTML = tableHTML + String.raw`</div>`
+    })
+    tableHTML = tableHTML + String.raw`</div>`
+/*
     let tableHTML = String.raw`<div class="table_pop_wrap"><table class="pure-table pure-table-horizontal" style="border: none;" id="tbl2">`
     arr[0].forEach((col, colIndex)=>{
       tableHTML = tableHTML + String.raw`<tr>`
@@ -221,6 +263,7 @@ textarea {
       tableHTML = tableHTML + String.raw`</tr>`
     })
     tableHTML = tableHTML + String.raw`</table></div>`
+*/
     return tableHTML
   }
 
@@ -381,7 +424,7 @@ textarea {
         "folder": "spreads",
       },
     })
-    console.log(obj.return)
+    //console.log(obj.return)
     if (obj.status === "OK") {
       console.log("テーブル読込完了")
       return obj.return
