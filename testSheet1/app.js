@@ -240,11 +240,9 @@ hr{
       } else if (args === "edit") {
         tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
       } else {
-        tableHTML = tableHTML + String.raw`<textarea readonly="true" id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
-/*
+        //tableHTML = tableHTML + String.raw`<textarea readonly="true" id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
         tableHTML = tableHTML + String.raw`<hr>`
         tableHTML = tableHTML + String.raw`<div id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
-*/
       }
       tableHTML = tableHTML + String.raw`</div>`
     })
