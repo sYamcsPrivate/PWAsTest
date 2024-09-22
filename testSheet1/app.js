@@ -158,6 +158,7 @@ const app=async()=>{
   /* justify-content: center;*/ /* 横方向中央 */
   overflow: auto;
   padding: 5px;
+  padding-bottom: 30px;
   position: relative;
   left: 0vw;
   top: 35px;
@@ -179,6 +180,7 @@ const app=async()=>{
 
 }
 textarea {
+  position: relative;
   width: 99%;
   field-sizing: content;
   overflow-y: hidden;
