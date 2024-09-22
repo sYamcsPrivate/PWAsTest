@@ -84,6 +84,7 @@ if (typeof(window) === "undefined") {
 
 //win
 } else {
+  navigator.serviceWorker.register("./app.js")
   Console.promise.then(()=>Console.settings({storage:true, show:false, pos:"right-top", posx:65, posy:-65}))
 
 
