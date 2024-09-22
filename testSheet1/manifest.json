@@ -1,0 +1,23 @@
+{
+  "name": "testSheet1",
+  "scope": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+a",
+      "url": "./?link=%s&protocol=a"
+    },
+    {
+      "protocol": "web+href",
+      "url": "./?%s"
+    }
+  ]
+}
