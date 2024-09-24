@@ -210,7 +210,7 @@ textarea {
   position: relative;
   width: 100%;
   field-sizing: content;
-  overflow-y: hidden;
+  overflow-y: auto;
   resize: vertical;
   box-sizing: border-box;
   display: block;
