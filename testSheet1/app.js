@@ -183,7 +183,7 @@ const app=async()=>{
 textarea {
   position: relative;
   width: 99%;
-  field-sizing: content;
+  /* field-sizing: content; */
   /* overflow-y: hidden; */
   /* resize: none; */
 }
