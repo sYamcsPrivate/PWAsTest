@@ -186,7 +186,8 @@ textarea {
   width: 99%;
   field-sizing: content;
   /* overflow-y: hidden; */
-  resize: none;
+  /* resize: none; */
+  overflow-wrap: break-word;
 }
 .rect {
   border: none;
