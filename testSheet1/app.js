@@ -211,8 +211,11 @@ textarea {
   width: 100%;
   field-sizing: content;
   overflow-y: hidden;
-  resize: none;
+  resize: vertical;
   box-sizing: border-box;
+  display: block;
+  -webkit-appearance: none;
+  border-radius: 0;
 }
 </style>
 <div class="pos">
