@@ -181,14 +181,6 @@ const app=async()=>{
   background-color: rgba(0, 0, 0, 0.3);
 
 }
-textarea {
-  position: relative;
-  width: 99%;
-  field-sizing: content;
-  /* overflow-y: hidden; */
-  /* resize: none; */
-  overflow-wrap: break-word;
-}
 .rect {
   border: none;
   border: 1px solid #333;
@@ -206,6 +198,14 @@ hr{
   border-bottom: 1px solid #333;
   margin-inline: 10px;
   width: calc(100% - 20px);
+}
+textarea {
+  position: relative;
+  width: 99%;
+  field-sizing: content;
+  /* overflow-y: hidden; */
+  /* resize: none; */
+  overflow-wrap: break-word;
 }
 </style>
 <div class="pos">
