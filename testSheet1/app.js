@@ -132,7 +132,7 @@ body {
 }
 .button {
   margin: 5px;
-  width: 80px;
+  width: 90px;
   height: 30px;
 }
 .loading_wrap {
@@ -206,7 +206,8 @@ hr{
 }
 textarea {
   position: relative;
-  width: 99%;
+  min-width: 80%;
+  max-width: 99%;
   field-sizing: content;
   /* overflow-y: hidden; */
   /* resize: none; */
