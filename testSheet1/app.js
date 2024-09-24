@@ -95,6 +95,9 @@ const app=async()=>{
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
 <style>
+body {
+  overflow-wrap: break-word;
+}
 .pos {
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -185,10 +188,12 @@ const app=async()=>{
   border: none;
   border: 1px solid #333;
   border-radius: 3px;
+/*
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+*/
   padding: 10px;
   margin: 5px;
   width: calc(100% - 31.6px);
@@ -205,7 +210,6 @@ textarea {
   field-sizing: content;
   /* overflow-y: hidden; */
   /* resize: none; */
-  overflow-wrap: break-word;
 }
 </style>
 <div class="pos">
