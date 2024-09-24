@@ -204,13 +204,15 @@ hr{
   margin-inline: 10px;
   width: calc(100% - 20px);
 }
+
+/* https://jiguma.com/form-css-summary/#width100 */
 textarea {
   position: relative;
-  max-width: 95%;
-  min-width: 70%;
+  width: 100%;
   field-sizing: content;
-  overflow-y: auto;
+  overflow-y: hidden;
   resize: none;
+  box-sizing: border-box;
 }
 </style>
 <div class="pos">
