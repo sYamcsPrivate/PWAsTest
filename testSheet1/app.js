@@ -198,6 +198,7 @@ textarea {
   justify-content: center;
   padding: 10px;
   margin: 5px;
+  width: calc(100% - 31.6px);
 }
 hr{
   border: none;
