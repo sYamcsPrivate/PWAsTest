@@ -167,6 +167,7 @@ const app=async()=>{
 .table_pop_wrap {
   padding: 5px;
   overflow-y: auto;
+  width: calc(100% - 10px);
 }
 *:popover-open {
   width: 90%;
@@ -183,9 +184,9 @@ const app=async()=>{
 textarea {
   position: relative;
   width: 99%;
-  /* field-sizing: content; */
+  field-sizing: content;
   /* overflow-y: hidden; */
-  /* resize: none; */
+  resize: none;
 }
 .rect {
   border: none;
