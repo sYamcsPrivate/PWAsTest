@@ -102,26 +102,26 @@ body {
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   position: fixed;
-  left: 0vw;
-  top: 0vh;
+  left: 0svw;
+  top: 0svh;
   user-select: none;
 }
 .area {
-  width: 100vw;
-  height: 100vh;
+  width: 100svw;
+  height: 100svh;
   overflow-x: hidden;
   overflow-y: auto;
 }
 .area_pop {
   padding: 10px;
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 95svw;
+  max-height: 95svh;
 }
 .flex_top_fix {
   display: flex;
   position: fixed;
-  left: 0vw;
-  top: 0vh;
+  left: 0svw;
+  top: 0svh;
   z-index: 1;
 }
 .flex_right_down {
@@ -136,8 +136,8 @@ body {
   height: 30px;
 }
 .loading_wrap {
-  width: 100vw;
-  height: 100vh;
+  width: 100svw;
+  height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +164,7 @@ body {
   padding: 5px;
   padding-bottom: 30px;
   position: relative;
-  left: 0vw;
+  left: 0svw;
   top: 35px;
 }
 .table_pop_wrap {
@@ -208,9 +208,10 @@ textarea {
   position: relative;
   min-width: 80%;
   max-width: 99%;
+  width: 99%;
   field-sizing: content;
-  /* overflow-y: hidden; */
-  /* resize: none; */
+  overflow-y: auto;
+  resize: none;
 }
 </style>
 <div class="pos">
