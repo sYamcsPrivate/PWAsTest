@@ -206,9 +206,8 @@ hr{
 }
 textarea {
   position: relative;
-  min-width: 80%;
-  max-width: 99%;
-  width: 99%;
+  max-width: 95%;
+  min-width: 70%;
   field-sizing: content;
   overflow-y: auto;
   resize: none;
