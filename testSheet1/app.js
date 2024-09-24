@@ -184,7 +184,7 @@ textarea {
   position: relative;
   width: 99%;
   field-sizing: content;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
   /* resize: none; */
 }
 .rect {
