@@ -130,11 +130,25 @@ body {
   padding-top: 10px;
   padding-bottom: 15px;
 }
+
 .button {
   margin: 5px;
   width: 90px;
   height: 30px;
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  //padding: 1rem 4rem;
+  border: 2px solid #27acd9;
+  color: #27acd9;
+  transition: 0.5s;
 }
+.button:hover {
+  color: #fff;
+  background: #27acd9;
+}
+
 .loading_wrap {
   width: 100svw;
   height: 100svh;
@@ -167,11 +181,6 @@ body {
   left: 0svw;
   top: 35px;
 }
-.table_pop_wrap {
-  padding: 5px;
-  overflow-y: auto;
-  width: calc(100% - 10px);
-}
 *:popover-open {
   width: 90%;
   border: none;
@@ -184,25 +193,14 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
 
 }
-.rect {
-  border: none;
-  border: 1px solid #333;
-  border-radius: 3px;
-/*
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-*/
-  padding: 10px;
-  margin: 5px;
-  width: calc(100% - 31.6px);
+
+.table_pop_wrap {
+  padding: 5px;
+  overflow-y: auto;
+  width: calc(100% - 10px);
 }
-hr{
-  border: none;
-  border-bottom: 1px solid #333;
-  margin-inline: 10px;
-  width: calc(100% - 20px);
+.table_pop {
+  width: 100%;
 }
 
 /* https://jiguma.com/form-css-summary/#width100 */
@@ -247,37 +245,21 @@ textarea {
   const makePopTableHTML=(args)=>{
     let tableHTML = String.raw`<div class="table_pop_wrap">`
     arr[0].forEach((col, colIndex)=>{
-      tableHTML = tableHTML + String.raw`<div class="rect">`
-      tableHTML = tableHTML + String.raw`<div>` + col + String.raw`</div>`
+      tableHTML = tableHTML + String.raw`<table class="pure-table table_pop">`
+      tableHTML = tableHTML + String.raw`<thead><tr><th>` + col + String.raw`<//th></tr></thead>`
+      tableHTML = tableHTML + String.raw`<tbody><tr><td>`
       if (args === "add") {
         tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`"></textarea>`
       } else if (args === "edit") {
         tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
       } else {
         //tableHTML = tableHTML + String.raw`<textarea readonly="true" id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
-        tableHTML = tableHTML + String.raw`<hr>`
         tableHTML = tableHTML + String.raw`<div id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
       }
-      tableHTML = tableHTML + String.raw`</div>`
+      tableHTML = tableHTML + String.raw`</td></tr></tbody>`
+      tableHTML = tableHTML + String.raw`</table>`
     })
     tableHTML = tableHTML + String.raw`</div>`
-/*
-    let tableHTML = String.raw`<div class="table_pop_wrap"><table class="pure-table pure-table-horizontal" style="border: none;" id="tbl2">`
-    arr[0].forEach((col, colIndex)=>{
-      tableHTML = tableHTML + String.raw`<tr>`
-      tableHTML = tableHTML + String.raw`<td>` + col + String.raw`</td>`
-      if (args === "add") {
-        tableHTML = tableHTML + String.raw`<td><textarea id="pop_` + col + String.raw`"></textarea></td>`
-      } else if (args === "edit") {
-        tableHTML = tableHTML + String.raw`<td><textarea id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea></td>`
-      } else {
-        //tableHTML = tableHTML + String.raw`<td id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</td>`
-        tableHTML = tableHTML + String.raw`<td><textarea readonly=true id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea></td>`
-      }
-      tableHTML = tableHTML + String.raw`</tr>`
-    })
-    tableHTML = tableHTML + String.raw`</table></div>`
-*/
     return tableHTML
   }
 
@@ -455,9 +437,11 @@ textarea {
     ;[...tbl1.rows].forEach((row, index)=>{
       if (index !== 0) {
         if (index === rowIndex) {
-          row.style.backgroundColor = "#e0ffff"
+          row.style.backgroundColor = "#27acd9"
+          row.style.color = "#ffffff"
         } else {
           row.style.backgroundColor = ""
+          row.style.color = ""
         }
       }
     })
@@ -474,18 +458,18 @@ textarea {
       } else {
       }
 
-      tableHTML = tableHTML + String.raw`<tr onclick="AppRowClick(` + rowIndex + String.raw`)">`
+      tableHTML = tableHTML + String.raw`<tr>`
 
       row.forEach((cell, colIndex)=>{
 
         if (rowIndex === 0) {
           if (colIndex === 0) {
-            tableHTML = tableHTML + String.raw`<th>#</th>`
+            tableHTML = tableHTML + String.raw`<th onclick="AppRowClick(` + rowIndex + String.raw`)">` + "#" + `</th>`
           }
           tableHTML = tableHTML + String.raw`<th>`
         } else {
           if (colIndex === 0) {
-            tableHTML = tableHTML + String.raw`<td>` + rowIndex + `</td>`
+            tableHTML = tableHTML + String.raw`<td onclick="AppRowClick(` + rowIndex + String.raw`)">` + rowIndex + `</td>`
           }
           tableHTML = tableHTML + String.raw`<td>`
         }
