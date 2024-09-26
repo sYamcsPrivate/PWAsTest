@@ -133,7 +133,7 @@ body {
 
 .button {
   margin: 5px;
-  width: 90px;
+  width: 100px;
   height: 30px;
   display: block;
   text-align: center;
@@ -198,9 +198,15 @@ body {
   padding: 5px;
   overflow-y: auto;
   width: calc(100% - 10px);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
-.table_pop {
+.table_pop, .table_pop thead, .table_pop th, .table_pop tbody, .table_pop td {
   width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* https://jiguma.com/form-css-summary/#width100 */
