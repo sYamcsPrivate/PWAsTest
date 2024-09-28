@@ -106,47 +106,65 @@ body {
   top: 0svh;
   user-select: none;
 }
-.area {
+.is_hidden {
+  display: none !important;
+}
+
+.area_button {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.style_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
+  width: 50px;
+  height: 50px;
+  background-color: #cbcbcb;
+  opacity: 0.33;
+  font-weight: bold;
+}
+
+.area_main {
   width: 100svw;
   height: 100svh;
   overflow-x: hidden;
   overflow-y: auto;
 }
-.area_pop {
-  padding: 10px;
-  max-width: 95svw;
-  max-height: 95svh;
-}
-.flex_top_fix {
-  display: flex;
-  position: fixed;
+.table_main_wrap {
+  overflow: auto;
+  position: relative;
   left: 0svw;
   top: 0svh;
-  z-index: 1;
 }
-.flex_right_down {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  padding-bottom: 15px;
+.table_main_wrap th, .table_main_wrap td {
+  white-space: nowrap;
+}
+.table_row_wrap {
+  overflow-y: auto;
+}
+.table_row, .table_row thead, .table_row th, .table_row tbody, .table_row td {
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-.button {
-  margin: 5px;
-  width: 100px;
-  height: 30px;
+/* https://jiguma.com/form-css-summary/#width100 */
+textarea {
+  position: relative;
+  width: 100%;
+  field-sizing: content;
+  overflow-y: auto;
+  resize: vertical;
+  box-sizing: border-box;
   display: block;
-  text-align: center;
-  vertical-align: middle;
-  text-decoration: none;
-  //padding: 1rem 4rem;
-  border: 2px solid #27acd9;
-  color: #27acd9;
-  transition: 0.5s;
-}
-.button:hover {
-  color: #fff;
-  background: #27acd9;
+  -webkit-appearance: none;
+  border-radius: 0;
 }
 
 .loading_wrap {
@@ -170,71 +188,41 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-.table_wrap {
-  /* display: flex; */
-  /* align-items: center; */ /* 縦方向中央 */
-  /* justify-content: center;*/ /* 横方向中央 */
-  overflow: auto;
-  padding: 5px;
-  padding-bottom: 30px;
-  position: relative;
-  left: 0svw;
-  top: 35px;
-}
-*:popover-open {
-  width: 90%;
-  border: none;
-  /* margin-left: 10px;
-  margin-right: 10px; */
-  position: absolute;
-  overflow-y: auto;
-}
-*::backdrop {
-  background-color: rgba(0, 0, 0, 0.3);
 
-}
-
-.table_pop_wrap {
-  padding: 5px;
-  overflow-y: auto;
-  width: calc(100% - 10px);
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-.table_pop, .table_pop thead, .table_pop th, .table_pop tbody, .table_pop td {
-  width: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-/* https://jiguma.com/form-css-summary/#width100 */
-textarea {
-  position: relative;
-  width: 100%;
-  field-sizing: content;
-  overflow-y: auto;
-  resize: vertical;
-  box-sizing: border-box;
-  display: block;
-  -webkit-appearance: none;
-  border-radius: 0;
-}
 </style>
+
 <div class="pos">
-  <div class="area" id="show"></div>
+  <div class="area_button" id="show_button"></div>
+  <div class="area_main" id="show_main"></div>
+  <div class="area_main is_hidden" id="show_row"></div>
 </div>
-<div id="pop1" popover="auto">
-  <div class="area_pop" id="show_pop"></div>
-</div>
+
+
   `)
 
   let arr = []
   let selectRow = 0
 
+  globalThis.AppShowMain=()=>{
+    document.getElementById("show_main").classList.toggle("is_hidden");
+    document.getElementById("show_row").classList.toggle("is_hidden");
+    document.getElementById("button_add").classList.toggle("is_hidden");
+    document.getElementById("button_cancel").classList.toggle("is_hidden");
+    document.getElementById("button_edit").classList.toggle("is_hidden");
+    document.getElementById("button_delete").classList.toggle("is_hidden");
+  }
+
+  const showButton=()=>{
+    document.getElementById("show_button").innerHTML = String.raw`
+      <div class="style_button" id="button_add">a</div>
+      <div class="style_button is_hidden" id="button_cancel" onclick="AppShowMain()">c</div>
+      <div class="style_button is_hidden" id="button_edit">e</div>
+      <div class="style_button is_hidden" id="button_delete">d</div>
+    `
+  }
+
   const showLoading=()=>{
-    document.getElementById("show").innerHTML = String.raw`<div class="loading_wrap"><div class="loading"></div></div>`
+    document.getElementById("show_main").innerHTML = String.raw`<div class="loading_wrap"><div class="loading"></div></div>`
   }
   showLoading()
 
@@ -248,172 +236,18 @@ textarea {
     return res.json()
   }
 
-  const makePopTableHTML=(args)=>{
-    let tableHTML = String.raw`<div class="table_pop_wrap">`
+  const makerowTableHTML=(args)=>{
+    let tableHTML = String.raw`<div class="table_row_wrap">`
     arr[0].forEach((col, colIndex)=>{
-      tableHTML = tableHTML + String.raw`<table class="pure-table table_pop">`
+      tableHTML = tableHTML + String.raw`<table class="pure-table table_row">`
       tableHTML = tableHTML + String.raw`<thead><tr><th>` + col + String.raw`<//th></tr></thead>`
       tableHTML = tableHTML + String.raw`<tbody><tr><td>`
-      if (args === "add") {
-        tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`"></textarea>`
-      } else if (args === "edit") {
-        tableHTML = tableHTML + String.raw`<textarea id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
-      } else {
-        //tableHTML = tableHTML + String.raw`<textarea readonly="true" id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</textarea>`
-        tableHTML = tableHTML + String.raw`<div id="pop_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
-      }
+      tableHTML = tableHTML + String.raw`<div id="row_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
       tableHTML = tableHTML + String.raw`</td></tr></tbody>`
       tableHTML = tableHTML + String.raw`</table>`
     })
     tableHTML = tableHTML + String.raw`</div>`
     return tableHTML
-  }
-
-  globalThis.AppPerformClick=async(args)=>{
-    console.log("AppPerformClick: start, args: " + args)
-    console.time("AppPerformClick: time")
-    showLoading()
-
-    if (args === "add") {
-      let values = []
-      arr[0].forEach((col, colIndex)=>{
-        const id = "pop_" + col
-        const value = document.getElementById(id).value
-        values.push(value)
-      })
-      console.log(values)
-      console.log("テーブル追加中…")
-      const obj = await doPost({
-        func: "insert",
-        args: {
-          "values": [values],
-          "sheet": "sheet1",
-          "spread": "temp1",
-          "folder": "spreads",
-        },
-      })
-      console.log(obj.return)
-      if (obj.status === "OK") {
-        console.log("テーブル追加完了")
-      } else {
-        console.log("テーブル追加失敗")
-      }
-
-    } else if (args === "edit") {
-      let sets = {}
-      arr[0].forEach((col, colIndex)=>{
-        const id = "pop_" + col
-        const value = document.getElementById(id).value
-        sets[col] = value
-      })
-      console.log("indexes: " + selectRow)
-      console.log(sets)
-      console.log("テーブル更新中…")
-      const obj = await doPost({
-        func: "update",
-        args: {
-          "sets": sets,
-          "indexes": [selectRow],
-          "sheet": "sheet1",
-          "spread": "temp1",
-          "folder": "spreads",
-        },
-      })
-      console.log(obj.return)
-      if (obj.status === "OK") {
-        console.log("テーブル更新完了")
-      } else {
-        console.log("テーブル更新失敗")
-      }
-
-    } else if (args === "delete") {
-      console.log("indexes: " + selectRow)
-      console.log("テーブル削除中…")
-      const obj = await doPost({
-        func: "delete",
-        args: {
-          "indexes": [selectRow],
-          "sheet": "sheet1",
-          "spread": "temp1",
-          "folder": "spreads",
-        },
-      })
-      console.log(obj.return)
-      if (obj.status === "OK") {
-        console.log("テーブル削除完了")
-      } else {
-        console.log("テーブル削除失敗")
-      }
-
-    }
-    await showTabel()
-    console.timeEnd("AppPerformClick: time")
-    console.log("AppPerformClick: end")
-  }
-
-  const makePopButtonHTML=(args)=>{
-    let html = String.raw`<div class="flex_right_down">`
-    if (args !== "view") {
-      html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="hide" id="btn_perform" onclick="AppPerformClick('` + args + String.raw`')">perform</button>`
-    }
-    html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="hide" id="btn_close">close</button>`
-    html = html + String.raw`</div>`
-    return html
-  }
-
-  globalThis.AppAddClick=()=>{
-    console.log("AppAddClick")
-    let popHTML = ""
-    popHTML = "<h3>add</h3>"
-    popHTML = popHTML + makePopTableHTML("add")
-    popHTML = popHTML + makePopButtonHTML("add")
-    document.getElementById("show_pop").innerHTML = popHTML
-  }
-  globalThis.AppEditClick=()=>{
-    console.log("AppEditClick")
-    if (selectRow === 0) {
-      document.getElementById("show_pop").innerHTML = "Please select a row"
-      return
-    }
-    let popHTML = ""
-    popHTML = "<h3>edit(#" + selectRow + ")</h3>"
-    popHTML = popHTML + makePopTableHTML("edit")
-    popHTML = popHTML + makePopButtonHTML("edit")
-    document.getElementById("show_pop").innerHTML = popHTML
-  }
-  globalThis.AppDeleteClick=()=>{
-    console.log("AppDeleteClick")
-    if (selectRow === 0) {
-      document.getElementById("show_pop").innerHTML = "Please select a row"
-      return
-    }
-    let popHTML = ""
-    popHTML = "<h3>delete(#" + selectRow + ")</h3>"
-    popHTML = popHTML + makePopTableHTML("delete")
-    popHTML = popHTML + makePopButtonHTML("delete")
-    document.getElementById("show_pop").innerHTML = popHTML
-  }
-  globalThis.AppViewClick=()=>{
-    console.log("AppViewClick")
-    if (selectRow === 0) {
-      document.getElementById("show_pop").innerHTML = "Please select a row"
-      return
-    }
-    let popHTML = ""
-    popHTML = "<h3>view(#" + selectRow + ")</h3>"
-    popHTML = popHTML + makePopTableHTML("view")
-    popHTML = popHTML + makePopButtonHTML("view")
-    document.getElementById("show_pop").innerHTML = popHTML
-  }
-
-  const makeButtonHTML=()=>{
-    let html = String.raw`<div class="flex_top_fix">`
-    html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="show" id="btn_add"onclick="AppAddClick()">add</button>`
-    html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="show" id="btn_edit" onclick="AppEditClick()">edit</button>`
-    html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="show" id="btn_delete" onclick="AppDeleteClick()">delete</button>`
-    html = html + String.raw`<button class="button" popovertarget="pop1" popovertargetaction="show" id="btn_view"onclick="AppViewClick()">view</button>`
-    html = html + String.raw`</div>`
-    return html
   }
 
   const getTableArray=async()=>{
@@ -439,22 +273,22 @@ textarea {
   globalThis.AppRowClick=(rowIndex)=>{
     console.log("クリック行: " + rowIndex)
     selectRow = rowIndex
-    const tbl1 = document.getElementById("tbl1")
-    ;[...tbl1.rows].forEach((row, index)=>{
-      if (index !== 0) {
-        if (index === rowIndex) {
-          row.style.backgroundColor = "#27acd9"
-          row.style.color = "#ffffff"
-        } else {
-          row.style.backgroundColor = ""
-          row.style.color = ""
-        }
-      }
-    })
+   // const tbl1 = document.getElementById("tbl1")
+    let rowHTML = ""
+    //rowHTML = "<h3>view(#" + selectRow + ")</h3>"
+    rowHTML = rowHTML + makerowTableHTML("view")
+    document.getElementById("show_row").innerHTML = rowHTML
+
+    document.getElementById("show_main").classList.toggle("is_hidden");
+    document.getElementById("show_row").classList.toggle("is_hidden");
+    document.getElementById("button_add").classList.toggle("is_hidden");
+    document.getElementById("button_cancel").classList.toggle("is_hidden");
+    document.getElementById("button_edit").classList.toggle("is_hidden");
+    document.getElementById("button_delete").classList.toggle("is_hidden");
   }
 
   const makeTableHTML=(arr)=>{
-    let tableHTML = String.raw`<div class="table_wrap"><table class="pure-table" id="tbl1">`
+    let tableHTML = String.raw`<div class="table_main_wrap"><table class="pure-table" id="tbl1">`
     arr.forEach((row, rowIndex)=>{
 
       if (rowIndex === 0) {
@@ -508,10 +342,10 @@ textarea {
   const showTabel=async()=>{
     selectRow = 0
     let innerHTML = ""
-    innerHTML = innerHTML + makeButtonHTML()
     arr = await getTableArray()
     innerHTML = innerHTML + makeTableHTML(arr)
-    document.getElementById("show").innerHTML = innerHTML
+    document.getElementById("show_main").innerHTML = innerHTML
+    showButton()
   }
   await showTabel()
 
