@@ -167,7 +167,7 @@ body {
   background-color: #dddddd;
   position: sticky;
   left: 0px;
-  z-index: 3;
+  z-index: 1;
   padding-inline: 4px;
   text-align: center;
   font-weight: bold;
@@ -182,7 +182,7 @@ body {
   position: absolute;
   top:0px;
   left:-1px;
-  z-index:3;
+  z-index:1;
 }
 
 .table_main_wrap th, .table_main_wrap td {
