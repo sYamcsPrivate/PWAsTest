@@ -144,11 +144,42 @@ body {
   left: 0svw;
   top: 0svh;
 }
+
+.table_main_wrap th, .table_main_wrap td {
+  white-space: nowrap;
+}
+.table_main_wrap th:first-child, .table_main_wrap td:first-child{
+  background-color: #dddddd;
+  position: sticky;
+  left: 0px;
+  padding-inline: 4px;
+  text-align: center;
+  font-weight: bold;
+  min-width: 22px;
+  -webkit-transform: translate3d(0, 0, 0px);
+  transform: translate3d(0, 0, 0px);
+  z-index: 2;
+}
+/*スクロール時に左にできる隙間を埋める*/
+.table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
+  content:"";
+  width: 100%;
+  height:100%;
+  border-left:solid 3px #dddddd;
+  position: absolute;
+  top:0px;
+  left:-1px;
+  -webkit-transform: translate3d(0, 0, 0px);
+  transform: translate3d(0, 0, 0px);
+  z-index:2;
+}
 .table_main_wrap thead {
   background-color: #dddddd;
   position: sticky;
   top: 0px;
   left: 0px;
+  -webkit-transform: translate3d(0, 0, 1px);
+  transform: translate3d(0, 0, 1px);
   z-index: 3;
 }
 /*スクロール時に上にできる隙間を埋める*/
@@ -160,33 +191,9 @@ body {
   position: absolute;
   top:-1px;
   left:0;
+  -webkit-transform: translate3d(0, 0, 1px);
+  transform: translate3d(0, 0, 1px);
   z-index:3;
-}
-
-.table_main_wrap th:first-child, .table_main_wrap td:first-child{
-  background-color: #dddddd;
-  position: sticky;
-  left: 0px;
-  z-index: 2;
-  padding-inline: 4px;
-  text-align: center;
-  font-weight: bold;
-  min-width: 22px;
-}
-/*スクロール時に左にできる隙間を埋める*/
-.table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
-  content:"";
-  width: 100%;
-  height:100%;
-  border-left:solid 3px #dddddd;
-  position: absolute;
-  top:0px;
-  left:-1px;
-  z-index:2;
-}
-
-.table_main_wrap th, .table_main_wrap td {
-  white-space: nowrap;
 }
 
 .area_row {
