@@ -162,7 +162,7 @@ textarea {
   width: 100%;
   field-sizing: content;
   overflow-y: auto;
-  resize: vertical;
+  resize: none;
   box-sizing: border-box;
   display: block;
   -webkit-appearance: none;
@@ -204,21 +204,37 @@ textarea {
 
   let arr = []
   let selectRow = 0
+  let phase = "main";
+
+  globalThis.AppShowEdit=(args)=>{
+    if (phase === "row_view"){
+      document.getElementById("button_delete").classList.remove("is_hidden");
+      arr[0].forEach((col, colIndex)=>{
+        const idx = colIndex + 1
+        const id = "row_col" + idx
+        console.log(id)
+        const textareaHeight = document.getElementById(id).scrollHeight
+        document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height=` + textareaHeight + `" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
+      })
+      phase = "row_edit";
+    }
+  }
 
   globalThis.AppShowMain=()=>{
-    document.getElementById("show_main").classList.toggle("is_hidden");
-    document.getElementById("show_row").classList.toggle("is_hidden");
-    document.getElementById("button_add").classList.toggle("is_hidden");
-    document.getElementById("button_cancel").classList.toggle("is_hidden");
-    document.getElementById("button_edit").classList.toggle("is_hidden");
-    document.getElementById("button_delete").classList.toggle("is_hidden");
+    phase = "main";
+    document.getElementById("show_main").classList.remove("is_hidden");
+    document.getElementById("show_row").classList.add("is_hidden");
+    document.getElementById("button_add").classList.remove("is_hidden");
+    document.getElementById("button_cancel").classList.add("is_hidden");
+    document.getElementById("button_edit").classList.add("is_hidden");
+    document.getElementById("button_delete").classList.add("is_hidden");
   }
 
   const showButton=()=>{
     document.getElementById("show_button").innerHTML = String.raw`
       <div class="style_button" id="button_add">a</div>
       <div class="style_button is_hidden" id="button_cancel" onclick="AppShowMain()">c</div>
-      <div class="style_button is_hidden" id="button_edit">e</div>
+      <div class="style_button is_hidden" id="button_edit" onclick="AppShowEdit()">e</div>
       <div class="style_button is_hidden" id="button_delete">d</div>
     `
   }
@@ -281,6 +297,7 @@ textarea {
     rowHTML = rowHTML + makerowTableHTML("view")
     document.getElementById("show_row").innerHTML = rowHTML
 
+    phase = "row_view";
     document.getElementById("show_main").classList.toggle("is_hidden");
     document.getElementById("show_row").classList.toggle("is_hidden");
     document.getElementById("button_add").classList.toggle("is_hidden");
