@@ -127,7 +127,7 @@ body {
   font-weight: bold;
   background-color: #fff;
   opacity: 0.5;
-  z-index: 1;
+  z-index: 9;
   border-style: solid;
 }
 
@@ -152,13 +152,13 @@ body {
   background-color: #dddddd;
   position: sticky;
   left: 0px;
-  //padding-inline: 4px;
+  padding-inline: 4px;
   text-align: center;
   font-weight: bold;
   min-width: 22px;
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
-  z-index: 2;
+  z-index: 3;
 }
 /*スクロール時に左にできる隙間を埋める*/
 .table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
@@ -171,7 +171,7 @@ body {
   left:-1px;
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
-  z-index: 2;
+  z-index: 3;
 }
 
 .table_main_wrap thead {
