@@ -122,11 +122,13 @@ body {
   justify-content: center;
   align-items: center;
   margin: 5px;
-  width: 50px;
-  height: 50px;
-  background-color: #cbcbcb;
-  opacity: 0.33;
+  width: 30px;
+  height: 30px;
   font-weight: bold;
+  background-color: #fff;
+  opacity: 0.5;
+  z-index: 1;
+  border-style: solid;
 }
 
 .area_main {
