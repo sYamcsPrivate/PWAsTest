@@ -171,6 +171,7 @@ body {
   padding-inline: 4px;
   text-align: center;
   font-weight: bold;
+  min-width: 22px;
 }
 /*スクロール時に左にできる隙間を埋める*/
 .table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
@@ -254,30 +255,6 @@ textarea {
   let selectRow = 0
   let phase = "main";
 
-  globalThis.AppShowEdit=(args)=>{
-    if (phase === "row_view"){
-      document.getElementById("button_delete").classList.add("is_hidden");
-      arr[0].forEach((col, colIndex)=>{
-        const idx = colIndex + 1
-        const id = "row_col" + idx
-        console.log(id)
-        let textareaHeight = document.getElementById(id).scrollHeight
-        const rowHeight = document.getElementById("show_row").clientHeight
-        if (textareaHeight > rowHeight * 0.8) textareaHeight = rowHeight * 0.8
-        document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height:` + textareaHeight + `px" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
-        document.getElementById(id).addEventListener('input', (args)=>{
-          //console.log(JSON.stringify(args))
-          //console.log(document.getElementById(id).scrollHeight)
-          if (document.getElementById(id).scrollHeight < document.getElementById("show_row").clientHeight * 0.8) {
-            document.getElementById(id).style.height = "auto";
-            document.getElementById(id).style.height = `${document.getElementById(id).scrollHeight}px`;
-          }
-        })
-      })
-      phase = "row_edit";
-    }
-  }
-
   globalThis.AppShowMain=()=>{
     phase = "main";
     document.getElementById("show_main").classList.remove("is_hidden");
@@ -288,12 +265,170 @@ textarea {
     document.getElementById("button_delete").classList.add("is_hidden");
   }
 
+  globalThis.AppClickAdd=()=>{
+    if (phase === "main"){
+      document.getElementById("show_row").innerHTML = makeRowTableHTML("add")
+
+      arr[0].forEach((col, colIndex)=>{
+        const id = "row_" + col
+        addAutoResize(id)
+      })
+
+      document.getElementById("show_main").classList.add("is_hidden");
+      document.getElementById("show_row").classList.remove("is_hidden");
+      document.getElementById("button_add").classList.remove("is_hidden");
+      document.getElementById("button_cancel").classList.remove("is_hidden");
+      document.getElementById("button_edit").classList.add("is_hidden");
+      document.getElementById("button_delete").classList.add("is_hidden");
+      phase = "add_view";
+
+    } else if (phase === "add_view") {
+
+      console.log("テーブル追加中…")
+
+      let values = []
+      arr[0].forEach((col, colIndex)=>{
+        const id = "row_" + col
+        const value = document.getElementById(id).value
+        values.push(value)
+      })
+
+      arr.push(values)
+
+      doPost({
+        func: "insert",
+        args: {
+          "values": [values],
+          "sheet": "sheet1",
+          "spread": "temp1",
+          "folder": "spreads",
+        },
+      }).then(obj=>{
+      console.log(obj.return)
+      if (obj.status === "OK") {
+        console.log("テーブル追加完了")
+      } else {
+        console.log("テーブル追加失敗")
+      }
+    })
+
+      document.getElementById("show_main").innerHTML = makeTableHTML(arr)
+      phase = "main";
+      AppShowMain()
+
+    }
+  }
+
+  globalThis.AppClickDelete=()=>{
+
+    //console.log(arr[selectRow])
+    arr.splice(selectRow, 1)
+
+    console.log("indexes: " + selectRow)
+    console.log("テーブル削除中…")
+
+    doPost({
+      func: "delete",
+      args: {
+        "indexes": [selectRow],
+        "sheet": "sheet1",
+        "spread": "temp1",
+        "folder": "spreads",
+      },
+    }).then(obj=>{
+      console.log(obj.return)
+      if (obj.status === "OK") {
+        console.log("テーブル削除完了")
+      } else {
+        console.log("テーブル削除失敗")
+      }
+    })
+
+    document.getElementById("show_main").innerHTML = makeTableHTML(arr)
+    phase = "main";
+    AppShowMain()
+  }
+
+  const addAutoResize=(id)=>{
+    document.getElementById(id).addEventListener('input', (args)=>{
+      if (document.getElementById(id).scrollHeight < document.getElementById("show_row").clientHeight * 0.8) {
+        document.getElementById(id).style.height = "auto";
+        document.getElementById(id).style.height = `${document.getElementById(id).scrollHeight}px`;
+      }
+    })
+  }
+
+  globalThis.AppClickEdit=()=>{
+
+    if (phase === "row_view"){
+      document.getElementById("button_delete").classList.add("is_hidden");
+
+      arr[0].forEach((col, colIndex)=>{
+        const id = "row_" + col
+        let textareaHeight = document.getElementById(id).scrollHeight
+        const rowHeight = document.getElementById("show_row").clientHeight
+        if (textareaHeight > rowHeight * 0.8) textareaHeight = rowHeight * 0.8
+        document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height:` + textareaHeight + `px" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
+        addAutoResize(id)
+      })
+      phase = "row_edit";
+
+    } else if (phase === "row_edit") {
+      let sets = {}
+      arr[0].forEach((col, colIndex)=>{
+        const id = "row_" + col
+        const value = document.getElementById(id).value
+        sets[col] = value
+        arr[selectRow][colIndex] = value
+      })
+
+      console.log("indexes: " + selectRow)
+      console.log(sets)
+      console.log("テーブル更新中…")
+
+      doPost({
+        func: "update",
+        args: {
+          "sets": sets,
+          "indexes": [selectRow],
+          "sheet": "sheet1",
+          "spread": "temp1",
+          "folder": "spreads",
+        },
+      }).then(obj=>{
+        console.log(obj.return)
+        if (obj.status === "OK") {
+          console.log("テーブル更新完了")
+        } else {
+          console.log("テーブル更新失敗")
+        }
+      })
+
+      document.getElementById("show_main").innerHTML = makeTableHTML(arr)
+      phase = "main";
+      AppShowMain()
+    }
+  }
+
+  globalThis.AppClickCancel=()=>{
+    if (phase === "row_view"){
+      phase = "main";
+      AppShowMain()
+    } else if (phase === "row_edit"){
+      phase = "row_view";
+      AppRowClick(selectRow)
+    } else if (phase === "add_view"){
+      phase = "main";
+      AppShowMain()
+    }
+  }
+
   const showButton=()=>{
     document.getElementById("show_button").innerHTML = String.raw`
-      <div class="style_button" id="button_add">a</div>
-      <div class="style_button is_hidden" id="button_cancel" onclick="AppShowMain()">c</div>
-      <div class="style_button is_hidden" id="button_edit" onclick="AppShowEdit()">e</div>
-      <div class="style_button is_hidden" id="button_delete">d</div>
+      <div class="style_button is_hidden" id="button_cancel" onclick="AppClickCancel()">c</div>
+      <div class="style_button" id="button_add" onclick="AppClickAdd()">a</div>
+      <div class="style_button is_hidden" id="button_edit" onclick="AppClickEdit()">e</div>
+      <div class="style_button is_hidden" id="button_delete" onclick="AppClickDelete()">d</div>
     `
   }
 
@@ -318,7 +453,12 @@ textarea {
       tableHTML = tableHTML + String.raw`<table class="pure-table table_row">`
       tableHTML = tableHTML + String.raw`<thead><tr><th>` + col + String.raw`<//th></tr></thead>`
       tableHTML = tableHTML + String.raw`<tbody><tr><td>`
-      tableHTML = tableHTML + String.raw`<div id="row_` + col + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
+      const id = "row_" + col
+      if (args === "view") {
+        tableHTML = tableHTML + String.raw`<div id="` + id + String.raw`">` + arr[selectRow][colIndex] + String.raw`</div>`
+      } else {
+        tableHTML = tableHTML + String.raw`<textarea id="` + id + String.raw`"></textarea>`
+      }
       tableHTML = tableHTML + String.raw`</td></tr></tbody>`
       tableHTML = tableHTML + String.raw`</table>`
     })
@@ -348,6 +488,7 @@ textarea {
 
   globalThis.AppRowClick=(rowIndex)=>{
     console.log("クリック行: " + rowIndex)
+    if (rowIndex === 0) return
     selectRow = rowIndex
    // const tbl1 = document.getElementById("tbl1")
     let rowHTML = ""
@@ -355,13 +496,13 @@ textarea {
     rowHTML = rowHTML + makeRowTableHTML("view")
     document.getElementById("show_row").innerHTML = rowHTML
 
+    document.getElementById("show_main").classList.add("is_hidden");
+    document.getElementById("show_row").classList.remove("is_hidden");
+    document.getElementById("button_add").classList.add("is_hidden");
+    document.getElementById("button_cancel").classList.remove("is_hidden");
+    document.getElementById("button_edit").classList.remove("is_hidden");
+    document.getElementById("button_delete").classList.remove("is_hidden");
     phase = "row_view";
-    document.getElementById("show_main").classList.toggle("is_hidden");
-    document.getElementById("show_row").classList.toggle("is_hidden");
-    document.getElementById("button_add").classList.toggle("is_hidden");
-    document.getElementById("button_cancel").classList.toggle("is_hidden");
-    document.getElementById("button_edit").classList.toggle("is_hidden");
-    document.getElementById("button_delete").classList.toggle("is_hidden");
   }
 
   const makeTableHTML=(arr)=>{
@@ -418,10 +559,8 @@ textarea {
 
   const showTabel=async()=>{
     selectRow = 0
-    let innerHTML = ""
     arr = await getTableArray()
-    innerHTML = innerHTML + makeTableHTML(arr)
-    document.getElementById("show_main").innerHTML = innerHTML
+    document.getElementById("show_main").innerHTML = makeTableHTML(arr)
     showButton()
   }
   await showTabel()
