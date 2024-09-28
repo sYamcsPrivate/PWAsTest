@@ -262,6 +262,14 @@ textarea {
         const rowHeight = document.getElementById("show_row").clientHeight
         if (textareaHeight > rowHeight * 0.8) textareaHeight = rowHeight * 0.8
         document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height:` + textareaHeight + `px" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
+        document.getElementById(id).addEventListener('input', (args)=>{
+          //console.log(JSON.stringify(args))
+          //console.log(document.getElementById(id).scrollHeight)
+          if (document.getElementById(id).scrollHeight < document.getElementById("show_row").clientHeight * 0.8) {
+            document.getElementById(id).style.height = "auto";
+            document.getElementById(id).style.height = `${document.getElementById(id).scrollHeight}px`;
+          }
+        })
       })
       phase = "row_edit";
     }
@@ -301,7 +309,7 @@ textarea {
     return res.json()
   }
 
-  const makerowTableHTML=(args)=>{
+  const makeRowTableHTML=(args)=>{
     let tableHTML = String.raw`<div class="table_row_wrap">`
     arr[0].forEach((col, colIndex)=>{
       tableHTML = tableHTML + String.raw`<table class="pure-table table_row">`
@@ -341,7 +349,7 @@ textarea {
    // const tbl1 = document.getElementById("tbl1")
     let rowHTML = ""
     //rowHTML = "<h3>view(#" + selectRow + ")</h3>"
-    rowHTML = rowHTML + makerowTableHTML("view")
+    rowHTML = rowHTML + makeRowTableHTML("view")
     document.getElementById("show_row").innerHTML = rowHTML
 
     phase = "row_view";
