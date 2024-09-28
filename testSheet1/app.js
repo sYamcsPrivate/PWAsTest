@@ -160,7 +160,8 @@ body {
 textarea {
   position: relative;
   width: 100%;
-  field-sizing: content;
+  min-height: 2.5em;
+  //field-sizing: content;
   overflow-y: auto;
   resize: none;
   box-sizing: border-box;
@@ -214,7 +215,7 @@ textarea {
         const id = "row_col" + idx
         console.log(id)
         const textareaHeight = document.getElementById(id).scrollHeight
-        document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height=` + textareaHeight + `" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
+        document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height:` + textareaHeight + `px" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
       })
       phase = "row_edit";
     }
