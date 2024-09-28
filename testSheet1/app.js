@@ -158,7 +158,7 @@ body {
   min-width: 22px;
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
-  z-index: 1;
+  z-index: 2;
 }
 /*スクロール時に左にできる隙間を埋める*/
 .table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
@@ -171,7 +171,7 @@ body {
   left:-1px;
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
-  z-index:1;
+  z-index: 2;
 }
 
 .table_main_wrap thead {
@@ -181,7 +181,7 @@ body {
   left: 0px;
   -webkit-transform: translate3d(0, 0, 1px);
   transform: translate3d(0, 0, 1px);
-  z-index: 2;
+  z-index: 1;
 }
 /*スクロール時に上にできる隙間を埋める*/
 .table_main_wrap thead::before{
@@ -194,7 +194,7 @@ body {
   left:0;
   -webkit-transform: translate3d(0, 0, 1px);
   transform: translate3d(0, 0, 1px);
-  z-index:2;
+  z-index: 1;
 }
 
 .area_row {
