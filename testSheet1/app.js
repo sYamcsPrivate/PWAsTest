@@ -149,7 +149,7 @@ body {
   position: sticky;
   top: 0px;
   left: 0px;
-  z-index: 2;
+  z-index: 3;
 }
 /*スクロール時に上にできる隙間を埋める*/
 .table_main_wrap thead::before{
@@ -160,14 +160,14 @@ body {
   position: absolute;
   top:-1px;
   left:0;
-  z-index:2;
+  z-index:3;
 }
 
 .table_main_wrap th:first-child, .table_main_wrap td:first-child{
   background-color: #dddddd;
   position: sticky;
   left: 0px;
-  z-index: 1;
+  z-index: 2;
   padding-inline: 4px;
   text-align: center;
   font-weight: bold;
@@ -182,7 +182,7 @@ body {
   position: absolute;
   top:0px;
   left:-1px;
-  z-index:1;
+  z-index:2;
 }
 
 .table_main_wrap th, .table_main_wrap td {
