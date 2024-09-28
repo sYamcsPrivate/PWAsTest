@@ -214,7 +214,9 @@ textarea {
         const idx = colIndex + 1
         const id = "row_col" + idx
         console.log(id)
-        const textareaHeight = document.getElementById(id).scrollHeight
+        let textareaHeight = document.getElementById(id).scrollHeight
+        const rowHeight = document.getElementById("show_row").clientHeight
+        if (textareaHeight > rowHeight * 0.8) textareaHeight = rowHeight * 0.8
         document.getElementById(id).parentNode.innerHTML = String.raw`<textarea style="height:` + textareaHeight + `px" id="` + id + String.raw`">` + document.getElementById(id).textContent + String.raw`</textarea>`
       })
       phase = "row_edit";
