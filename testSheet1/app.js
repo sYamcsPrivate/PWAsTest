@@ -134,17 +134,61 @@ body {
 .area_main {
   width: 100svw;
   height: 100svh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .table_main_wrap {
-  overflow: auto;
+  overflow: scroll;
   position: relative;
+  width: 100svw;
+  height: 100svh;
   left: 0svw;
   top: 0svh;
 }
+.table_main_wrap thead {
+  background-color: #dddddd;
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+}
+/*スクロール時に上にできる隙間を埋める*/
+.table_main_wrap thead::before{
+  content:"";
+  width: 100%;
+  height:100%;
+  border-top:solid 3px #dddddd;
+  position: absolute;
+  top:-1px;
+  left:0;
+  z-index:2;
+}
+
+.table_main_wrap th:first-child, .table_main_wrap td:first-child{
+  background-color: #dddddd;
+  position: sticky;
+  left: 0px;
+  z-index: 3;
+}
+/*スクロール時に左にできる隙間を埋める*/
+.table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
+  content:"";
+  width: 100%;
+  height:100%;
+  border-left:solid 3px #dddddd;
+  position: absolute;
+  top:0px;
+  left:-1px;
+  z-index:3;
+}
+
 .table_main_wrap th, .table_main_wrap td {
   white-space: nowrap;
+}
+
+.area_row {
+  width: 100svw;
+  height: 100svh;
+  overflow: auto;
 }
 .table_row_wrap {
   overflow-y: auto;
@@ -197,7 +241,7 @@ textarea {
 <div class="pos">
   <div class="area_button" id="show_button"></div>
   <div class="area_main" id="show_main"></div>
-  <div class="area_main is_hidden" id="show_row"></div>
+  <div class="area_row is_hidden" id="show_row"></div>
 </div>
 
 
