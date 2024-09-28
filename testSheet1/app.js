@@ -168,6 +168,9 @@ body {
   position: sticky;
   left: 0px;
   z-index: 3;
+  padding-inline: 4px;
+  text-align: center;
+  font-weight: bold;
 }
 /*スクロール時に左にできる隙間を埋める*/
 .table_main_wrap th:first-child::before, .table_main_wrap td:first-child::before{
@@ -253,7 +256,7 @@ textarea {
 
   globalThis.AppShowEdit=(args)=>{
     if (phase === "row_view"){
-      document.getElementById("button_delete").classList.remove("is_hidden");
+      document.getElementById("button_delete").classList.add("is_hidden");
       arr[0].forEach((col, colIndex)=>{
         const idx = colIndex + 1
         const id = "row_col" + idx
