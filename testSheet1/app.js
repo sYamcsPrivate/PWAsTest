@@ -152,7 +152,7 @@ body {
   background-color: #dddddd;
   position: sticky;
   left: 0px;
-  padding-inline: 4px;
+  //padding-inline: 4px;
   text-align: center;
   font-weight: bold;
   min-width: 22px;
