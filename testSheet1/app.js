@@ -95,9 +95,6 @@ const app=async()=>{
 
   document.body.insertAdjacentHTML("beforeend", String.raw`
 <style>
-body {
-  overflow-wrap: break-word;
-}
 .pos {
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -105,6 +102,8 @@ body {
   left: 0svw;
   top: 0svh;
   user-select: none;
+  overscroll-behavior: none;
+  overflow-wrap: break-word;
 }
 .is_hidden {
   display: none !important;
@@ -197,7 +196,7 @@ body {
   z-index: 2;
 }
 
-.table_main_wrap thead th:first-child{
+#table_main_left_top {
   -webkit-transform: translate3d(0, 0, 2px);
   transform: translate3d(0, 0, 2px);
   z-index: 3;
@@ -536,7 +535,7 @@ textarea {
 
         if (rowIndex === 0) {
           if (colIndex === 0) {
-            tableHTML = tableHTML + String.raw`<th onclick="AppRowClick(` + rowIndex + String.raw`)">` + "#" + `</th>`
+            tableHTML = tableHTML + String.raw`<th id="table_main_left_top">` + "#" + `</th>`
           }
           tableHTML = tableHTML + String.raw`<th>`
         } else {
