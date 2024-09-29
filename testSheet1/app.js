@@ -182,6 +182,7 @@ const app=async()=>{
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
   z-index: 2;
+  pointer-events: none;
 }
 /*スクロール時に上にできる隙間を埋める*/
 .table_main_wrap thead::before{
@@ -195,12 +196,14 @@ const app=async()=>{
   -webkit-transform: translate3d(0, 0, 0px);
   transform: translate3d(0, 0, 0px);
   z-index: 2;
+  pointer-events: none;
 }
 
-#table_main_left_top {
+.table_main_wrap thead th:first-child {
   -webkit-transform: translate3d(0, 0, 2px);
   transform: translate3d(0, 0, 2px);
   z-index: 3;
+  pointer-events: none;
 }
 
 .area_row {
@@ -536,7 +539,7 @@ textarea {
 
         if (rowIndex === 0) {
           if (colIndex === 0) {
-            tableHTML = tableHTML + String.raw`<th id="table_main_left_top">` + "#" + `</th>`
+            tableHTML = tableHTML + String.raw`<th>` + "#" + `</th>`
           }
           tableHTML = tableHTML + String.raw`<th>`
         } else {
@@ -546,7 +549,7 @@ textarea {
           tableHTML = tableHTML + String.raw`<td>`
         }
 
-        if (cell.length > 20) cell = cell.slice(0, 19) + "..."
+        if (cell.length > 10) cell = cell.slice(0, 9) + "..."
         tableHTML = tableHTML + cell
 
         if (rowIndex === 0) {
