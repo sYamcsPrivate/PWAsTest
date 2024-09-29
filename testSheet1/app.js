@@ -102,8 +102,8 @@ const app=async()=>{
   left: 0svw;
   top: 0svh;
   user-select: none;
-  overscroll-behavior: none;
   overflow-wrap: break-word;
+  overscroll-behavior: none;
 }
 .is_hidden {
   display: none !important;
@@ -137,6 +137,7 @@ const app=async()=>{
 }
 .table_main_wrap {
   overflow: scroll;
+  overscroll-behavior: none;
   position: relative;
   width: 100svw;
   height: 100svh;
@@ -155,8 +156,8 @@ const app=async()=>{
   text-align: center;
   font-weight: bold;
   min-width: 22px;
-  -webkit-transform: translate3d(0, 0, 0px);
-  transform: translate3d(0, 0, 0px);
+  -webkit-transform: translate3d(0, 0, 1px);
+  transform: translate3d(0, 0, 1px);
   z-index: 1;
 }
 /*スクロール時に左にできる隙間を埋める*/
@@ -168,8 +169,8 @@ const app=async()=>{
   position: absolute;
   top:0px;
   left:-1px;
-  -webkit-transform: translate3d(0, 0, 0px);
-  transform: translate3d(0, 0, 0px);
+  -webkit-transform: translate3d(0, 0, 1px);
+  transform: translate3d(0, 0, 1px);
   z-index: 1;
 }
 
@@ -178,8 +179,8 @@ const app=async()=>{
   position: sticky;
   top: 0px;
   left: 0px;
-  -webkit-transform: translate3d(0, 0, 1px);
-  transform: translate3d(0, 0, 1px);
+  -webkit-transform: translate3d(0, 0, 0px);
+  transform: translate3d(0, 0, 0px);
   z-index: 2;
 }
 /*スクロール時に上にできる隙間を埋める*/
@@ -191,8 +192,8 @@ const app=async()=>{
   position: absolute;
   top:-1px;
   left:0;
-  -webkit-transform: translate3d(0, 0, 1px);
-  transform: translate3d(0, 0, 1px);
+  -webkit-transform: translate3d(0, 0, 0px);
+  transform: translate3d(0, 0, 0px);
   z-index: 2;
 }
 
