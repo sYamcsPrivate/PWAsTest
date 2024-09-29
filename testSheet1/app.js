@@ -463,7 +463,7 @@ textarea {
   const makeRowTableHTML=(args)=>{
     let tableHTML = String.raw`<div class="table_row_wrap">`
     arr[0].forEach((col, colIndex)=>{
-      tableHTML = tableHTML + String.raw`<table class="pure-table table_row">`
+      tableHTML = tableHTML + String.raw`<table class="pure-table pure-table-bordered table_row">`
       tableHTML = tableHTML + String.raw`<thead><tr><th>` + col + String.raw`<//th></tr></thead>`
       tableHTML = tableHTML + String.raw`<tbody><tr><td>`
       const id = "row_" + col
@@ -519,7 +519,7 @@ textarea {
   }
 
   const makeTableHTML=(arr)=>{
-    let tableHTML = String.raw`<div class="table_main_wrap"><table class="pure-table" id="tbl1">`
+    let tableHTML = String.raw`<div class="table_main_wrap"><table class="pure-table pure-table-bordered" id="tbl1">`
     arr.forEach((row, rowIndex)=>{
 
       if (rowIndex === 0) {
