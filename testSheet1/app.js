@@ -585,7 +585,7 @@ textarea {
           tableHTML = tableHTML + String.raw`<td>`
         }
 
-        if (cell.length > 10) cell = cell.slice(0, 9) + "..."
+        if (cell.length > 20) cell = cell.slice(0, 19) + "..."
         tableHTML = tableHTML + cell
 
         if (rowIndex === 0) {
