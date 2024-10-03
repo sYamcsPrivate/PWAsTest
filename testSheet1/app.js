@@ -268,6 +268,31 @@ textarea {
 
   `)
 
+
+  //ターゲットからWindowに向けて上がっていくバブリングフェーズなので、以下はrowClickより後に起動する
+  let canToggleButton = true, isShowButton = true
+  const toggleShowButtonArea=(e)=>{
+    //console.log("toggleShowButtonArea: start")
+    //console.log("[before]canToggleButton: " + canToggleButton)
+    //console.log("[before]isShowButton: " + isShowButton)
+    if (canToggleButton) {
+      if (isShowButton) {
+        document.getElementById("show_button").classList.add("is_hidden")
+        isShowButton = false
+      } else {
+        document.getElementById("show_button").classList.remove("is_hidden");
+        isShowButton = true
+      }
+    } else {
+      canToggleButton = true
+    }
+    //console.log("[after]canToggleButton: " + canToggleButton)
+    //console.log("[after]isShowButton: " + isShowButton)
+    //console.log("toggleShowButtonArea: end")
+  }
+  document.getElementById("show_main").addEventListener('click', (e)=>toggleShowButtonArea(e), {once: false})
+  document.getElementById("show_row").addEventListener('click', (e)=>toggleShowButtonArea(e), {once: false})
+
   let arr = []
   let selectRow = 0
   let phase = "main";
@@ -372,6 +397,9 @@ textarea {
         document.getElementById(id).style.height = "auto";
         document.getElementById(id).style.height = `${document.getElementById(id).scrollHeight}px`;
       }
+    })
+    document.getElementById(id).addEventListener('click', (args)=>{
+      canToggleButton = false
     })
   }
 
@@ -504,6 +532,7 @@ textarea {
   }
 
   globalThis.AppRowClick=(rowIndex)=>{
+    //console.log("AppRowClick: start")
     console.log("クリック行: " + rowIndex)
     if (rowIndex === 0) return
     selectRow = rowIndex
@@ -519,7 +548,14 @@ textarea {
     document.getElementById("button_cancel").classList.remove("is_hidden");
     document.getElementById("button_edit").classList.remove("is_hidden");
     document.getElementById("button_delete").classList.remove("is_hidden");
+
     phase = "row_view";
+
+    document.getElementById("show_button").classList.remove("is_hidden");
+    isShowButton = true
+    canToggleButton = false
+
+    //console.log("AppRowClick: end")
   }
 
   const makeTableHTML=(arr)=>{
