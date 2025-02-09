@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>クイズアプリ</title>
+    <style>
+        #answer {
+            display: none;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>クイズアプリ</h1>
+    
+    <div id="question-container">
+        <p id="question"></p>
+        <button id="show-answer-button">解答を表示</button>
+        <p id="answer"></p>
+    </div>
+
+    <div id="response-container" style="display:none;">
+        <button id="correct-button">正解</button>
+        <button id="incorrect-button">不正解</button>
+    </div>
+    
+<!--    <button id="next-question-button">スキップして次の問題へ</button> -->
+
+    <div id="result">
+        <p>解答済みの問題数: <span id="answered-count">0</span></p>
+        <p>正解した数: <span id="correct-count">0</span></p>
+        <p>正解割合: <span id="correct-percentage">0%</span></p>
+    </div>
+
+    <script>
+        // 問題と解答の配列
+        const qa = [
+
+  ["東南アジアで開かれた、コーヒーやゴムなどを栽培している大規模な農業", "プランテーション"],
+  ["中国が沿岸部内陸部の格差をなくすため、2000年から始めた内陸部の開発。", "西部大開発"],
+  ["アメリカで、情報技術産業などがさかんな北緯37度以南の地域", "サンベルト"],
+  ["ハイテク産業の企業や研究所が多い、サンフランシスコ周辺の地域の総称", "シリコンバレー"],
+  ["地球の気温が上昇している現象", "地球温暖化"],
+  ["都市化の一方で、貧しい人々が住み生活環境が悪化している地区。", "スラム"],
+  ["国や地域などの人口を面積で割って出した、一般に1kmあたりで示される人の数", "人口密度"],
+  ["イギリスのロンドンを通る0度の経線の呼び名", "本初子午線"],
+  ["沿岸から200海里以内の水域、沿岸の国が独占的に調査したり開発したりできる", "排他的経済水域"],
+  ["一年の大半が雪や氷におおわれている気候帯", "寒带"],
+  ["アフリカ北部やアラビア半島、ユーラシア大陸の内陸部などにみられる、雨が少なく乾燥した地域", "乾燥带"],
+  ["熱帯の入り江や河口に育つ常緑広葉樹の森林", "マングローブ"],
+  ["寒帯のうち、一年中氷や雪におおわれる気候", "氷雪気候"],
+  ["乾燥帯のうち、少し雨が降り、たけの短い草が広がる草原がみられる気候", "ステップ気候"],
+  ["乾燥した地域の中でもわき水や井戸があって水が得られる場所", "オアシス"],
+  ["サハラ砂漠の南側に沿って広がる、少量の雨が降る地域", "サヘル"],
+  ["他の国に政治・経済などあらゆる面で支配された地域", "植民地"],
+  ["工業が発達し、工業製品を世界中に輸出するようになった中国の呼び名", "世界の工場"],
+  ["同じ土地で一年に2回同じ作物をつくること", "二期作"],
+  ["いくつもの国を流れ、沿岸国が自由に航行できるよう条約が結ばれている河川", "国際河川"],
+  ["自然を見るだけでなく、体験や学習を通して地域の歴史や文化も楽しむ観光", "エコツーリズム"],
+  ["1つの国の国民が国内・国外から1年間に得た所得を合計したもので、国の経済の成長をはかる指標となるもの", "国民総所得"],
+  ["古代からあった他人の所有物とされて強制的に働かされ、売買された人々", "奴隷"],
+  ["工業化が進んでいないため、限られた資源や農産物の輸出にたよっている国の経済のこと", "モノカルチャー経済"],
+  ["スペイン語を話すメキシコや西インド諸島などからアメリカ合衆国にやってきた移民", "ヒスパニック"],
+  ["太平洋を囲む国や地域が経済協力を目的として1989年に結成したアジア太平洋経済協力会議の欧文略称", "APEC"],
+  ["アルゼンチンの国土の中央部、ラプラタ川沿いに広がる温帯の草原", "パンパ"],
+  ["ペルーで15世紀に栄えていた帝国", "インカ帝国"],
+  ["アマゾン川の河口から1600kmも上流にある、多くの船でにぎわっている都市", "マナオス"],
+  ["さとうきびなどの植物原料からつくるアルコール燃料", "バイオエタノール"],
+  ["将来世代のために、経済の発展と環境の保護を両立させる開発の考え", "持続可能な開発"],
+  ["国土の3分の2が低い降水量で呼ばれているオーストラリア大陸の別名", "乾燥大陸"],
+  ["オーストラリアの先住民", "アボリジニ"],
+  ["ニュージーランドの先住民", "マオリ"],
+  ["オーストラリアやニュージーランドをかつて植民地支配していたヨーロッパの国", "イギリス"],
+  ["オーストラリアの現在の貿易相手国第1位であるアジアの国", "中国"],
+  ["トンネルを掘るのではなく、地表から直接けずって鉱産資源を掘り出す方法", "露天掘り"],
+  ["中国や東南アジアの国々出身の華人が集まって住んでいる地域", "チャイナタウン"],
+  ["20世紀初めから1970年代にかけて、オーストラリアでとられていたヨーロッパ系以外の移民を制限する政策", "白豪主義"],
+  ["メソポタミア文明で発明された、月の満ち欠けをもとにしてつくられた暦", "太陰曆"],
+  ["「仁」と「礼」を基本とした道徳的な政治をするべきだとした教え", "儒学(儒教)"],
+  ["ペルシャを征服して広大な帝国を築いたマケドニアの王", "アレクサンドロス大王"],
+  ["紀元前1世紀に、地中海を囲む地域を統一し、領土を現在のヨーロッパ北部にまで広げた帝国", "ローマ帝国"],
+  ["天智天皇の没後、後継ぎをめぐって起こった戦い", "壬申の乱"],
+  ["律令制度で、九州地方の政治や外交、防衛にあたる役職", "大宰府"],
+  ["中国の制度や文化を取り入れるため、奈良時代に送られた使節", "遣唐使"],
+  ["794年に桓武天皇が移した都", "平安京"],
+  ["藤原氏の一族が、天皇が幼い時についた役職", "摂政"],
+  ["藤原氏の一族が、天皇の成人後についた天皇を補佐する役職", "関白"],
+  ["摂関政治の全盛期を築いた人物", "藤原道長"],
+  ["清少納言があらわした随筆", "枕草子"],
+  ["京都の宇治に建てられた阿弥陀堂の代表的なもの", "平等院鳳凰堂"],
+  ["894年に遣唐使に任命されたものの、唐のおとろえなどを理由に派遣の停止を訴えた人物", "菅原道真"],
+  ["征夷大将軍に任命され、蝦夷と戦って胆沢地方を平定した人物。", "坂上田村麻呂"],
+  ["地方の武士が多くの家来を従えて成長した組織。", "武士団"],
+  ["上皇が摂政や関白の力をおさえて行った政治。", "院政"],
+  ["1156年におこった内乱。後白河天皇方についた平清盛と源義朝らが勝利した。", "保元の乱"],
+  ["1159年におこった内乱。平清盛が源義朝を破った戦い。", "平治の乱"],
+  ["1185年に壇ノ浦で平氏をほろぼした人物。", "源義経"],
+  ["御家人が将軍に対して朝廷のある京都や幕府のある鎌倉を整備し、生命をかけて軍役などを果たすこと", "奉公"],
+  ["北条氏が独占して、幕府政治の実権を握ることになった将軍を補佐する役職。", "執権"],
+  ["承久の乱のあと、幕府が設置した、朝廷の監視や京都の警備、西日本の武士の統率などをつかさどった役所。", "六波羅探題"],
+  ["後鳥羽上皇の命令で編集された朝廷の文化を代表する和歌集。", "新古今和歌集"],
+  ["念仏の札を配って教えを広め、時宗を開いた人物。", "一遍"],
+  ["「南無妙法蓮華経」を唱えれば、人も国も救われると説いた仏教の宗派。", "日蓮宗"],
+  ["座禅によって自分の力でさとりを開こうとする仏教の宗派", "禅宗"],
+  ["天皇が位をゆずったあとの称号", "上皇"],
+  ["源頼朝が1185年に国ごとに置いた役人", "守護"],
+  ["源頼朝が1185年に荘園や公領ごとに置いた役人", "地頭"],
+  ["後鳥羽上皇が幕府を倒そうと兵をあげたものの、幕府の大軍によって敗れた戦乱", "承久の乱"],
+  ["1232年に北条泰時が定めた法律", "御成敗式目"],
+  ["米の裏作に麦を作る農業", "二毛作"],
+  ["琵琶法師によって語り伝えられた軍記物", "平家物語"],
+  ["兼好法師によって書かれた随筆", "徒然草"],
+  ["足利義満が明に対して朝貢の形式で始めた貿易", "勘合貿易"],
+  ["実力のある者が力をのばして上の身分の者に打ち勝つ風潮", "下剋上"],
+  ["戦国大名が領国の武士や農民の行動を取り締まるためにつくった独自の法律", "分国法"],
+  ["大名が城の周辺に家来や商工業者を呼び寄せてつくった町", "城下町"],
+  ["農民が土倉などをおそって借金の帳消しなどを求めた行動", "土一揆"],
+  ["後継ぎ問題をめぐって有力な守護大名が対立し、1467年に起こった戦乱", "応仁の乱"]
+
+        ];
+
+        let currentQuestionIndex = -1;
+        let answeredCount = 0;
+        let correctCount = 0;
+
+        // 次の問題をランダムに表示する関数
+        function showNextQuestion() {
+            const randomIndex = Math.floor(Math.random() * qa.length);
+            currentQuestionIndex = randomIndex;
+            const questionElement = document.getElementById('question');
+            const answerElement = document.getElementById('answer');
+            const responseContainer = document.getElementById('response-container');
+            const showAnswerButton = document.getElementById('show-answer-button');
+
+            // 問題を表示
+            questionElement.textContent = qa[randomIndex][0];
+
+            // 解答を非表示に
+            answerElement.textContent = qa[randomIndex][1];
+            answerElement.style.display = 'none';
+
+            // 解答ボタンを有効化
+            showAnswerButton.textContent = '解答を表示';
+            responseContainer.style.display = 'none';
+        }
+
+        // 解答を表示または非表示にする関数
+        function toggleAnswer() {
+            const answerElement = document.getElementById('answer');
+            const showAnswerButton = document.getElementById('show-answer-button');
+            if (answerElement.style.display === 'none') {
+                answerElement.style.display = 'block';
+                showAnswerButton.textContent = '解答を非表示';
+                document.getElementById('response-container').style.display = 'block';
+            } else {
+                answerElement.style.display = 'none';
+                showAnswerButton.textContent = '解答を表示';
+                document.getElementById('response-container').style.display = 'none';
+            }
+        }
+
+        // 正解/不正解を記録
+        function recordAnswer(isCorrect) {
+            answeredCount++;
+            if (isCorrect) {
+                correctCount++;
+            }
+            updateResults();
+        }
+
+        // 結果の更新
+        function updateResults() {
+            document.getElementById('answered-count').textContent = answeredCount;
+            document.getElementById('correct-count').textContent = correctCount;
+            const correctPercentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+            document.getElementById('correct-percentage').textContent = `${correctPercentage}%`;
+        }
+
+        // ページがロードされた時に最初の問題を表示
+        window.onload = showNextQuestion;
+
+        // 「スキップして次の問題へ」ボタンのクリックイベント
+        // document.getElementById('next-question-button').addEventListener('click', showNextQuestion);
+
+        // 「解答を表示」ボタンのクリックイベント
+        document.getElementById('show-answer-button').addEventListener('click', toggleAnswer);
+
+        // 「正解」ボタンのクリックイベント
+        document.getElementById('correct-button').addEventListener('click', function() {
+            recordAnswer(true);
+            showNextQuestion();
+        });
+
+        // 「不正解」ボタンのクリックイベント
+        document.getElementById('incorrect-button').addEventListener('click', function() {
+            recordAnswer(false);
+            showNextQuestion();
+        });
+
+        // キーボードショートカット
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ' || event.key === 'Spacebar') { // Spaceキー
+                toggleAnswer();
+            } else if (event.key === 'Enter') { // Enterキー
+                showNextQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
